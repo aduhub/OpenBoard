@@ -1,0 +1,859 @@
+﻿@charset "utf-8";
+
+BODY{
+	background-color:#dadada;
+	font-size : 16pt;
+	font-family : 'ヒラギノ角ゴ Pro W3','Hiragino Kaku Gothic Pro','メイリオ','Meiryo','ＭＳ Ｐゴシック',sans-serif;
+	margin-top : 0px;
+	margin-left : 0px;
+	margin-right : 0px;
+	margin-bottom : 0px;
+}
+A {
+	color:#0066FF;
+	text-decoration: none;
+}
+A:hover{
+	color:#FF9900;
+}
+H3{
+	font-size : 24pt;
+	font-weight:bold;
+	padding:0px;
+	margin:4px;
+}
+TD{
+	font-size : 14pt;
+	/*font-family : "Verdana", "MS UI Gothic";*/
+}
+INPUT{
+	font-size : 16pt;
+	font-family : 'Verdana';
+	border:1px solid #444444;
+	color: #222222;
+	padding:4px;
+	background: -webkit-gradient(linear, left top, left bottom, from(#eaeaea), color-stop(0.1, #ffffff));
+	background: -moz-linear-gradient(top, #eaeaea, #ffffff 10%);
+	border-radius: 4px;
+	box-shadow: 1px 1px 1px #fff;
+}
+INPUT:read-only{
+	color: #555555;
+	background: #cccccc;
+}
+SELECT{
+	font-size : 16pt;
+	font-family : 'Verdana';
+	border:1px solid #444444;
+	color: #222222;
+	padding:3px;
+	background: -webkit-gradient(linear, left top, left bottom, from(#eaeaea), color-stop(0.1, #ffffff));
+	background: -moz-linear-gradient(top, #eaeaea, #ffffff 10%);
+	border-radius: 4px;
+	box-shadow: 1px 1px 1px #fff;
+}
+BUTTON.base{
+	font-size : 14pt;
+	font-family : 'Verdana','ヒラギノ角ゴ Pro W3','Hiragino Kaku Gothic Pro','メイリオ','Meiryo','ＭＳ Ｐゴシック',sans-serif;
+	border:1px solid #444444;
+	padding:4px;
+	border-radius: 4px;
+	box-shadow: 1px 1px 1px #fff;
+}
+BUTTON.glay{
+	color:#333333;
+	background: -webkit-gradient(linear, left top, left bottom, from(#F7F7F7), color-stop(0.02, #DFDFDF), color-stop(0.97, #C3C3C3), to(#969696));
+	background: -moz-linear-gradient(top, #F7F7F7, #DFDFDF 2%, #C3C3C3 97%, #969696);
+}
+BUTTON.glay:active{
+	background: -webkit-gradient(linear, left top, left bottom, from(#969696), color-stop(0.02, #A3A3A3));
+	background: -moz-linear-gradient(top, #969696, #A3A3A3 2%);
+}
+BUTTON.blue{
+	background: -webkit-gradient(linear, left top, left bottom,  from(#B2EFF7), color-stop(0.02, #5ACBEB), color-stop(0.97, #517DC3), to(#5585B6));
+	color: #ffffff;
+	text-shadow: -1px -1px 2px #777777;
+}
+BUTTON.blue:active{
+	background: -webkit-gradient(linear, left top, left bottom,  from(#5585B6), color-stop(0.02, #517DC3));
+	background: -moz-linear-gradient(top, #356596, #315DA3 2%);
+	text-shadow: 1px 1px 2px #888888;
+}
+BUTTON.orange{
+	background: -webkit-gradient(linear, left top, left bottom, from(#F7EF92), color-stop(0.02, #EBBB3A), color-stop(0.97, #A35D31), to(#966535));
+	background: -moz-linear-gradient(top, #E7CF82, #CB9B2A 2%, #A35D31 97%, #966535);
+	color: #ffffff;
+	text-shadow: -1px -1px 2px #777777;
+}
+BUTTON.orange:active{
+	background: -webkit-gradient(linear, left top, left bottom, from(#966535), color-stop(0.02, #A35D31));
+	background: -moz-linear-gradient(top, #966535, #A35D31 2%);
+	text-shadow: 1px 1px 2px #888888;
+}
+BUTTON.icon IMG{
+	margin-left:4px;
+	margin-right:4px;
+}
+/*########### wrapper ############*/
+#wrapper{
+	position : absolute;
+	top : 0px;
+	left : 0px;
+	width : 1024px;
+	height : 600px;
+	z-index: 1;
+	overflow:hidden;
+}
+/*########### head ############*/
+#div_head_block{
+	background-color:#994400;
+	position:absolute;
+	top   :0px;
+	left  :0px;
+	width :1024px;
+	height:60px;
+	z-index:100;
+	box-shadow: -1px 0px 8px #202020;
+}
+.head_logo{
+	color:#fefefe;
+	font-size : 36px;
+	line-height: 50px;
+	font-weight:bold;
+	font-family : 'Verdana';
+	position:absolute;
+	top   :0px;
+	left  :10px;
+	text-shadow: -1px -1px 1px #662200, 1px 1px 1px #AA6622;
+}
+#div_head_login{
+	position:absolute;
+	top   :10px;
+	right :10px;
+}
+#div_head_user{
+	position:absolute;
+	top   :10px;
+	right :10px;
+}
+#SPANUSERNM{
+	color:#fefefe;
+	font-weight:bold;
+}
+/*########### ###########*/
+#div_menu_block{
+	background-color:#444444;
+	position:absolute;
+	top   :60px;
+	left  :0px;
+	width :200px;
+	height:540px;
+	z-index:50;
+	box-shadow: 0px 0px 8px #202020;
+}
+#btn_menu7{
+	color:#00ccee;
+}
+.menu_btn{
+	font-size : 14pt;
+	font-weight:bold;
+	font-family : 'ヒラギノ角ゴ Pro W3','Hiragino Kaku Gothic Pro','メイリオ','Meiryo','ＭＳ Ｐゴシック',sans-serif;
+	color:#fefefe;
+	background: -webkit-gradient(linear, left top, left bottom, from(#444444), color-stop(0.90, #444444), to(#666666));
+	background: -moz-linear-gradient(top, #444444, #444444 90%, #666666);
+	width :200px;
+	height:32px;
+	margin:0px;
+	border:none;
+	text-shadow: 1px 1px 1px #888888;
+	display:none;
+}
+.menu_btn:active{
+	background: -webkit-gradient(linear, left top, left bottom, from(#969696), color-stop(0.02, #A3A3A3));
+	background: -moz-linear-gradient(top, #969696, #A3A3A3 02%);
+	text-shadow: 1px 1px 1px #888888;
+}
+.menu_btn:first-child{
+	margin-top:4px;
+}
+.amazon{
+	width :110px;
+	height:99px;
+	margin-top:130px;
+	margin-left:45px;
+	margin-right:45px;
+	border-radius: 8px;
+	box-shadow: 2px 2px 2px #333333;
+}
+.amazon img{
+	border-radius: 8px;
+}
+.twitter{
+	margin-top:4px;
+	height:300px;
+}
+/*########### Tab ###############*/
+.page_frame{
+	position : absolute;
+	top : 60px;
+	left : 200px;
+	width : 824px;
+	height : 540px;
+	z-index: 1;
+	display: none;
+	background-color : #efefef;
+}
+.page_frame P{
+	font-size : 14pt;
+	/*font-family : 'Ubuntu','ヒラギノ角ゴ Pro W3','Hiragino Kaku Gothic Pro','メイリオ','Meiryo','ＭＳ Ｐゴシック',sans-serif;*/
+	margin : 24px 12px 24px 12px;
+	line-height:20px;
+}
+#div_page4{
+	background-color : #888888;
+	display: none;
+}
+/*##########*/
+#div_roomlistbtn{
+	position:absolute;
+	top:10px;
+	right:10px;
+	width:540px;
+	height:40px;
+	text-align:right;
+}
+#DIVROOMHEAD{
+	background-color : #aaaaaa;
+	height:40px;
+	width:824px;
+}
+#DIVLIST{
+	width:824px;
+	height:440px;
+	overflow:auto;
+}
+#DIVLIST::-webkit-scrollbar {
+  width: 12px;
+  height:0px;
+}
+#DIVLIST::-webkit-scrollbar-thumb {
+  background-color:rgba(0,0,0,0.3);
+}
+#DIVLIST::-webkit-scrollbar-thumb:hover{
+  background-color:rgba(0,0,0,0.6);
+}
+.LISTLINE{
+	font-size : 14pt;
+	line-height:36px;
+	height:36px;
+	width:812px;
+	padding:2px 0px 2px 2px;
+	border-bottom:solid 1px #cccccc;
+}
+.LISTLINE div{
+	height:36px;
+	float:left;
+	overflow:hidden;
+}
+.LISTLINE div:nth-child(1){
+	width:208px;
+}
+.LISTLINE div:nth-child(2){
+	width:140px;
+}
+.LISTLINE div:nth-child(3){
+	width:80px;
+}
+.LISTLINE div:nth-child(4){
+	width:50px;
+}
+.LISTLINE div:nth-child(5){
+	width:70px;
+}
+.LISTLINE div:nth-child(6){
+	width:160px;
+}
+.LISTLINE div:nth-child(7){
+	width:104px;
+}
+
+#DIVRESULT_BACK{
+	background-color:rgba(0,0,0,0.2);
+	position : absolute;
+	top   : 0px;
+	left  : 0px;
+	width : 824px;
+	height : 540px;
+	z-index:50;
+	display:none;
+}
+#DIVRESULT{
+	background-color : #e0e0e0;
+	border: solid 1px #a0a0a0;
+	text-align : center;
+	padding     : 8px;
+	margin-top  : 100px;
+	margin-left : auto;
+	margin-right: auto;
+	border-radius: 6px;
+	width : 360px;
+	max-height:400px;
+	overflow:auto;
+}
+#DIVRESULT table{
+	width:360px;
+	border:solid 1px #666666;
+	border-spacing:0px;
+}
+#DIVRESULT td{
+	padding:2px;
+	border:solid 1px #666666;
+}
+/*############# ROOM ENTRY #############*/
+#DIV_MAPVIEW{
+	position:absolute;
+	top:60px;
+	left:360px;
+	width:400px;
+	height:300px;
+	border:solid 1px #666666;
+}
+/*############# DECK EDITOR #############*/
+#div_deck_label1{
+	position:absolute;
+	top:10px;
+	left:10px;
+}
+#div_deck_label2{
+	position:absolute;
+	top:10px;
+	left:265px;
+}
+#div_deck_label3{
+	position:absolute;
+	top:10px;
+	left:520px;
+}
+.deck_label{
+	color:#AAAAAA;
+	background-color:#333333;
+	font-size:20px;
+	text-align:center;
+	height:38px;
+	width:244px;
+	border-radius: 8px;
+}
+#SEL_DECKLIST{
+	position:absolute;
+	top:40px;
+	left:10px;
+}
+#SEL_DECKSET{
+	position:absolute;
+	top:40px;
+	left:265px;
+}
+#SEL_CARDLIST{
+	position:absolute;
+	top:40px;
+	left:520px;
+}
+.CARDLIST{
+	background-color:#FFFFFF;
+	height: 440px;
+	width : 240px;
+	overflow:auto;
+	border: solid 2px #333333;
+}
+.CARDLIST BUTTON{
+	font-size : 20px;
+	width : 220px;
+	margin: 1px;
+	border: solid 1px #666666;
+	border-radius:4px;
+	box-shadow: 0 0 0 #000;
+}
+/* LIST SELECT BUTTON */
+#SELECTBTN{
+	position:absolute;
+	top:100px;
+	left:770px;
+	width:40px;
+	height:300px;
+}
+#SELECTBTN BUTTON{
+	color: #ffffff;
+	background: -webkit-gradient(linear, left top, left bottom, from(#EEEEEE), to(#DDDDDD));
+	background: -moz-linear-gradient(top, #EEEEEE, #DDDDDD);
+	width :40px;
+	height:46px;
+	border:1px solid #777;
+	padding-top:4px;
+	margin:-1px 0px 0px 0px;
+}
+#SELECTBTN BUTTON:active{
+	background: #CCCCCC;
+}
+#SELECTBTN BUTTON.b1{
+	border-top-left-radius: 6px;
+	border-top-right-radius: 6px; 
+}
+#SELECTBTN BUTTON.b9{
+	border-bottom-left-radius: 6px;
+	border-bottom-right-radius: 6px; 
+}
+#deck_ctl{
+	position:absolute;
+	top:490px;
+}
+/* DECK */
+#DECKVIEW{
+	background-color:rgba(0,0,0,0.8);
+	position : absolute;
+	top   : 0px;
+	left  : 0px;
+	width : 824px;
+	height : 540px;
+	z-index:50;
+	display:none;
+	text-align:center;
+}
+#DECKVIEW CANVAS{
+	margin-top:40px;
+}
+/* CARD INFOMATION */
+#CARDINFO{
+	display:none;
+	background-color : #EEEEEE;
+	border-style: solid;
+	border-width: 1px;
+	border-color : #314759;
+	position : absolute;
+	top : 80px;
+	left : 200px;
+	width : 400px;
+	height : 260px;
+	z-Index : 10;
+	box-shadow: 2px 2px 0px #666;
+}
+#CARDINFO_LEFT{
+	position : absolute;
+	top : 0px;
+	left : 0px;
+	width : 200px;
+	height : 260px;
+}
+#CARDINFO_RIGHT{
+	position : absolute;
+	top : 0px;
+	left : 200px;
+	width : 190px;
+	height : 250px;
+	padding : 5px;
+}
+	.class_Info_Line{
+		/*box layout*/
+		display:-webkit-box;
+		display:-moz-box;
+		font-size : 20px;
+		font-family : "Verdana",'ヒラギノ角ゴ Pro W3','Hiragino Kaku Gothic Pro','メイリオ','Meiryo','ＭＳ Ｐゴシック',sans-serif;
+		line-height:26px;
+		height:26px;
+		width:100%;
+	}
+		.class_Info_Line div{
+			-webkit-box-sizing:border-box;
+			-moz-box-sizing:border-box;
+		}
+	.class_Info_Line2{
+		height:36px;
+		width:100%;
+		text-align : center;
+	}
+	.class_Info_Comment{
+		font-size : 20px;
+		font-family : "Verdana",'ヒラギノ角ゴ Pro W3','Hiragino Kaku Gothic Pro','メイリオ','Meiryo','ＭＳ Ｐゴシック',sans-serif;
+		min-height:32px;
+		width:100%;
+		padding-top:4px;
+		padding-bottom:4px;
+		line-height:22px;
+		-webkit-box-sizing:border-box;
+		-moz-box-sizing:border-box;
+	}
+/*########## CARDLIST ###########*/
+#DIV_CARDBOOKLIST{
+	position:absolute;
+	top:0px;
+	left:0px;
+	width:824px;
+	height:540px;
+	overflow:auto;
+}
+.item_frame{
+	background-color:#e0e0e0;
+	position:absolute;
+	top:0px;
+	left:0px;
+	width:380px;
+	height:130px;
+	border:solid 4px #994400;
+	border-radius: 4px;
+}
+.item_back{
+	position:absolute;
+	top:0px;
+	left:0px;
+	width:380px;
+	height:130px;
+	z-index:1;
+}
+.item_back:hover{
+	z-index:3;
+}
+.item_cardb{
+	position:absolute;
+	top:0px;
+	left:0px;
+	width:100px;
+	height:130px;
+	z-index:11;
+}
+.item_cardf{
+	position:absolute;
+	top:0px;
+	left:0px;
+	width:100px;
+	height:130px;
+	z-index:12;
+}
+.item_flavor{
+	font-size : 18px;
+	font-family : 'ヒラギノ角ゴ Pro W3','Hiragino Kaku Gothic Pro','メイリオ','Meiryo','ＭＳ Ｐゴシック',sans-serif;
+	color:#fefefe;
+	background-color:rgba(32, 32, 32, 0.8);
+	position:absolute;
+	top:0px;
+	left:100px;
+	width:260px;
+	height:110px;
+	padding:10px;
+}
+.item_info{
+	background-color:#e0e0e0;
+	font-size:16px;
+	line-height:20px;
+	position:absolute;
+	top:0px;
+	left:100px;
+	width:280px;
+	height:130px;
+	z-index:2;
+}
+.item_info A{
+	color:#0000CC;
+	text-decoration:underline;
+}
+.book_frame_r0{
+	position:absolute;
+	top:0px;
+	left:0px;
+	width:26px;
+	height:26px;
+}
+.book_frame_r1{
+	position:absolute;
+	top:0px;
+	left:28px;
+	width:250px;
+	height:26px;
+	font-size:20px;
+	font-weight:bold;
+	line-height:26px;
+}
+.book_frame_r2{
+	position:absolute;
+	top:28px;
+	left:0px;
+	width:160px;
+	height:22px;
+}
+.book_frame_r3{
+	position:absolute;
+	top:28px;
+	left:160px;
+	width:100px;
+	height:22px;
+}
+.book_frame_r4{
+	position:absolute;
+	top:48px;
+	left:0px;
+	width:280px;
+	height:80px;
+	overflow:auto;
+}
+
+.book_g{
+	font-weight:bold;
+	background-color:#FFCC00;
+	padding:0px 4px 0px 4px;;
+	border-radius:4px;
+}
+.book_st{
+	font-weight:bold;
+	background-color:#6D8DF3;
+	padding-left:4px;
+	padding-right:4px;
+	border-radius:4px;
+}
+.book_hp{
+	font-weight:bold;
+	background-color:#A8E61D;
+	padding-left:4px;
+	padding-right:4px;
+	border-radius:4px;
+}
+/* ABILITY INFOMATION */
+#DIV_DIALOG_BACK{
+	background-color:rgba(0,0,0,0.2);
+	position : absolute;
+	top   : 0px;
+	left  : 0px;
+	width : 824px;
+	height: 540px;
+	z-index:50;
+	display:none;
+}
+#DIV_DIALOG{
+	background-color : #e0e0e0;
+	border: solid 1px #a0a0a0;
+	text-align : center;
+	padding     : 8px;
+	margin-top  : 100px;
+	margin-left : auto;
+	margin-right: auto;
+	border-radius: 6px;
+	width : 320px;
+}
+/*############# MAP #############*/
+.MAPLIST{
+	background-color:#FFFFFF;
+	position:absolute;
+	top   : 0px;
+	left  : 0px;
+	height: 540px;
+	width : 200px;
+	overflow:auto;
+}
+.MAPLIST BUTTON{
+	font-size : 20px;
+	width : 180px;
+	margin: 1px;
+	border: solid 1px #666666;
+	border-radius:4px;
+	box-shadow: 0 0 0 #000;
+}
+#DIV_MAPVIEW2{
+	position:absolute;
+	top   : 0px;
+	left  : 200px;
+	height: 540px;
+	width : 624px;
+	overflow:scroll;
+}
+#DIV_MAPDETAIL{
+	background-color:#FFFFFF;
+	position:absolute;
+	top   : 8px;
+	left  : 250px;
+	height: 120px;
+	width : 180px;
+	padding:4px;
+	border:solid 1px #666666;
+	opacity:0.6;
+	border-radius:4px;
+}
+#DIV_MAPDETAIL TD{
+	font-size : 12pt;
+	font-family : "Verdana";
+}
+/*########### alert box ###########*/
+#div_alert{
+	background-color:#ffffcc;
+	border: solid 1px #a0a0a0;
+	position : absolute;
+	top    : 40px;
+	left   : 312px;
+	width  : 400px;
+	height : 40px;
+	line-height: 40px;
+	font-size  : 16px;
+	text-align : center;
+	display:none;
+	z-index:150;
+	border-radius: 6px;
+	box-shadow: 1px 1px 4px #202020;
+}
+div.animeMsgpop{
+	-webkit-animation-name: msgpop;
+	-webkit-animation-duration: 2.0s;
+	-webkit-animation-timing-function: liner;
+	-moz-animation-name: msgpop;
+	-moz-animation-duration: 2.0s;
+	-moz-animation-timing-function: liner;
+}
+@-webkit-keyframes msgpop{
+	0% {
+		opacity:0.0;
+		padding-top:10px;
+	}
+	10% {
+		opacity:1.0;
+		padding-top:5px;
+	}
+	80% {
+		opacity:1.0;
+		padding-top:5px;
+	}
+	100% {
+		opacity:0.0;
+		padding-top:0px;
+	}
+}
+@-moz-keyframes msgpop{
+	0% {
+		opacity:0.0;
+		padding-top:10px;
+	}
+	10% {
+		opacity:1.0;
+		padding-top:5px;
+	}
+	80% {
+		opacity:1.0;
+		padding-top:5px;
+	}
+	100% {
+		opacity:0.0;
+		padding-top:0px;
+	}
+}
+/*########### alert box ###########*/
+#div_icons{
+	background-color:rgba(32, 32, 32, 0.8);
+	border: solid 1px #a0a0a0;
+	position : absolute;
+	top    : 120px;
+	left   : 312px;
+	width  : 400px;
+	height : 130px;
+	text-align : center;
+	display:none;
+	z-index:140;
+	border-radius: 6px;
+	box-shadow: 1px 1px 4px #202020;
+}
+#div_icons img{
+	margin-left:-20px;
+	margin-right:-20px;
+}
+/*########### log ###########*/
+#logframe{
+	position : absolute;
+	top : 0px;
+	left : 1024px;
+	width : 256px;
+	height : 600px;
+	z-index: 1;
+	overflow:hidden;
+}
+#logheadder{
+	background-color:#996600;
+	position:absolute;
+	top   :0px;
+	left  :0px;
+	width :256px;
+	height:60px;
+	z-index:100;
+	box-shadow: -1px 0px 8px #202020;
+}
+#logdetail{
+	font-size: 12px;
+	position : absolute;
+	top : 60px;
+	left : 0px;
+	width : 256px;
+	height : 508px;
+	z-index: 1;
+	background-color : #fefeca;
+	overflow: auto;
+}
+#logchat{
+	background-color : #fefeca;
+	position : absolute;
+	top	: 568px;
+	left	: 0px;
+	width	: 256px;
+	height	: 32px;
+	z-index	: 61;
+}
+#logchat INPUT{
+	font-size:16px;
+	height:22px;
+	width:222px;
+	padding:0px;
+}
+.log_name{
+	margin:4px;
+	font-size:10px;
+	font-weight:bold;
+}
+.log_chat{
+	padding:4px;
+	margin:4px;
+	font-size:12px;
+	background-color : #fefefe;
+	box-shadow: 0px 2px 2px #dadaba;
+}
+.log_msg{
+	margin:4px 4px 4px 4px;
+	font-size:12px;
+	font-weight:bold;
+}
+/*########## DeckColor ##############*/
+.DeckColor0{
+	color:#202020;
+	background:none;
+	background-color:#FEFEFE;
+}
+.DeckColor1{
+	color:#A89861;
+	background:none;
+	background-color:#261F0C;
+	border: solid 1px #575135;
+}
+.DeckColor2{
+	color:#EFE4BD;
+	background:none;
+	background-color:#A32500;
+	border: solid 1px #2B2922;
+}
+.DeckColor3{
+	color:#2B211F;
+	background:none;
+	background-color:#B4D32F;
+	border: solid 1px #FEAB2F;
+}
+.DeckColor4{
+	color:#492449;
+	background:none;
+	background-color:#EF9950;
+	border: solid 1px #DEDE91;
+}
+.DeckColor5{
+	color:#9E9354;
+	background:none;
+	background-color:#204D4F;
+	border: solid 1px #7A874D;
+}

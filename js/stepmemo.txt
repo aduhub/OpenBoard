@@ -1,0 +1,38 @@
+No Timer Detail
+=============================
+11 - start dialog
+12 >0 draw - card click wait
+13 >>0 draw - discard wait
+20 <> draw - step end
+21 0 spell - target wait
+22 - spell - target ok
+23 0 spell - YesNo wait
+24 - spell - target 2nd ok
+25 - spell - do
+26 - spell - back to (hand | deck)
+28 >>0 spell - discard wait
+30 - spell - step end
+31 < dice - do
+32 - dice - arrow wait
+34 - dice - alter wait
+35 0 dice - discard wait
+40 > dice - step end
+41 0 summon - YesNo wait
+42 - summon - do
+50 - summon - step end
+51 0 territory - dialog
+52 0 territory - move wait
+53 0 territory - change card wait
+54 - territory - ability wait
+58 >>0 territory - discard wait
+60 - territory - step end
+71 - battle - init
+72 0 battle - item wait
+73 - battle - item (choiced | galarry)
+74 - battle - do
+80 - battle - step end
+90 - turn - do
+91 - turn - tax
+92 - turn - trans wait
+93 - turn - trans do
+100 game end

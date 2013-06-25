@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="ja">
+<head>
+	<meta charset="utf-8">
+	<link rel="shortcut icon" href="favicon.ico" type="image/png">
+	<link rel="stylesheet" type="text/css" href="board.css">
+	<link rel="stylesheet" type="text/css" href="boardani.css">
+	<link href='http://fonts.googleapis.com/css?family=Uncial+Antiqua' rel='stylesheet' type='text/css'>
+	<script src="http://js.pusher.com/1.12/pusher.min.js"></script>
+	<script type="text/javascript" src="lib/jquery1_7_2.js"></script>
+	<script type="text/javascript" src="js/scriptload.js"></script>
+	<title>Openboard</title>
+</head>
+<body onload="initBoard()">
+	<!-- MAIN -->
+	<div id="DIV_FRAME">
+		<div id="DIV_BACK"><canvas id="CVS_BACK" width="1600" height="1200"></canvas></div>
+	</div>
+	<div id="DIV_INFO" onmouseover="InfoMouseover(1)" onmouseout="InfoMouseover(0)"></div>
+	<div id="DIV_INFOPLUS"></div>
+	<div id="DIV_INFOMAP"></div>
+	<div id="DIV_POINT1" class="class_Point" onclick="PlayerClick(1)"></div>
+	<div id="DIV_POINT2" class="class_Point" onclick="PlayerClick(2)"></div>
+	<div id="DIV_POINT3" class="class_Point" onclick="PlayerClick(3)"></div>
+	<div id="DIV_POINT4" class="class_Point" onclick="PlayerClick(4)"></div>
+	<div id="DIV_HANDFRAME">
+		<div id="DIV_HAND1" class="CLS_HAND" onclick="HandClick(1)" oncontextmenu="CardInfo(1);return false;" onmouseout="CardInfo(0)"><CANVAS id="CVS_HAND1" width="100" height="130"></CANVAS></div>
+		<div id="DIV_HAND2" class="CLS_HAND" onclick="HandClick(2)" oncontextmenu="CardInfo(2);return false;" onmouseout="CardInfo(0)"><CANVAS id="CVS_HAND2" width="100" height="130"></CANVAS></div>
+		<div id="DIV_HAND3" class="CLS_HAND" onclick="HandClick(3)" oncontextmenu="CardInfo(3);return false;" onmouseout="CardInfo(0)"><CANVAS id="CVS_HAND3" width="100" height="130"></CANVAS></div>
+		<div id="DIV_HAND4" class="CLS_HAND" onclick="HandClick(4)" oncontextmenu="CardInfo(4);return false;" onmouseout="CardInfo(0)"><CANVAS id="CVS_HAND4" width="100" height="130"></CANVAS></div>
+		<div id="DIV_HAND5" class="CLS_HAND" onclick="HandClick(5)" oncontextmenu="CardInfo(5);return false;" onmouseout="CardInfo(0)"><CANVAS id="CVS_HAND5" width="100" height="130"></CANVAS></div>
+		<div id="DIV_HAND6" class="CLS_HAND" onclick="HandClick(6)" oncontextmenu="CardInfo(6);return false;" onmouseout="CardInfo(0)"><CANVAS id="CVS_HAND6" width="100" height="130"></CANVAS></div>
+		<div id="DIV_HAND7" class="CLS_HAND" onclick="HandClick(7)" oncontextmenu="CardInfo(7);return false;" onmouseout="CardInfo(0)"><CANVAS id="CVS_HAND7" width="100" height="130"></CANVAS></div>
+	</div>
+	<div id="DIV_TIMEKEEP"></div>
+	<div id="DIV_TIMEBAR_BACK"><img src="img/ctl_timer.png" height="26" width="26"><div id="DIV_TIMEBAR"><div id="DIV_TIMEBAR_BLACK"></div></div></div>
+	<div id="DIV_CONTROLBTN"><a href="javascript:ChangeBoardSize()" alt="拡大縮小"><img src="img/ctl_map.png" height="26" width="26"></a><a href="javascript:GridNumberChange()" alt="数字切替"><img src="img/ctl_gsh.png" height="26" width="26"></a><a href="javascript:ControlPanelDisp()" alt="背景・BGM"><img src="img/ctl_bg.png" height="26" width="26"></a></div>
+	<div id="DIV_RESULTBTN"><a href="javascript:EndResultOpen(0)" alt="マップ表示"><img src="img/ctl_map.png" height="26" width="26"></a><a href="javascript:EndResultOpen(1)" alt="グラフ"><img src="img/ctl_graph.png" height="26" width="26"></a><a href="javascript:EndResultOpen(2)" alt="終了時情報"><img src="img/ctl_analytics.png" height="26" width="26"></a></div>
+	<!-- REPLAY -->
+	<div id="DIV_REPLAYCONTROL"><BUTTON onclick='obNet.replaycmd("")'>ノーマル</BUTTON><BUTTON onclick='obNet.replaycmd("skip")'>スキップ</BUTTON><BUTTON onclick='obNet.replaycmd("stop")'>ストップ</BUTTON></div>
+	<!-- DIALOG -->
+	<div id="DIV_DICE"></div>
+	<div id="DIV_MSG"></div>
+	<div id="DIV_MSG2"></div>
+	<div id="DIV_DIALOG_BACK"><div id="DIV_DIALOG"></div></div>
+	<div id="DIV_INFOGRID" onmouseover="GridInfoEscape()"></div>
+	<div id="DIV_INFOCARD" onclick="CardInfo(0)" onmouseout="CardInfo(0)">
+		<div id="DIV_INFOCARD_LEFT"><CANVAS id="CVS_INFOCARD" width="200" height="260"></CANVAS></div>
+		<div id="DIV_INFOCARD_RIGHT"></div>
+	</div>
+	<div id="DIV_DRAW" onclick="Draw2Hand()"><CANVAS id="CVS_DRAW" width="200" height="260"></CANVAS></div>
+	<div id="DIV_RESULT">
+		<div id="DIV_RESULT_HEAD">RESULT</div>
+		<div><canvas id="CVS_GRAPH" width="400" height="200"></canvas></div>
+		<div id="DIV_RESULT_DETAIL"></div>
+	</div>
+	<!-- VS -->
+	<div id="DIV_VSBACK">
+		<div id="DIV_VSNAME0" class="CLS_VSLABEL1"></div>
+		<div id="DIV_VSNAME1" class="CLS_VSLABEL1"></div>
+		<div id="DIV_VSCARD0"><CANVAS id="CVS_VSCARD0" width="200" height="260"></CANVAS></div>
+		<div id="DIV_VSCARD1"><CANVAS id="CVS_VSCARD1" width="200" height="260"></CANVAS></div>
+		<div id="DIV_VSCARDINFO0"></div>
+		<div id="DIV_VSCARDINFO1"></div>
+		<div id="DIV_VSITEM0"><CANVAS id="CVS_VSITEM0" width="100" height="130"></CANVAS></div>
+		<div id="DIV_VSITEM1"><CANVAS id="CVS_VSITEM1" width="100" height="130"></CANVAS></div>
+		<div id="DIV_VSLOG"></div>
+		<div id="DIV_VSLABEL1" class="CLS_VSLABEL2">ST</div>
+		<div id="DIV_VSLABEL2" class="CLS_VSLABEL2">HP</div>
+		<div id="DIV_VSDMG0" class="CLS_DMG">100</div>
+		<div id="DIV_VSDMG1" class="CLS_DMG">100</div>
+		<div id="DIV_VSNST0" class="CLS_NUM"></div>
+		<div id="DIV_VSNLF0" class="CLS_NUM"></div>
+		<div id="DIV_VSNST1" class="CLS_NUM"></div>
+		<div id="DIV_VSNLF1" class="CLS_NUM"></div>
+		<div id="DIV_VSST0" class="CLS_BAR"><IMG id="DIV_VSST01" src="img/bar1.gif" height="20" border="0" class="CLS_VSBAR"><IMG id="DIV_VSST02" src="img/bar3.gif" height="20" border="0" class="CLS_VSBAR"></div>
+		<div id="DIV_VSLF0" class="CLS_BAR"><IMG id="DIV_VSLF01" src="img/bar2.gif" height="20" border="0" class="CLS_VSBAR"><IMG id="DIV_VSLF02" src="img/bar3.gif" height="20" border="0" class="CLS_VSBAR"></div>
+		<div id="DIV_VSST1" class="CLS_BAR"><IMG id="DIV_VSST12" src="img/bar3.gif" height="20" border="0" class="CLS_VSBAR"><IMG id="DIV_VSST11" src="img/bar1.gif" height="20" border="0" class="CLS_VSBAR"></div>
+		<div id="DIV_VSLF1" class="CLS_BAR"><IMG id="DIV_VSLF12" src="img/bar3.gif" height="20" border="0" class="CLS_VSBAR"><IMG id="DIV_VSLF11" src="img/bar2.gif" height="20" border="0" class="CLS_VSBAR"></div>
+	</div>
+	<!-- LOG -->
+	<div id="DIV_LOG1" class="CLS_LOG"></div>
+	<div id="DIV_LOG2" class="CLS_LOG"></div>
+	<div id="DIV_LOG2PLUS">
+	<form action="javascript:ChatSend();" target="_self">
+	<table border='0' cellpadding='0' cellspacing='1'>
+		<tr><td width="2"></td><td><INPUT type="text" id="chatcomment" size="10"></td><td><img src="img/cr.gif" height="22" width="22"></td></tr>
+	</table>
+	</form>
+	</div>
+	<div id="DIV_DEBUGHAND1"><CANVAS id="CVS_DH11" width="50" height="65" onclick="DebugHandClick(1, 1)"></CANVAS><CANVAS id="CVS_DH12" width="50" height="65" onclick="DebugHandClick(1, 2)"></CANVAS><CANVAS id="CVS_DH13" width="50" height="65" onclick="DebugHandClick(1, 3)"></CANVAS><CANVAS id="CVS_DH14" width="50" height="65" onclick="DebugHandClick(1, 4)"></CANVAS><CANVAS id="CVS_DH15" width="50" height="65" onclick="DebugHandClick(1, 5)"></CANVAS><CANVAS id="CVS_DH16" width="50" height="65" onclick="DebugHandClick(1, 6)"></CANVAS><CANVAS id="CVS_DH17" width="50" height="65" onclick="DebugHandClick(1, 7)"></CANVAS></div>
+	<div id="DIV_DEBUGHAND2"><CANVAS id="CVS_DH21" width="50" height="65" onclick="DebugHandClick(2, 1)"></CANVAS><CANVAS id="CVS_DH22" width="50" height="65" onclick="DebugHandClick(2, 2)"></CANVAS><CANVAS id="CVS_DH23" width="50" height="65" onclick="DebugHandClick(2, 3)"></CANVAS><CANVAS id="CVS_DH24" width="50" height="65" onclick="DebugHandClick(2, 4)"></CANVAS><CANVAS id="CVS_DH25" width="50" height="65" onclick="DebugHandClick(2, 5)"></CANVAS><CANVAS id="CVS_DH26" width="50" height="65" onclick="DebugHandClick(2, 6)"></CANVAS><CANVAS id="CVS_DH27" width="50" height="65" onclick="DebugHandClick(2, 7)"></CANVAS></div>
+	<div id="DIV_DEBUGHAND3"><CANVAS id="CVS_DH31" width="50" height="65" onclick="DebugHandClick(3, 1)"></CANVAS><CANVAS id="CVS_DH32" width="50" height="65" onclick="DebugHandClick(3, 2)"></CANVAS><CANVAS id="CVS_DH33" width="50" height="65" onclick="DebugHandClick(3, 3)"></CANVAS><CANVAS id="CVS_DH34" width="50" height="65" onclick="DebugHandClick(3, 4)"></CANVAS><CANVAS id="CVS_DH35" width="50" height="65" onclick="DebugHandClick(3, 5)"></CANVAS><CANVAS id="CVS_DH36" width="50" height="65" onclick="DebugHandClick(3, 6)"></CANVAS><CANVAS id="CVS_DH37" width="50" height="65" onclick="DebugHandClick(3, 7)"></CANVAS></div>
+	<div id="DIV_DEBUGHAND4"><CANVAS id="CVS_DH41" width="50" height="65" onclick="DebugHandClick(4, 1)"></CANVAS><CANVAS id="CVS_DH42" width="50" height="65" onclick="DebugHandClick(4, 2)"></CANVAS><CANVAS id="CVS_DH43" width="50" height="65" onclick="DebugHandClick(4, 3)"></CANVAS><CANVAS id="CVS_DH44" width="50" height="65" onclick="DebugHandClick(4, 4)"></CANVAS><CANVAS id="CVS_DH45" width="50" height="65" onclick="DebugHandClick(4, 5)"></CANVAS><CANVAS id="CVS_DH46" width="50" height="65" onclick="DebugHandClick(4, 6)"></CANVAS><CANVAS id="CVS_DH47" width="50" height="65" onclick="DebugHandClick(4, 7)"></CANVAS></div>
+	<!-- DECK -->
+	<div id="DIV_DECK"><table>
+		<tr><td>デッキリスト</td><td>デッキカード</td></tr>
+		<tr>
+			<TD><div id='SEL_DECKLIST' class='CARDLIST'></div></TD>
+			<TD><div id='SEL_DECKSET'  class='CARDLIST'></div></TD>
+		</tr>
+		<tr><TD colspan='2' align='center'><BUTTON id="button_deckok" disabled="true" onclick='DeckSend()'>デッキ決定</BUTTON></td></tr>
+	</table></div>
+	<!-- CONTROL PANEL -->
+	<div id="DIV_CONTROLPANEL">
+		<div><h3>背景画像</h3></div>
+		<div><input type="file" accept="image/*" onchange="WallPaperLoad(this)"></div>
+		<div><label><input type="radio" name="imgtile" onchange="WallPaperSet(1)" checked><img src="img/imgtile.gif" height="16" width="25"></label>
+		   <label><input type="radio" name="imgtile" onchange="WallPaperSet(2)"><img src="img/imgstrech.gif" height="16" width="25"></label></div> 
+		<div><h3>BGM(mp3)</h3></div>
+		<div>♪前半<span id="spanbgmmap1"></span></div>
+		<div><input type="file" accept="audio/*" onchange="Audie.load(this, 'map1')"></div>
+		<div>♪後半<span id="spanbgmmap2"></span></div>
+		<div><input type="file" accept="audio/*" onchange="Audie.load(this, 'map2')"></div>
+		<div>♪戦闘<span id="spanbgmbattle"></span></div>
+		<div><input type="file" accept="audio/*" onchange="Audie.load(this, 'battle')"></div>
+		<div>♪達成<span id="spanbgmgoal"></span></div>
+		<div><input type="file" accept="audio/*" onchange="Audie.load(this, 'goal')"></div>
+		<div><h3>Volume</h3></div>
+		<div>BGM<span id="spanvolbgm">(30)</span></div>
+		<div><input type="range" min="0" max="100" value="30" onchange="Audie.volchg('bgm')" id="bgmvolume"></div>
+		<div>SE<span id="spanvolse">(80)</span></div>
+		<div><input type="range" min="0" max="100" value="80" onchange="Audie.volchg('se')" id="sevolume"></div>
+	</div>
+</body>
+</html>
