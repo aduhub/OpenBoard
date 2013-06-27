@@ -10,6 +10,19 @@ var Frame = {
 		Frame.loopid = setTimeout(Frame._main, 5000);
 	},
 	//
+	startset:function(){
+		//join 
+		switch(sessionStorage.Mode){
+		case "join":
+			//Net.WS.send(JSON.stringify([{room:sessionStorage.RoomID, cmd:"ping", pno:0, hash:"0000"}]));
+			break;
+		case "gallery":
+			wkcmd = "system{}*観戦者が増えました*";
+			//Net.WS.send(JSON.stringify([{room:sessionStorage.RoomID, cmd:"chat", msg:wkcmd}]));
+			break;
+		}
+	},
+	//
 	stack:function(message){
 		switch(message["cmd"]){
 		case "send":
@@ -27,7 +40,7 @@ var Frame = {
 			Logprint({msg:chatitem[1], type:"chat"});
 			break;
 		}
-	}
+	},
 	//基本ループ
 	_main:function (){
 		//[Log Play]
@@ -43,7 +56,7 @@ var Frame = {
 			var runflg = 0;
 			var wkstr = Frame.cmdstack[0];
 			var wkcmd = wkstr.split(":");
-			var logping = wkcmd.shift();
+			var loghash = wkcmd.shift();
 			var logpno = Number(wkcmd.shift());
 			var logcmd = wkcmd.shift();
 			var logpara = wkcmd.join(":");
