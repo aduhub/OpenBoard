@@ -73,7 +73,10 @@ function initBoard(){
 	//####################################################
 
 	//通信開始
-	setTimeout(obNet.init, 500);
+	Net.init();
+    Net.getCGI("");
+    //main
+    Frame.init();
 }
 function createBoard(){
 	//wait Info
@@ -241,8 +244,7 @@ function PlayerHandSetup(i_flg){
 		DispDialog({msgs:["準備完了", "他のプレイヤーを待っています・・・"]});
 		//送信
 		var deck = Player[Board.role].hand + ":" + Player[Board.role].deck;
-		var wkcmd = Board.role + ":ready:" + deck;
-		obNet.send(wkcmd);
+		Net.send("ready:" + deck);
 		//次を用意
 		DeckShuffle(Board.role, 1);
 	}

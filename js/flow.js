@@ -190,7 +190,7 @@ function TurnEnd(){
 		if(Board.step >= 40 && Board.step < 90 && Board.step % 10 == 0){
 			StepSet(91);
 			//send
-			obNet.send(Board.role+":turn");
+			Net.send("turn");
 
 			//表示
 			DispInfo();
@@ -532,7 +532,7 @@ function EndGame(i_flg){
 	if(Board.role >= 1 && Board.role <= 4){
 		//result send
 		$T.search(Analytics.rank, "pno", Board.role);
-		obNet.send(Board.role+":gameend:"+$T.result.rank+":"+$T.result.g);
+		Net.send("gameend:"+$T.result.rank+":"+$T.result.g);
 		
 		//rate update
 		if((Board.playcnt == 4 && !Board.alliance) || sessionStorage.Mode == "debug"){

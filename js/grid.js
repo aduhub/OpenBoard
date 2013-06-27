@@ -849,9 +849,8 @@ function GridTrans(i_no){
 			EffectBox({pattern:"soldout", gno:i_no});
 			////コマンド送信
 			if(Board.turn == Board.role){
-				var wkcmd = Board.role+":trans:"+i_no;
 				//送信
-				obNet.send(wkcmd);
+				Net.send("trans:"+i_no);
 			}
 			//還元
 			var wkvalue = GridValue(i_no);

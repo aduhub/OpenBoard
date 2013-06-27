@@ -171,9 +171,9 @@ function SpellConfirm(i_num){
 		//ダイアログ非表示
 		DispDialog("none");
 		//コマンド送信
-		var wkcmd = Board.role+":spell:"+Spell.cno+":"+Spell.tgttype+":"+Spell.target.join("_");
+		var wkcmd = "spell:"+Spell.cno+":"+Spell.tgttype+":"+Spell.target.join("_");
 		//送信
-		obNet.send(wkcmd);
+		Net.send(wkcmd);
 		//Spell aculo
 		StepSet(23);
 		//Animation
@@ -402,9 +402,9 @@ function SpellFire(i_flg){
 				//ライト
 				GridLight("clear");
 				//コマンド送信
-				var wkcmd = Board.role+":spellplus:"+Spell.target.join("_");
+				var wkcmd = "spellplus:"+Spell.target.join("_");
 				//送信
-				obNet.send(wkcmd);
+				Net.send(wkcmd);
 			}
 		}
 		if(mvto.length == 0){
@@ -491,9 +491,9 @@ function SpellFire(i_flg){
 					}
 				}
 				//コマンド送信
-				var wkcmd = Board.role+":spellplus:"+Spell.target.join("_");
+				var wkcmd = "spellplus:"+Spell.target.join("_");
 				//送信
-				obNet.send(wkcmd);
+				Net.send(wkcmd);
 				//使用確認
 				SpellFire(1);
 			}else{
@@ -550,9 +550,9 @@ function SpellFire(i_flg){
 			//Role Player
 			if(Board.turn == Board.role){
 				//コマンド送信
-				var wkcmd = Board.role+":spellplus:"+Spell.target.join("_");
+				var wkcmd = "spellplus:"+Spell.target.join("_");
 				//送信
-				obNet.send(wkcmd);
+				Net.send(wkcmd);
 			}
 			//手札追加
 			Drawcard({pno:Spell.pno, from:"dno", dno:tgttop});
@@ -603,9 +603,9 @@ function SpellFire(i_flg){
 				var selclr = maxclr[Math.floor(Math.random() * maxclr.length)];
 				Spell.target.push(selclr);
 				//コマンド送信
-				var wkcmd = Board.role+":spellplus:"+Spell.target.join("_");
+				var wkcmd = "spellplus:"+Spell.target.join("_");
 				//送信
-				obNet.send(wkcmd);
+				Net.send(wkcmd);
 				//使用確認
 				SpellFire(1);
 			}else{
@@ -647,9 +647,9 @@ function SpellFire(i_flg){
 					Spell.target.push(gridarr[Math.floor(Math.random() * gridarr.length)]);
 				}
 				//コマンド送信
-				var wkcmd = Board.role+":spellplus:"+Spell.target.join("_");
+				var wkcmd = "spellplus:"+Spell.target.join("_");
 				//送信
-				obNet.send(wkcmd);
+				Net.send(wkcmd);
 				//使用確認
 				SpellFire(1);
 			}else{
@@ -769,9 +769,9 @@ function SpellFire(i_flg){
 					Spell.target.push(0);
 				}
 				//コマンド送信
-				var wkcmd = Board.role+":spellplus:"+Spell.target.join("_");
+				var wkcmd = "spellplus:"+Spell.target.join("_");
 				//送信
-				obNet.send(wkcmd);
+				Net.send(wkcmd);
 				//使用確認
 				SpellFire(1);
 			}else{
@@ -1083,9 +1083,9 @@ function SpellFire(i_flg){
 			//Role Player
 			if(Board.turn == Board.role){
 				//コマンド送信
-				var wkcmd = Board.role+":spellplus:"+Spell.target.join("_");
+				var wkcmd = "spellplus:"+Spell.target.join("_");
 				//送信
-				obNet.send(wkcmd);
+				Net.send(wkcmd);
 			}
 			//Status
 			var tgtstr = "AMG"+["", "N", "F", "W", "E", "D"][Spell.target];
@@ -1137,9 +1137,9 @@ function SpellFire(i_flg){
 			//Role Player
 			if(Board.turn == Board.role){
 				//コマンド送信
-				var wkcmd = Board.role+":spellplus:"+Spell.target.join("_");
+				var wkcmd = "spellplus:"+Spell.target.join("_");
 				//送信
-				obNet.send(wkcmd);
+				Net.send(wkcmd);
 			}
 			//ターゲット有無
 			if(tgtcno != "0"){
@@ -1199,9 +1199,9 @@ function SpellFire(i_flg){
 			var tgtcno = Spell.target[1];
 			if(Board.turn == Board.role){
 				//コマンド送信
-				var wkcmd = Board.role+":spellplus:"+tgtpno+"_"+tgtcno;
+				var wkcmd = "spellplus:"+tgtpno+"_"+tgtcno;
 				//送信
-				obNet.send(wkcmd);	
+				Net.send(wkcmd);
 			}
 			//ターゲット有無
 			if(tgtpno != "9"){
@@ -1249,9 +1249,9 @@ function SpellFire(i_flg){
 			//Role Player
 			if(Board.turn == Board.role){
 				//コマンド送信
-				var wkcmd = Board.role+":spellplus:"+Spell.target.join("_");
+				var wkcmd = "spellplus:"+Spell.target.join("_");
 				//送信
-				obNet.send(wkcmd);
+				Net.send(wkcmd);
 			}
 			var tgtpno = Number(Spell.target[0]);
 			var tgtdno = Number(Spell.target[1]);
@@ -1515,9 +1515,9 @@ function SpellDeckBack(arg){
 		if(Spell.pno == Board.role){
 			var selectdno = Math.floor(Math.random() * Player[Spell.pno].DeckCount()) + 1;
 			//コマンド送信
-			var wkcmd = Board.role+":spellback:"+selectdno;
+			var wkcmd = "spellback:"+selectdno;
 			//送信
-			obNet.send(wkcmd);
+			Net.send(wkcmd);
 			//再実行
 			SpellDeckBack({step:1, dno:selectdno});
 		}

@@ -192,9 +192,7 @@ function SummonReady(){
 	
 	if(Board.turn == Board.role){
 		//コマンド送信
-		var wkcmd = Board.role+":"+Summon.type+":"+Summon.cno+":"+Summon.gno;
-		//送信
-		obNet.send(wkcmd);
+		Net.send(Summon.type+":"+Summon.cno+":"+Summon.gno);
 		//手札再表示
 		SortHand();
 	}

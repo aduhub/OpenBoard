@@ -2,6 +2,7 @@ var Frame = {
 	//【プロパティ】
 	loopid:0,
 	cmdstack:[],
+    _replaycmd:"",
 	lastchatter:"",
 	//【メソッド】
 	//初期処理
@@ -14,11 +15,9 @@ var Frame = {
 		//join 
 		switch(sessionStorage.Mode){
 		case "join":
-			//Net.WS.send(JSON.stringify([{room:sessionStorage.RoomID, cmd:"ping", pno:0, hash:"0000"}]));
 			break;
 		case "gallery":
 			wkcmd = "system{}*観戦者が増えました*";
-			//Net.WS.send(JSON.stringify([{room:sessionStorage.RoomID, cmd:"chat", msg:wkcmd}]));
 			break;
 		}
 	},
@@ -347,7 +346,7 @@ var Frame = {
 			break;
 		case "replay":
 			//switch
-			if(obNet.__replaycmd == "skip"){
+			if(Frame._replaycmd == "skip"){
 				return true;
 			}
 			break;
@@ -355,6 +354,6 @@ var Frame = {
 		return false;
 	},
 	replaycmd:function(cmd){
-		obNet.__replaycmd = cmd;
+		Frame._replaycmd = cmd;
 	}
 }

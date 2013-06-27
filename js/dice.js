@@ -53,8 +53,8 @@ function DiceRollResult(arg){
 		Dice.route = [];
 		Dice.Roll(arg.pow, arg.roll);
 		//コマンド送信
-		var wkcmd = Board.role+":dice:"+Dice.rest;
-		obNet.send(wkcmd);
+		var wkcmd = "dice:"+Dice.rest;
+		Net.send(wkcmd);
 	}else{
 		//ステップ（移動開始）
 		StepSet(31);
@@ -137,16 +137,16 @@ function DicePieceMove(i_mvto){
 						//クリア
 						GridLight("clear");
 						//コマンド送信
-						var wkcmd = Board.role+":move:"+nextgno;
-						obNet.send(wkcmd);
+						var wkcmd = "move:"+nextgno;
+						Net.send(wkcmd);
 					}
 				}
 			}
 		}
 		//[ 正常移動 ]
 		if(nextgno >= 1){
-			var waitsec = (obNet.skipchk()) ? 50 : 300;
-			var msec = (obNet.skipchk()) ? 30 : 0;
+			var waitsec = (Frame.skipchk()) ? 50 : 300;
+			var msec = (Frame.skipchk()) ? 30 : 0;
 			//ステップ
 			StepSet(31);
 			//歩数残--
@@ -170,11 +170,11 @@ function DicePieceMove(i_mvto){
 			Enchant({pno:Dice.pno, gno:nextgno, time:"DICE_PASS_THROUGH"});
 			//Bridge
 			if(BridgeCheck()){
-				waitsec += (obNet.skipchk()) ? 50 : 500;
+				waitsec += (Frame.skipchk()) ? 50 : 500;
 			}
 			//ForceGate
 			if(ForceGateCheck(waitsec)){
-				waitsec += (obNet.skipchk()) ? 50 : 500;
+				waitsec += (Frame.skipchk()) ? 50 : 500;
 			}
 			//Timeout Next
 			setTimeout(function(){
@@ -206,7 +206,7 @@ function DicePieceMove(i_mvto){
 //橋チェック
 function BridgeCheck(arg){
 	var ret = false;
-	var msec = (obNet.skipchk()) ? 50 : 300;
+	var msec = (Frame.skipchk()) ? 50 : 300;
 	//Cross Road
 	if(Board.grid[Player[Dice.pno].stand].color == 22){
 		var stdgrid, arrowno, mvgno;
@@ -244,7 +244,7 @@ function BridgeCheck(arg){
 //強制転送チェック
 function ForceGateCheck(waitsec){
 	var ret = false;
-	var msec = (obNet.skipchk()) ? 50 : 300;
+	var msec = (Frame.skipchk()) ? 50 : 300;
 	//Cross Road
 	if(Board.grid[Player[Dice.pno].stand].color == 24){
 		//現在情報
@@ -391,7 +391,7 @@ function CastleCheck(){
 function DiceNextMove(){
 	var standNow = Player[Dice.pno].stand;
 	var shadwNow = Player[Dice.pno].shadow;
-	var msec = (obNet.skipchk()) ? 50 : 500;
+	var msec = (Frame.skipchk()) ? 50 : 500;
 	//Dice Step End
 	if(Dice.rest == 0){
 		if(Board.grid[standNow].color == 21){
@@ -452,7 +452,7 @@ function DiceNextMove(){
 }
 //
 function DiceStepTeleport(arg){
-	var msec = (obNet.skipchk()) ? 50 : 500;
+	var msec = (Frame.skipchk()) ? 50 : 500;
 	switch(arg.step){
 	case 0:
 		//ステップ
@@ -473,9 +473,9 @@ function DiceStepTeleport(arg){
 			//ライト
 			GridLight("clear");
 			//コマンド送信
-			var wkcmd = Board.role+":dicetele:"+arg.gno;
+			var wkcmd = "dicetele:"+arg.gno;
 			//送信
-			obNet.send(wkcmd);
+			Net.send(wkcmd);
 		}
 		Player[Board.turn].shadow = arg.gno;
 		Player[Board.turn].stand = arg.gno;
@@ -531,9 +531,9 @@ function DiceStepDraw(i_flg){
 			//ダイアログ非表示
 			DispDialog("none");
 			//コマンド送信
-			var wkcmd = Board.role+":dicedraw:"+i_flg;
+			var wkcmd = "dicedraw:"+i_flg;
 			//送信
-			obNet.send(wkcmd);
+			Net.send(wkcmd);
 		}
 		//Animation
 		EffectBox({pattern:"fortpuff", img:"gicon_alt", pno:Board.turn});

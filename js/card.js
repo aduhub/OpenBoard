@@ -75,7 +75,7 @@ function Draw2Hand(){
 	StepSet(13);
 	if(Board.turn == Board.role){
 		//コマンド
-		obNet.send(Board.role + ":draw");
+		Net.send("draw");
 		//非表示
 		$("#DIV_DRAW").css("display", "none");
 	}
@@ -140,9 +140,8 @@ function DeckShuffle(i_pno, i_flg){
 			break;
 		case 1: //準備のみ
 			Player[i_pno].decknext.push(wknext);
-			var wkcmd = Board.role + ":shuffle:"+wknext;
 			//送信
-			obNet.send(wkcmd);
+			Net.send("shuffle:"+wknext);
 			break;
 		}
 	}
@@ -265,8 +264,7 @@ function Discard(arg){
 	if(Board.role == arg.pno){
 		tgtcno = Player[Board.role].HandCard(arg.hno);
 		//送信
-		var wkcmd = Board.role + ":discard:" + tgtcno;
-		obNet.send(wkcmd);
+		Net.send("discard:" + tgtcno);
 	}else{
 		tgtcno = arg.cno;
 	}
@@ -334,9 +332,8 @@ function DeckList(){
 	DisplaySet("DIV_DECK", 40);
 	//DECK LIST READ
 	var pars = "DECKCMD=LIST&USERID="+sessionStorage.USERID;
-	//$.ajax({url:'perl/ocdeck.cgi', data:pars, timeout:5000, success:onDeckList, error:function(){setTimeout(DeckList, 2000);}});
 	//Worker
-	obNet.xhr({cgi:"perl/ocdeck.cgi", para:pars, fnc:"onDeckList"});
+	Net.xhr({cgi:"perl/ocdeck.cgi", para:pars, fnc:"onDeckList"});
 }
 //リスト取得値セット
 function onDeckList(recvstr){
@@ -395,9 +392,8 @@ function DeckSend(){
 	if(deckselectid != ""){
 		//削除
 		$("#DIV_DECK").remove();
-		var wkcmd = Board.role + ":deck:" + deckselectid;
 		//送信
-		obNet.send(wkcmd);
+		Net.send("deck:" + deckselectid);
 	}
 }
 //DECK受信
@@ -449,9 +445,8 @@ function DeckImport(deckno){
 		}
 		//DECK LIST READ
 		var pars = "DECKCMD=IMPORT&USERID="+sessionStorage.USERID+"&DECKID="+deckno;
-		//$.ajax({url:'perl/ocdeck.cgi', data:pars, timeout:5000, success:onDeckImport, error:function(){alert("Error")}});
 		//Worker
-		obNet.xhr({cgi:"perl/ocdeck.cgi", para:pars, fnc:"onDeckImport"});
+		Net.xhr({cgi:"perl/ocdeck.cgi", para:pars, fnc:"onDeckImport"});
 	}
 }
 //

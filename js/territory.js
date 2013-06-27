@@ -305,9 +305,9 @@ function TerritoryLevel(i_level){
 			//ウィンドウ消去
 			DisplaySet("DIV_INFOGRID", 0);
 			//コマンド送信
-			var wkcmd = Board.role+":territory:"+Territory.gno+":level:"+i_level;
+			var wkcmd = "territory:"+Territory.gno+":level:"+i_level;
 			//送信
-			obNet.send(wkcmd);
+			Net.send(wkcmd);
 		}
 		//設定
 		tgtgrid.level = Number(i_level);
@@ -339,9 +339,9 @@ function TerritoryColor(i_color){
 			//ウィンドウ消去
 			DisplaySet("DIV_INFOGRID", 0);
 			//コマンド送信
-			var wkcmd = Board.role+":territory:"+Territory.gno+":color:"+i_color;
+			var wkcmd = "territory:"+Territory.gno+":color:"+i_color;
 			//送信
-			obNet.send(wkcmd);
+			Net.send(wkcmd);
 		}
 		//設定
 		tgtgrid.color = i_color;
@@ -381,9 +381,9 @@ function TerritoryMove(i_gno, i_flg){
 		StepSet(53);
 		if(Board.turn == Board.role && i_flg == 0){
 			//コマンド送信
-			var wkcmd = Board.role+":territory:"+Territory.gno+":move:"+i_gno;
+			var wkcmd = "territory:"+Territory.gno+":move:"+i_gno;
 			//送信
-			obNet.send(wkcmd);
+			Net.send(wkcmd);
 		}
 		if(Board.grid[i_gno].owner == 0){
 			//Move
@@ -1000,12 +1000,12 @@ function TerritoryAbiTgtChk(gno){
 function TerritoryAbiPaySend(opt){
 	if(Board.turn == Board.role){
 		//Command
-		var wkcmd = Board.role+":territory:"+Territory.gno+":ability:"+Territory.ability;
+		var wkcmd = "territory:"+Territory.gno+":ability:"+Territory.ability;
 		if(opt){
 			wkcmd += ":" + opt;
 		}
 		//Stack
-		obNet.send(wkcmd);
+		Net.send(wkcmd);
 	}
 	//Pay Cost
 	var reg = new RegExp(Territory.ability+"=([0-9]+)");

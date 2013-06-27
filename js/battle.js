@@ -223,9 +223,9 @@ function BattleItem(){
 				//コマンド送信
 				var wkcno = (arg[1] == 9) ? "FIST" : Player[Board.role].HandCard(arg[1]);
 				var rndarr = $T.rndsort([1,2,3,4,5,6,7]);
-				var wkcmd = Board.role+":item:"+wkcno+":"+rndarr.join("");
+				var wkcmd = "item:"+wkcno+":"+rndarr.join("");
 				//送信
-				obNet.send(wkcmd);
+				Net.send(wkcmd);
 				//Itemセット
 				Battle.p[i].item = wkcno;
 				Battle.p[i].rnd = rndarr.join("");
