@@ -68,7 +68,7 @@ var Net = {
 	},
 	//=====[ 送信 ]=====
 	send:function (data){
-		var hash = CryptoJS.SHA1(data);
+		var hash = CryptoJS.SHA1(data).toString();
 		var message = {"pno":Board.role, "cmd":"send", "data":data, "hash":hash}
 		// pubnub send
 		Net.pubnub_send(message);

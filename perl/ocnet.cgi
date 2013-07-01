@@ -26,7 +26,7 @@ exit(0);
 #  ログ取得  #
 #------------#
 sub GetLog{
-	if ($FORM{"ROOMID"} ne "" && $FORM{"LOGNO"} ne ""){
+	if ($FORM{"ROOMID"} ne ""){
 		# File Path
 		$datpath = "../dat/log/".$FORM{"ROOMID"}.".txt";
 		# === Insert ===
@@ -66,16 +66,9 @@ sub GetLog{
 			open(IN, $datpath);
 			flock(IN, 1);
 			@logdat = <IN>;
-			if($FORM{"LOGNO"} == 0) {
-				$ret_logno = $#logdat + 1;
-				foreach (@logdat) {
-					$ret_dat.= ",".$_;
-				}
-			}elsif($#logdat >= $FORM{"LOGNO"}){
-				$ret_logno = $#logdat + 1;
-				for ($i = $FORM{"LOGNO"}; $i <= $#logdat; $i++) {
-					$ret_dat.= ",".$logdat[$i];
-				}
+			$ret_logno = $#logdat + 1;
+			foreach (@logdat) {
+				$ret_dat.= ",".$_;
 			}
 			close(IN);
 		}

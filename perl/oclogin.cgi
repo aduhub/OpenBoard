@@ -154,7 +154,7 @@ if($params{"LOGCMD"} eq "ROOM"){
 		$datpath = "../dat/log/".$roomid.".txt";
 		### open bimode ####
 		open(OUT, "> $datpath");
-		print OUT "0000:0:room:".$params{"MAPNO"}.":".$params{"TARGET"}.":".$params{"ROUND"}.":".$playnum[int(rand(24))].":".$params{"TIMER"}.":".$params{"PLAYCNT"}.":".$params{"USERID"}.":".$params{"NAME"}.":".$params{"ROOMMODE"}.":".$params{"SUDDEN"}."\n";
+		print OUT $params{"HASH"}.":0:room:".$params{"MAPNO"}.":".$params{"TARGET"}.":".$params{"ROUND"}.":".$playnum[int(rand(24))].":".$params{"TIMER"}.":".$params{"PLAYCNT"}.":".$params{"USERID"}.":".$params{"NAME"}.":".$params{"ROOMMODE"}.":".$params{"SUDDEN"}."\n";
 		close(OUT);
 
 		#Return
@@ -177,19 +177,19 @@ if($params{"LOGCMD"} eq "JOIN"){
 		@logdat = <IN>;
 		foreach (@logdat) {
 			$uid = $params{"USERID"};
-			if ($_ =~ /^....:0:join:$uid:/){
+			if ($_ =~ /^\w{40,40}:0:join:$uid:/){
 				$ret_dat = "ERROR,JOIN_UNIQUE";
 				$joincnt = 9;
 				last;
 			}
-			if ($_ =~ /^....:0:join:/){
+			if ($_ =~ /^\w{40,40}:0:join:/){
 				$joincnt++;
 				if($joincnt == 4){
 					$ret_dat = "ERROR,FULL";
 					last;
 				}
 			}
-			if ($_ =~ /^....:0:join:.*:.*:.*:.*:[AB]/){
+			if ($_ =~ /^\w{40,40}:0:join:.*:.*:.*:.*:[AB]/){
 				$joincntA++;
 				if($joincntA == 2){
 					$ret_dat = "ERROR,FULL";
@@ -273,7 +273,7 @@ if($params{"LOGCMD"} eq "LIST"){
 			$roundcnt = 0;
 			@logdat = <IN>;
 			foreach (@logdat) {
-				if ($_ =~ /^....:0:debug/){
+				if ($_ =~ /^\w{40,40}:0:debug/){
 					$status = "9";
 				}
 				if ($_ =~ /^....:0:join:/){
@@ -286,7 +286,7 @@ if($params{"LOGCMD"} eq "LIST"){
 					@logline = split(":", $_);
 					$names .= $logline[4]."{}";
 				}
-				if ($_ =~ /^....:[1-4]:gameend/){
+				if ($_ =~ /^\w{40,40}:[1-4]:gameend/){
 					if($status ne "9"){
 						$status = "3";
 					}
@@ -294,7 +294,7 @@ if($params{"LOGCMD"} eq "LIST"){
 					$logline[4] =~ s/\r\n|\r|\n//g;
 					$result .= $logline[1]."()".$logline[3]."()".$logline[4]."{}";
 				}
-				if ($_ =~ /^....:[1-4]:turn/){
+				if ($_ =~ /^\w{40,40}:[1-4]:turn/){
 					$turncnt++;
 				}
 			}
