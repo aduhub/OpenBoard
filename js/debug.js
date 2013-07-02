@@ -2,7 +2,7 @@ var ping_cooldown = 0;
 function DebugNetPing(){
 	//if(confirm("送信要求をだします:"+obNet.logno)){
 		if(ping_cooldown == 0){
-			obNet.send("");
+			Net.getCGI("");
 			ping_cooldown = 1;
 			setTimeout(function(){ping_cooldown = 0}, 3000);
 		}
@@ -155,63 +155,14 @@ function ChatSend(){
 	$("#chatcomment").val("");
 	if(msg != ""){
 		if(sessionStorage.Mode != "debug"){
-			switch(obNet.__socket){
-			case 1:
-				//### socketapi ###
-				if(msg == "ping"){
-					DebugNetPing();
-				}else{
-					wkcmd = sessionStorage.USERNAME+"{}"+msg;
-					obNet.WS.send(JSON.stringify([{room:obNet.roomid, cmd:"chat", msg:wkcmd}]));
-				}
-				break;
-			case 2:
-				//### pusher ###
-				if(msg == "ping"){
-					DebugNetPing();
-				}else{
-					wkcmd = sessionStorage.USERNAME+"{}"+msg;
-					$.post("php/send.php", {room:'ch' + obNet.roomid, cmd:"chat", pno:Board.role, msg:wkcmd});
-				}
-				break;
-			default:
-				//### perl ###
-				wkcmd = "9:chat:"+sessionStorage.USERNAME+"{}"+msg;
-				obNet.send(wkcmd);
-				break;
-			}
-		}else{
-			var cmd = msg.split("/");
-			var pno = Number(cmd[1]);
-			if(pno >= 1 && pno <= 4){
-				switch(cmd[0]){
-				case "hand":
-					Player[pno].hand = cmd[2];
-					DebugHandDisp(pno);
-					SortHand();
-					break;
-				case "stand":
-					var gno = Number(cmd[2]);
-					if(Board.grid[gno] != undefined){
-						Player[pno].stand = gno;
-						Player[pno].shadow = gno;
-						//Animation & ImageChange
-						EffectBox({pattern:"piecemove", pno:pno, gno:gno, msec:500});
-					}
-					break;
-				case "status":
-					//status
-					Player[pno].status = cmd[2];
-					Player[pno].statime = 99;
-					//icon set
-					SetPlayerIcon(pno, StatusIcon(cmd[2]));
-					break;
-				case "cmd":
-					eval(cmd[2]);
-					break;
-				}
-			}
-			Logprint({msg:msg, type:"chat"});
+            if(msg == "ping"){
+                DebugNetPing();
+            }else{
+                var hash = CryptoJS.SHA1(msg).toString();
+                var message = {"pno":Board.role, "cmd":"chat", "msg":sessionStorage.USERNAME+"{}"+msg, "hash":hash}
+                // pubnub send
+                Net.pubnub_send(message);
+            }
 		}
 	}
 	$("#chatcomment").focus();

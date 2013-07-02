@@ -22,29 +22,6 @@ my $cgi = new CGI;
 # return value
 $ret_dat = "";
 
-# =============[ LOGIN ]===============
-if($params{"LOGCMD"} eq "LOGIN"){
-	if ($params{"USERID"} ne "" && $params{"USERPW"} ne ""){
-		### open flock bimode ####
-		open(IN, $path_user);
-		flock(IN, 1);
-		@logdat = <IN>;
-		foreach (@logdat) {
-			if ($_ =~ /^\Q$params{"USERID"}\E\{\}\Q$params{"USERPW"}\E\{\}/){
-				# ID,NAME
-				@col = split("{}", $_);
-				$ret_dat = "LOGIN,".$col[0].",".$col[2].",".$col[4].",".$col[5].",".$col[6].",".$col[7].",".$col[8].",".$col[9];
-				last;
-			}
-		}
-		close(IN);
-		if($ret_dat eq ""){
-			$ret_dat = "ERROR,LOGIN2";
-		}
-	}else{
-		$ret_dat = "ERROR,LOGIN";
-	}
-}
 # =============[ ENTRY ]===============
 if($params{"LOGCMD"} eq "ENTRY"){
 	### open flock bimode ####
@@ -69,69 +46,28 @@ if($params{"LOGCMD"} eq "ENTRY"){
 		$ret_dat = "LOGIN,".$params{"ENTRYID"}.",".$params{"ENTRYNAME"}.",0,piece1,1500,0,1500,0";
 	}
 }
-# =============[ UPDATE ]===============
-if($params{"LOGCMD"} eq "UPDATE"){
-	### open flock bimode ####
-	open(IN, $path_user);
-	flock(IN, 1);
-	@logdat = <IN>;
-	### open flock bimode ####
-	open(OUT, ">> $path_temp");
-	flock(OUT, 2);
-	foreach (@logdat) {
-		$log_line = $_;
-		if ($log_line =~ /^\Q$params{"USERID"}\E\{\}/){
-			@col = split("{}", $log_line);
-			if($params{"PIECE"} ne ""){
-				$col[5] = $params{"PIECE"};
+# =============[ LOGIN ]===============
+if($params{"LOGCMD"} eq "LOGIN"){
+	if ($params{"USERID"} ne "" && $params{"USERPW"} ne ""){
+		### open flock bimode ####
+		open(IN, $path_user);
+		flock(IN, 1);
+		@logdat = <IN>;
+		foreach (@logdat) {
+			if ($_ =~ /^\Q$params{"USERID"}\E\{\}\Q$params{"USERPW"}\E\{\}/){
+				# ID,NAME
+				@col = split("{}", $_);
+				$ret_dat = "LOGIN,".$col[0].",".$col[2].",".$col[4].",".$col[5].",".$col[6].",".$col[7].",".$col[8].",".$col[9];
+				last;
 			}
-			if($params{"RATE"} ne ""){
-				$col[6] = $params{"RATE"};
-				$col[7] += 1;
-			}
-			if($params{"RATE2"} ne ""){
-				$col[8] = $params{"RATE2"};
-				$col[9] += 1;
-			}
-			print OUT join("{}", @col);
-		}else{
-			print OUT $log_line;
 		}
-	}
-	close(IN);
-	close(OUT);
-	rename($path_temp, $path_user);
-}
-# =============[ RANK ]===============
-if($params{"LOGCMD"} eq "RANK"){
-	### open flock bimode ####
-	open(IN, $path_user);
-	flock(IN, 1);
-	@logdat = <IN>;
-	foreach (@logdat) {
-		$log_line = $_;
-		@col = split("{}", $log_line);
-		if($col[7] >= 5){
-			$ret_dat .= ",".$col[6].":".$col[7].":".$col[2];
+		close(IN);
+		if($ret_dat eq ""){
+			$ret_dat = "ERROR,LOGIN2";
 		}
+	}else{
+		$ret_dat = "ERROR,LOGIN";
 	}
-	close(IN);
-	$ret_dat = "RANK".$ret_dat;
-}
-if($params{"LOGCMD"} eq "RANK_Y"){
-	### open flock bimode ####
-	open(IN, $path_user);
-	flock(IN, 1);
-	@logdat = <IN>;
-	foreach (@logdat) {
-		$log_line = $_;
-		@col = split("{}", $log_line);
-		if($col[9] >= 3){
-			$ret_dat .= ",".$col[8].":".$col[9].":".$col[2];
-		}
-	}
-	close(IN);
-	$ret_dat = "RANK".$ret_dat;
 }
 # =============[ ROOM ]===============
 if($params{"LOGCMD"} eq "ROOM"){
@@ -163,6 +99,69 @@ if($params{"LOGCMD"} eq "ROOM"){
 		#Return
 		$ret_dat = "ERROR,ROOM";
 	}
+}
+# =============[ LIST ]===============
+if($params{"LOGCMD"} eq "LIST"){
+	$ret_dat = "LIST";
+	opendir DIRH, "../dat/log";
+	while (my $file = readdir DIRH) {
+		next if $file !~ /^[0-9]{4}.txt/;
+		my $filepath = "../dat/log/".$file;
+		my @stats = stat($filepath);
+		my $waitsec = 60 * 60 * 24;
+		if($stats[9] >= (time - $waitsec)){
+			### open flock bimode ####
+			open(IN, $filepath);
+			flock(IN, 1);
+			$hitflg = "y";
+			$status = "0";
+			$names = "";
+			$result = "";
+			$joincnt = 0;
+			$turncnt = 0;
+			$roundcnt = 0;
+			@logdat = <IN>;
+			foreach (@logdat) {
+				if ($_ =~ /^\w{40,40}:0:debug/){
+					$status = "9";
+				}
+				if ($_ =~ /^\w{40,40}:0:join:/){
+					$status = "1";
+					#Status Check
+					if($stats[9] < (time - 7200)){
+						$status = "2";
+					}
+					$joincnt++;
+					@logline = split(":", $_);
+					$names .= $logline[4]."{}";
+				}
+				if ($_ =~ /^\w{40,40}:[1-4]:gameend/){
+					if($status ne "9"){
+						$status = "3";
+					}
+					@logline = split(":", $_);
+					$logline[4] =~ s/\r\n|\r|\n//g;
+					$result .= $logline[1]."()".$logline[3]."()".$logline[4]."{}";
+				}
+				if ($_ =~ /^\w{40,40}:[1-4]:turn/){
+					$turncnt++;
+				}
+			}
+			close(IN);
+			# Wait Room
+			if($hitflg eq "y"){
+				if($joincnt >= 1){
+					$roundcnt = int(($turncnt - 1) / $joincnt) + 1;
+				}
+				$logdat[0] =~ s/\r\n|\r|\n//g;
+				$ret_dat .= ",".substr($file, 0, 4).":".substr($logdat[0], 41).":".$joincnt.":".$status.":".$roundcnt;
+				if($status eq "3"){
+					$ret_dat .= ":".$names.":".$result;
+				}
+			}
+		}
+	}
+	closedir DIRH;
 }
 # =============[ JOIN ]===============
 if($params{"LOGCMD"} eq "JOIN"){
@@ -231,15 +230,15 @@ if($params{"LOGCMD"} eq "JOIN"){
 				open(OUT, ">> $datpath"); 
 				flock(OUT, 2);
 				if($params{"MODE"} eq "ALLIANCE"){
-					print OUT "0000:0:join:".$params{"USERID"}.":".$username.":".$useravt.":".$userrate.":".$params{"TEAM"}."\n";
+					print OUT $params{"HASH"}.":0:join:".$params{"USERID"}.":".$username.":".$useravt.":".$userrate.":".$params{"TEAM"}."\n";
 				}else{
-					print OUT "0000:0:join:".$params{"USERID"}.":".$username.":".$useravt.":".$userrate."\n";
+					print OUT $params{"HASH"}.":0:join:".$params{"USERID"}.":".$username.":".$useravt.":".$userrate."\n";
 				}
 				if($params{"DEBUG"} eq "Y"){
-					print OUT "0000:0:debug\n";;
+					print OUT $params{"HASH"}.":0:debug\n";;
 				}
 				if($joincnt == 4){
-					print OUT "0000:0:full\n";
+					print OUT $params{"HASH"}.":0:full\n";
 				}
 				close(OUT);                 
 				# return
@@ -251,68 +250,6 @@ if($params{"LOGCMD"} eq "JOIN"){
 	}else{
 		$ret_dat = "ERROR,JOIN";
 	}
-}
-# =============[ LIST ]===============
-if($params{"LOGCMD"} eq "LIST"){
-	$ret_dat = "LIST";
-	opendir DIRH, "../dat/log";
-	while (my $file = readdir DIRH) {
-		next if $file !~ /^[0-9]{4}.txt/;
-		my $filepath = "../dat/log/".$file;
-		my @stats = stat($filepath);
-		if($stats[9] >= (time - 129600)){
-			### open flock bimode ####
-			open(IN, $filepath);
-			flock(IN, 1);
-			$hitflg = "y";
-			$status = "0";
-			$names = "";
-			$result = "";
-			$joincnt = 0;
-			$turncnt = 0;
-			$roundcnt = 0;
-			@logdat = <IN>;
-			foreach (@logdat) {
-				if ($_ =~ /^\w{40,40}:0:debug/){
-					$status = "9";
-				}
-				if ($_ =~ /^....:0:join:/){
-					$status = "1";
-					#Status Check
-					if($stats[9] < (time - 7200)){
-						$status = "2";
-					}
-					$joincnt++;
-					@logline = split(":", $_);
-					$names .= $logline[4]."{}";
-				}
-				if ($_ =~ /^\w{40,40}:[1-4]:gameend/){
-					if($status ne "9"){
-						$status = "3";
-					}
-					@logline = split(":", $_);
-					$logline[4] =~ s/\r\n|\r|\n//g;
-					$result .= $logline[1]."()".$logline[3]."()".$logline[4]."{}";
-				}
-				if ($_ =~ /^\w{40,40}:[1-4]:turn/){
-					$turncnt++;
-				}
-			}
-			close(IN);
-			# Wait Room
-			if($hitflg eq "y"){
-				if($joincnt >= 1){
-					$roundcnt = int(($turncnt - 1) / $joincnt) + 1;
-				}
-				$logdat[0] =~ s/\r\n|\r|\n//g;
-				$ret_dat .= ",".substr($file, 0, 4).":".substr($logdat[0], 5).":".$joincnt.":".$status.":".$roundcnt;
-				if($status eq "3"){
-					$ret_dat .= ":".$names.":".$result;
-				}
-			}
-		}
-	}
-	closedir DIRH;
 }
 # =============[ KILL ]===============
 if($params{"LOGCMD"} eq "KILL"){
@@ -333,3 +270,67 @@ if($params{"LOGCMD"} eq "KILL"){
 print "Content-type:text/plane;charset=utf-8\n\n";
 print $ret_dat;
 exit(0);
+# =============[ UPDATE ]===============
+if($params{"LOGCMD"} eq "UPDATE"){
+	### open flock bimode ####
+	open(IN, $path_user);
+	flock(IN, 1);
+	@logdat = <IN>;
+	### open flock bimode ####
+	open(OUT, ">> $path_temp");
+	flock(OUT, 2);
+	foreach (@logdat) {
+		$log_line = $_;
+		if ($log_line =~ /^\Q$params{"USERID"}\E\{\}/){
+			@col = split("{}", $log_line);
+			if($params{"PIECE"} ne ""){
+				$col[5] = $params{"PIECE"};
+			}
+			if($params{"RATE"} ne ""){
+				$col[6] = $params{"RATE"};
+				$col[7] += 1;
+			}
+			if($params{"RATE2"} ne ""){
+				$col[8] = $params{"RATE2"};
+				$col[9] += 1;
+			}
+			print OUT join("{}", @col);
+		}else{
+			print OUT $log_line;
+		}
+	}
+	close(IN);
+	close(OUT);
+	rename($path_temp, $path_user);
+}
+# =============[ RANK ]===============
+if($params{"LOGCMD"} eq "RANK"){
+	### open flock bimode ####
+	open(IN, $path_user);
+	flock(IN, 1);
+	@logdat = <IN>;
+	foreach (@logdat) {
+		$log_line = $_;
+		@col = split("{}", $log_line);
+		if($col[7] >= 5){
+			$ret_dat .= ",".$col[6].":".$col[7].":".$col[2];
+		}
+	}
+	close(IN);
+	$ret_dat = "RANK".$ret_dat;
+}
+if($params{"LOGCMD"} eq "RANK_Y"){
+	### open flock bimode ####
+	open(IN, $path_user);
+	flock(IN, 1);
+	@logdat = <IN>;
+	foreach (@logdat) {
+		$log_line = $_;
+		@col = split("{}", $log_line);
+		if($col[9] >= 3){
+			$ret_dat .= ",".$col[8].":".$col[9].":".$col[2];
+		}
+	}
+	close(IN);
+	$ret_dat = "RANK".$ret_dat;
+}

@@ -40,15 +40,15 @@ window.onload = function(){
 		}
 	}
 	//Login Check
-	//if(sessionStorage.USERID && sessionStorage.USERID != ""){
-	//	LoginDisp();
-	//}else{
-	//	if(localStorage.ob_userid){
-	//		NetSend("LOGIN_STORAGE");
-	//	}else{
+	if(sessionStorage.USERID && sessionStorage.USERID != ""){
+		LoginDisp();
+	}else{
+		if(localStorage.ob_userid){
+			NetSend("LOGIN_STORAGE");
+		}else{
 			PageOpen(1);
-	//	}
-	//}
+		}
+	}
 	$("#btn_menu1").css("display","block");
 	$("#btn_menu4").css("display","block");
 	$("#btn_menu5").css("display","block");
@@ -155,7 +155,7 @@ function CheckItem(i_str, i_min, i_max, i_zenkaku){
 function NetSend(i_cmd){
 	if(netflg == 0){
 		var pars = "";
-        var ping = $T.rndstr(8);
+        var ping = $T.rndstr(16);
         pars += "HASH=" + CryptoJS.SHA1(ping).toString();
 		switch(i_cmd){
 		case "LOGIN":
@@ -207,7 +207,7 @@ function NetSend(i_cmd){
 			if(roomlistlock == 0){
 				pars +="&LOGCMD=LIST";
 				roomlistlock = 1;
-				setTimeout(function(){roomlistlock = 0;}, 5000);
+				setTimeout(function(){roomlistlock = 0;}, 1000);
 			}
 			break;
         case "ENTRY":
@@ -231,7 +231,7 @@ function JoinRoom(arg){
             sessionStorage.Mode = (arg.debug) ? "debug" : "join";
             //Ajax
             var pars = "";
-            var ping = $T.rndstr(8);
+            var ping = $T.rndstr(16);
             pars += "HASH=" + CryptoJS.SHA1(ping).toString();
             pars += "&LOGCMD=JOIN";
             pars += "&ROOMID=" + arg.room;

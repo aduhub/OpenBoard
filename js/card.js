@@ -326,10 +326,11 @@ function CardImgSet(arg){
 	Canvas.draw(para);
 }
 //##############################################################
-var deckselectid = "";
 //リスト表示
 function DeckList(){
 	DisplaySet("DIV_DECK", 40);
+    //IDクリア
+    Player[Board.role].deckid = "";
 	//DECK LIST READ
 	var pars = "DECKCMD=LIST&USERID="+sessionStorage.USERID;
 	//Worker
@@ -359,82 +360,63 @@ function onDeckList(recvstr){
 function DeckSelect(deckstr){
 	if(deckstr != null){
 		//Clear
-		if(deckselectid != ""){
+		if(Player[Board.role].deckid != ""){
 			$("#BTN_DECK" + deckselectid).css("backgroundColor", "");
 		}
 		//Set
 		var palet = {"C1":"DDDDDD","C2":"FFCCCC","C3":"CCCCFF","C4":"CCFFCC","C5":"FFFFCC","I":"EEEEEE","S":"EEDDFF"};
-		var deckdata = [];
 		var deckdat = deckstr.split(":");
-		deckselectid = deckdat.shift();
-		var seldecknm = deckdat.shift();
-		for(var i=0; i<deckdat.length; i++){
-			deckdata.push(deckdat[i]);
+        //ID保持
+        Player[Board.role].deckid = deckdat.shift();
+        Player[Board.role].deckname = deckdat.shift();
+        Player[Board.role].deckdata = deckdat.join(":");
+		if(Player[Board.role].deckid != ""){
+			$("#BTN_DECK" + Player[Board.role].deckid).css("backgroundColor", "#FF6600");
 		}
-		if(deckselectid != ""){
-			$("#BTN_DECK" + deckselectid).css("backgroundColor", "#FF6600");
-		}
-		deckdata.sort();
+
 		//Clear
 		$("#SEL_DECKSET button").remove();
-		if(deckdata.length > 0){
-			for(var i=0; i<deckdata.length; i++){
-				var clrno = Card[deckdata[i]].type;
-				if(clrno == "C") clrno += Card[deckdata[i]].color;
-				var button = "<button oncontextmenu='CardInfo(\""+deckdata[i]+"\");return false;' style='background-color:#"+palet[clrno]+";'>" + Card[deckdata[i]].name + "</button>";
+		if(deckdat.length > 0){
+            deckdat.sort();
+			for(var i=0; i<deckdat.length; i++){
+				var clrno = Card[deckdat[i]].type;
+				if(clrno == "C") clrno += Card[deckdat[i]].color;
+				var button = "<button oncontextmenu='CardInfo(\""+deckdat[i]+"\");return false;' style='background-color:#"+palet[clrno]+";'>" + Card[deckdat[i]].name + "</button>";
 				$("#SEL_DECKSET").append(button);
 			}
 		}
 	}
 }
-//選択DECK送信
+//DECK決定
 function DeckSend(){
-	if(deckselectid != ""){
-		//削除
+	if(Player[Board.role].deckid != ""){
+		//表示DIV削除
 		$("#DIV_DECK").remove();
-		//送信
-		Net.send("deck:" + deckselectid);
-	}
-}
-//DECK受信
-function onDeckRecv(recvstr){
-	var recvcmd = recvstr.split(",");
-	if(Board.deckcnt < Board.playcnt){
-		if(recvcmd[0] != "0"){
-			//デッキ設定
-			var deckinfo = recvcmd[2].split(":");
-			var deckname = deckinfo.shift();
-			var deckdata = deckinfo.join(":");
-			if(deckname.match(/\([0-9]+\)$/)){
-				deckname = deckname.match(/^(.*)\([0-9]+\)$/)[1];
-			}
-			Player[Number(recvcmd[1])].deckname = deckname;
-			Player[Number(recvcmd[1])].deckdata = deckdata;
-			//デッキセレクトカウント
-			Board.deckcnt++;
-			if (Board.deckcnt == Board.playcnt){
-				//プレイヤーデータセット
-				PlayerSetup();
-			}
-			
-			//##### Debug #####
-			if(sessionStorage.Mode == "debug"){
-				for(var i=1; i<=4; i++){
-					//全員同データ
-					Player[i].deckname = deckname;
-					Player[i].deckdata = deckdata;
-				}
-				//デッキセレクトカウント
-				Board.deckcnt = 4;
-				//プレイヤーデータセット
-				PlayerSetup();
-			}
-			//【Log】
-			console.log("DeckRecv:"+recvcmd[1]);
-		}else{
-			//【Log】
-			console.log("DeckRecv:Error");
-		}
+
+        //送信
+        var cmd = "deck:"+Player[Board.role].deckid+":"+ Player[Board.role].deckname;
+        Net.send(cmd);
+
+        //Deck数
+        Board.deckcnt += 1;
+        //プレイヤーデータセット
+        if(Board.playcnt == Board.deckcnt){
+            PlayerSetup();
+        }
+
+        //##### Debug #####
+        if(sessionStorage.Mode == "debug"){
+            for(var i=1; i<=4; i++){
+                //全員同データ
+                Player[i].deckid = Player[Board.role].deckid;
+                Player[i].deckname = Player[Board.role].deckname;
+                Player[i].deckdata = Player[Board.role].deckdata;
+            }
+            //デッキセレクトカウント
+            Board.deckcnt = 4;
+            //プレイヤーデータセット
+            PlayerSetup();
+        }
 	}
 }
 // ######[ インポート ]######

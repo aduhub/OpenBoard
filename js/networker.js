@@ -34,25 +34,22 @@ function clock(){
 //xhrHttpRequest
 function xhrget(arr){
 	(function(){
-		var xhr = new XMLHttpRequest();
-		var url = "/openboard/" + arr[0] + '?' + arr[1];
-		xhr.open('GET', url, true);
-		xhr.onreadystatechange = function(){
-			if(xhr.readyState == 4){
-				if(xhr.status == 200){
-					//メッセージ送信
-					var ua = navigator.userAgent.toLowerCase();
-					if(ua.indexOf("chrome") != -1){
-						webkitPostMessage([xhr.responseText, arr[2]]);
-					}else if(ua.indexOf("firefox") != -1){
-						postMessage([xhr.responseText, arr[2]]);
-					}
-				}
-				delete xhr;
-				//
-				clock();
-			}
-		};
-		xhr.send(null);
+        if(arr != null){
+            var xhr = new XMLHttpRequest();
+            var url = "/openboard/" + arr[0] + '?' + arr[1];
+            xhr.open('GET', url, true);
+            xhr.onreadystatechange = function(){
+                if(xhr.readyState == 4){
+                    if(xhr.status == 200){
+                        //メッセージ送信
+                        postMessage([xhr.responseText, arr[2]]);
+                    }
+                    delete xhr;
+                    //
+                    clock();
+                }
+            };
+            xhr.send(null);
+        }
 	})();
 }

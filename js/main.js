@@ -15,6 +15,7 @@ var Frame = {
 		//join 
 		switch(sessionStorage.Mode){
 		case "join":
+            Net.ping();
 			break;
 		case "gallery":
 			wkcmd = "system{}*観戦者が増えました*";
@@ -25,10 +26,11 @@ var Frame = {
 	stack:function(message){
 		switch(message["cmd"]){
 		case "send":
-			if(Number(message["pno"]) != Board.role){
-				Frame.cmdstack.push(message["data"]);
-			}
+    		Frame.cmdstack.push(message);
 			break;
+        case "ping":
+            Net.getCGI();
+            break;
 		case "chat":
 			var chatitem = message.msg.split("{}");
 			//Log
@@ -52,17 +54,16 @@ var Frame = {
 	//========[ LogPlayer ] ========
 	_playlog:function (){
 		if(Frame.cmdstack.length > 0){
+            //console
+            console.log("[play_0]" + JSON.stringify(Frame.cmdstack[0]))
 			var runflg = 0;
-			var wkstr = Frame.cmdstack[0];
-			var wkcmd = wkstr.split(":");
-			var loghash = wkcmd.shift();
-			var logpno = Number(wkcmd.shift());
-			var logcmd = wkcmd.shift();
-			var logpara = wkcmd.join(":");
-			var wkforcecmd = ['room','full','join','deck','ready','chat'];
-			var wkinterrupt = ['item','shuffle'];
+			var cmditem = Frame.cmdstack[0];
+            var cmddata = cmditem.plog.split(":");
+			var logpno = Number(cmditem.pno);
+			var logcmd = cmddata.shift();
+			var logpara = cmddata.join(":");
 			//自分の発行したコマンド
-			if(logpno == Board.role && wkforcecmd.indexOf(logcmd) == -1){
+			if(logpno == Board.role && ['room','full','join','ready','chat'].indexOf(logcmd) == -1){
 				runflg = 1;
 			}else{
 				switch(logcmd){
@@ -131,9 +132,12 @@ var Frame = {
 						if($T.inarray(sessionStorage.Mode, ["join", "debug"])){
 							//ロール check
 							if(Board.role == 9 && pinfo[0] == sessionStorage.USERID){
+                                //Board.roleセット
 								Board.role = role;
 								//デッキリスト表示
 								DeckList();
+                                //ping
+                                Net.ping();
 							}
 							//全員参加
 							if(Board.joincnt == Board.playcnt){
@@ -165,16 +169,18 @@ var Frame = {
 					}
 					break;
 				case "deck":
-					runflg = 1;
-					var pars = "DECKCMD=DECK&PID="+logpno+"&DECKID="+logpara;
-					//Worker
-					Net.xhr({cgi:"perl/ocdeck.cgi", para:pars, fnc:"onDeckRecv"});
-					//deckid
-					Player[logpno].deckid = logpara;
-					//削除(Reload用)
-					if(Board.role >= 1 && logpno == Board.role){
-						$("#DIV_DECK").remove();
-					}
+					runflg = 2;
+                    var deckinfo = logpara.split(":");
+                    //Deck情報
+                    Player[logpno].deckid = deckinfo.shift();
+                    Player[logpno].deckname = deckinfo.shift();
+                    //Deck数
+                    Board.deckcnt += 1;
+                    //プレイヤーデータセット
+                    if(Board.playcnt == Board.deckcnt){
+                        PlayerSetup();
+                    }
+
 					break;
 				case "ready":
 					if(Board.deckcnt == Board.playcnt){
@@ -327,7 +333,7 @@ var Frame = {
 			//実行
 			if(runflg >= 1){
 				//【Log】
-				console.log("p:"+logpno+"["+logcmd+":"+logpara+"]");
+				console.log("[play_1]"+logpno+":"+logcmd+":"+logpara);
 				var wkstr = Frame.cmdstack.shift();
 				if(runflg == 2){
 					//再呼び出し

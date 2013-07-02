@@ -7,7 +7,7 @@ var Net = {
 	_channel:"",
 	_sendcmd:[],
 	_recvcmd:[],
-	_recvhash:[],
+	_hashlist:[],
 	//##############
 	//#  メソッド  #
 	//##############
@@ -31,7 +31,7 @@ var Net = {
 			ssl           : false,
 			origin        : 'pubsub.pubnub.com'
 		});
-		Pubnub.subscribe({
+		Net.Pubnub.subscribe({
 			restore : true,
 			channel : Net._channel,
 			connect : function(){
@@ -46,43 +46,54 @@ var Net = {
 				console.log("pubnub Disconnect");
 			},
 			callback : function(message) {
-				if(Net._recvhash.indexOf(message["hash"]) == -1){
+				if(Net._hashlist.indexOf(message["hash"]) == -1){
 					//Frame
 					Frame.stack(message);
 					//stock
-					Net._recvhash.push(message["hash"]);
+					Net._hashlist.push(message["hash"]);
+                    //console
+                    console.log("[pub_get]" + JSON.stringify(message));
 				}
-				//console
-				console.log("pubnub_sub : " + JSON.stringify(message));
 			}
 		});
 	},
 	pubnub_send:function(message){
-		Pubnub.publish({
+		Net.Pubnub.publish({
 			channel  : Net._channel,
-			message  : message,
-			callback : function(info) {
-				console.log("pubnub_pub:" + JSON.stringify(info));
-			}
+			message  : message
+			//,callback : function(info) {
+			//	console.log("pubnub_status:" + JSON.stringify(info));
+			//}
 		});
+        //console
+        console.log("[pub_send]" + JSON.stringify(message));
 	},
 	//=====[ 送信 ]=====
-	send:function (data){
-		var hash = CryptoJS.SHA1(data).toString();
-		var message = {"pno":Board.role, "cmd":"send", "data":data, "hash":hash}
+	send:function (recv){
+		var message = {"cmd":"send", "pno":Board.role, "plog":recv, "hash":Net.hashkit()}
 		// pubnub send
 		Net.pubnub_send(message);
-		//send log
-		Net._sendcmd.push(data);
 	},
+    ping:function (){
+        var hash = Net.hashkit();
+        var message = {"cmd":"ping", "hash":hash}
+        // pubnub send
+        Net.pubnub_send(message);
+        // stock
+        Net._hashlist.push(hash);
+    },
+    hashkit:function(){
+        var timenow = new Date();
+        var hashseed = $T.rndstr(16);
+        hashseed += timenow.toString();
+        var rethash = CryptoJS.SHA1(hashseed).toString();
+        return rethash;
+    },
 	//=====[ Web Workers ]=====
 	xhr:function(arr){
-		if($T.browser() == "chrome"){
-			console.log("[xhr]"+arr.cgi+":"+arr.para);
-			Net.Worker.webkitPostMessage([arr.cgi, arr.para, arr.fnc]);
-		}else{
-			Net.Worker.postMessage([arr.cgi, arr.para, arr.fnc]);
-		}
+    	Net.Worker.postMessage([arr.cgi, arr.para, arr.fnc]);
+        //console
+        console.log("[xhr]"+arr.cgi+":"+arr.para);
 	},
 	onWorker:function(event){
 		//返却関数実行
@@ -108,31 +119,31 @@ var Net = {
 	//========[ Get Log ]========
 	getCGI:function (sendcmd){
         var pars = "ROOMID=" + sessionStorage.RoomID;
-        if(sendcmd != ""){
+        if(sendcmd != null && sendcmd != ""){
             pars += "&LOGCMD=" + sendcmd;
         }
         //Worker
         Net.xhr({cgi:"perl/ocnet.cgi", para:pars, fnc:"Net.ongetCGI"});
 	},
-	ongetCGI:function (recvstr){
-		var recvcmd = recvstr.split(",");
-		if (recvcmd[0] != "0"){
-			for(var i=0; i<recvcmd.length; i++){
-				recvcmd[i] = recvcmd[i].replace(/\n/g, '');
-                var wkcmd = recvcmd[i].split(":");
-                var loghash = recvcmd[i].shift();
-                var logpno = Number(recvcmd[i].shift());
-                var logcmd = recvcmd[i].join(":");
-				if(loghash == "0000" || Net._recvhash.indexOf(loghash) == -1){
-                    var message = {"pno":logpno, "cmd":"send", "data":logcmd, "hash":loghash}
+	ongetCGI:function (recv){
+        var recvstr = recv.replace(/\n/g, '');
+		var recvcmds = recvstr.split(",");
+		if (recvcmds[0] != "0"){
+			for(var i=1; i<recvcmds.length; i++){
+                var cmdarr = recvcmds[i].split(":");
+                var loghash = cmdarr.shift();
+                var logpno = Number(cmdarr.shift());
+                var logcmd = cmdarr.join(":");
+				if(Net._hashlist.indexOf(loghash) == -1){
+                    var message = {"cmd":"send", "pno":logpno, "plog":logcmd, "hash":loghash}
                     //Frame
                     Frame.stack(message);
                     //stock
-                    Net._recvhash.push(message["hash"]);
+                    Net._hashlist.push(loghash);
 				}
 			}
 			//#### Log ####
-			console.log("getCGI:"+recvstr);
+			console.log("[ongetCGI]"+recvstr);
 		}
 	}
 }
