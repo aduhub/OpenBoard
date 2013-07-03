@@ -881,8 +881,8 @@ function DivImg(i_id, i_src){
 	}
 }
 function SetPlayerImg(pno){
-	var css = [];
-	var cssP = [];
+	var css = {};
+	var cssP = {};
 	var transform = "";
 	var transformP = "";
 	var stands = [];
@@ -898,8 +898,8 @@ function SetPlayerImg(pno){
 	}
 
 	for(var i=1; i<=Board.playcnt; i++){
-		css = [];
-		cssP = [];
+		css = {};
+		cssP = {};
 		transform = "";
 		transformP = "";
 
@@ -948,13 +948,8 @@ function SetPlayerImg(pno){
 			}
 		}
 		if(pno == 0 || pno == i){
-			if($T.browser() == "chrome"){
-				css["-webkit-transform"] = transform;
-				cssP["-webkit-transform"] = transformP;
-			}else if($T.browser() == "firefox"){
-				css["-moz-transform"] = transform;
-				cssP["-moz-transform"] = transformP;
-			}
+			css["transform"] = transform;
+			cssP["transform"] = transformP;
 			$("#DIV_PLAYER"+i).css(css);
 			$("#DIV_PNO"+i+",#DIV_PICON"+i ).css(cssP);
 		}
@@ -1037,50 +1032,46 @@ function DispDialog(param){
 //DIV レイヤー設置
 function CreateLay(){
 	var arg = arguments;
-	var wkdivstr;
-	//イベント設定
+	var jQ_Div;
+
+	//Div生成
 	if(arg[6] == "click"){
-		wkdivstr = "<DIV ";
-		if(sessionStorage.iPhone == "Y"){
-			wkdivstr += "onTouchStart='GridClick("+arg[7]+")' ";
-		}else{
-			//wkdivstr += "onmousedown='function(e){var e = e || window.event;if(e.button == 0){GridClick("+arg[7]+");}}();' ";
-			wkdivstr += "onmousedown='GridClick("+arg[7]+")' ";
-			wkdivstr += "onmouseover='GridInfo("+arg[7]+")' ";
-			wkdivstr += "onmouseout='GridInfo(0); ' ";
-			wkdivstr += "oncontextmenu='GridGuidePop("+arg[7]+");return false;'";
-		}
-		wkdivstr += "></DIV>";
+        jQ_Div = $("<div/>", {
+            "onmousedown":"GridClick("+arg[7]+")",
+            "onmouseover":"GridInfo("+arg[7]+")",
+            "onmouseout":"GridInfo(0)",
+            "oncontextmenu":"GridGuidePop("+arg[7]+");return false;"
+        });
 	}else{
-		wkdivstr = "<DIV></DIV>";
+        jQ_Div = $("<div/>");
 	}
-	//DIV Erement
-	var wkdiv = $(wkdivstr);
-	wkdiv.attr("id", arg[0]);
-	//Style Text
-	var cssarg = [];
-	cssarg["position"] = (arg[6] == "fixed") ? "fixed" : "absolute";
-	cssarg["width"]  = arg[1]+"px";
-	cssarg["height"] = arg[2]+"px";
-	cssarg["left"]   = arg[3]+"px";
-	cssarg["top"]    = arg[4]+"px";
-	cssarg["zIndex"] = arg[5];
-	switch(arg[6]){
-	case "img":
-		cssarg["textAlign"] = "center";
-		if(arg[7] != ""){
-			cssarg["backgroundImage"] = "url(img/"+arg[7]+".gif)";
-			cssarg["backgroundRepeat"] = "no-repeat";
-		}
-		break;
-	case "click":
-		wkdiv.attr("class", "CLS_CLICK");
-		break;
-	}
-	//Style設定
-	wkdiv.css(cssarg);
+
+    //Attr設定
+    jQ_Div.attr("id", arg[0]);
+    //Class設定
+    if(arg[6] == "click"){
+        jQ_Div.addClass("CLS_CLICK");
+    }
 	//ドキュメントに追加
-	$("#DIV_FRAME").append(wkdiv);
+	$("#DIV_FRAME").append(jQ_Div);
+
+    //Style設定
+    var jQ_Css = {
+        position:(arg[6] == "fixed") ? "fixed" : "absolute",
+        width:arg[1]+"px",
+        height:arg[2]+"px",
+        left:arg[3]+"px",
+        top:arg[4]+"px",
+        zIndex:arg[5]
+    }
+    if(arg[6] == "img"){
+        jQ_Css["textAlign"] = "center";
+        if(arg[7] != ""){
+            jQ_Css["backgroundImage"] = "url(img/"+arg[7]+".gif)";
+            jQ_Css["backgroundRepeat"] = "no-repeat";
+        }
+    }
+    $("#"+arg[0]).css(jQ_Css);
 }
 //
 function SetPlayerIcon(pno, file){

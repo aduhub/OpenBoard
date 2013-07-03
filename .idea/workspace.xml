@@ -2,23 +2,20 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="df8ec2db-3007-4ca8-93dc-10d6db18753a" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/board.htm" afterPath="$PROJECT_DIR$/board.htm" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/card.js" afterPath="$PROJECT_DIR$/js/card.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/debug.js" afterPath="$PROJECT_DIR$/js/debug.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/index.js" afterPath="$PROJECT_DIR$/js/index.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/main.js" afterPath="$PROJECT_DIR$/js/main.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/net.js" afterPath="$PROJECT_DIR$/js/net.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/networker.js" afterPath="$PROJECT_DIR$/js/networker.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/perl/oclogin.cgi" afterPath="$PROJECT_DIR$/perl/oclogin.cgi" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/scriptload_idx.js" afterPath="$PROJECT_DIR$/js/scriptload_idx.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/codeStyleSettings.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/board.css" afterPath="$PROJECT_DIR$/board.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/board.js" afterPath="$PROJECT_DIR$/js/board.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/boardani.css" afterPath="$PROJECT_DIR$/boardani.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/effect.js" afterPath="$PROJECT_DIR$/js/effect.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="OpenBoard.iws" />
     <ignored path=".idea/workspace.xml" />
-    <file path="/Dummy.txt" changelist="df8ec2db-3007-4ca8-93dc-10d6db18753a" time="1372753177549" ignored="false" />
-    <file path="/a.js" changelist="df8ec2db-3007-4ca8-93dc-10d6db18753a" time="1372293288191" ignored="false" />
+    <file path="/Dummy.txt" changelist="df8ec2db-3007-4ca8-93dc-10d6db18753a" time="1372824024251" ignored="false" />
+    <file path="/a.js" changelist="df8ec2db-3007-4ca8-93dc-10d6db18753a" time="1372831821888" ignored="false" />
     <file path="/main.js" changelist="df8ec2db-3007-4ca8-93dc-10d6db18753a" time="1372746615680" ignored="false" />
     <file path="/net.js" changelist="df8ec2db-3007-4ca8-93dc-10d6db18753a" time="1372752951385" ignored="false" />
-    <file path="/board.js" changelist="df8ec2db-3007-4ca8-93dc-10d6db18753a" time="1372301589790" ignored="false" />
+    <file path="/board.js" changelist="df8ec2db-3007-4ca8-93dc-10d6db18753a" time="1372824184558" ignored="false" />
     <file path="/dice.js" changelist="df8ec2db-3007-4ca8-93dc-10d6db18753a" time="1372315360872" ignored="false" />
     <file path="/board.htm" changelist="df8ec2db-3007-4ca8-93dc-10d6db18753a" time="1372723724253" ignored="false" />
     <file path="/index.htm" changelist="df8ec2db-3007-4ca8-93dc-10d6db18753a" time="1372655401508" ignored="false" />
@@ -26,6 +23,8 @@
     <file path="/debug.js" changelist="df8ec2db-3007-4ca8-93dc-10d6db18753a" time="1372724643413" ignored="false" />
     <file path="/card.js" changelist="df8ec2db-3007-4ca8-93dc-10d6db18753a" time="1372747901783" ignored="false" />
     <file path="/networker.js" changelist="df8ec2db-3007-4ca8-93dc-10d6db18753a" time="1372750107614" ignored="false" />
+    <file path="/effect.js" changelist="df8ec2db-3007-4ca8-93dc-10d6db18753a" time="1372830597719" ignored="false" />
+    <file path="/board.css" changelist="df8ec2db-3007-4ca8-93dc-10d6db18753a" time="1372836345898" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -48,7 +47,7 @@
       <file leaf-file-name="net.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/js/net.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="115" column="29" selection-start="2904" selection-end="2904" vertical-scroll-proportion="0.0">
+            <state line="115" column="13" selection-start="2904" selection-end="2904" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -57,16 +56,56 @@
       <file leaf-file-name="card.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/js/card.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="397" column="16" selection-start="10039" selection-end="10047" vertical-scroll-proportion="-11.28">
+            <state line="397" column="16" selection-start="10039" selection-end="10047" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="main.js" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="main.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/js/main.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="182" column="35" selection-start="5089" selection-end="5089" vertical-scroll-proportion="0.35591274">
+            <state line="182" column="0" selection-start="5089" selection-end="5089" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="canvas.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/canvas.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="board.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/board.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="881" column="1" selection-start="24472" selection-end="24472" vertical-scroll-proportion="-8.56">
+              <folding>
+                <element signature="n#!!doc" expanded="true" />
+                <marker date="1372834670712" expanded="false" signature="27504:27515" placeholder="..." />
+                <marker date="1372834670712" expanded="false" signature="27907:27918" placeholder="..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="dice.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/dice.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="48" column="18" selection-start="1428" selection-end="1428" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="effect.js" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/js/effect.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="298" column="28" selection-start="11522" selection-end="11522" vertical-scroll-proportion="0.39716312">
               <folding />
             </state>
           </provider>
@@ -90,10 +129,6 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/js/flow.js" />
-        <option value="$PROJECT_DIR$/js/board.js" />
-        <option value="$PROJECT_DIR$/js/grid.js" />
-        <option value="$PROJECT_DIR$/js/spell.js" />
         <option value="$PROJECT_DIR$/js/summon.js" />
         <option value="$PROJECT_DIR$/js/territory.js" />
         <option value="$PROJECT_DIR$/perl/ocnet.cgi" />
@@ -106,6 +141,10 @@
         <option value="$PROJECT_DIR$/js/index.js" />
         <option value="$PROJECT_DIR$/js/net.js" />
         <option value="$PROJECT_DIR$/js/main.js" />
+        <option value="$PROJECT_DIR$/boardani.css" />
+        <option value="$PROJECT_DIR$/js/effect.js" />
+        <option value="$PROJECT_DIR$/js/board.js" />
+        <option value="$PROJECT_DIR$/board.css" />
       </list>
     </option>
   </component>
@@ -115,6 +154,22 @@
     <option name="width" value="1936" />
     <option name="height" value="1056" />
   </component>
+  <component name="ProjectInspectionProfilesVisibleTreeState">
+    <entry key="Project Default">
+      <profile-state>
+        <expanded-state>
+          <State>
+            <id />
+          </State>
+        </expanded-state>
+        <selected-state>
+          <State>
+            <id>CoffeeScript</id>
+          </State>
+        </selected-state>
+      </profile-state>
+    </entry>
+  </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
     <OptionsSetting value="true" id="Add" />
     <OptionsSetting value="true" id="Remove" />
@@ -122,7 +177,7 @@
     <OptionsSetting value="true" id="Update" />
     <OptionsSetting value="true" id="Status" />
     <OptionsSetting value="true" id="Edit" />
-    <ConfirmationsSetting value="0" id="Add" />
+    <ConfirmationsSetting value="2" id="Add" />
     <ConfirmationsSetting value="0" id="Remove" />
   </component>
   <component name="ProjectReloadState">
@@ -181,7 +236,7 @@
   <component name="PropertiesComponent">
     <property name="options.splitter.main.proportions" value="0.3" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="options.lastSelected" value="preferences.intentionPowerPack" />
+    <property name="options.lastSelected" value="Errors" />
     <property name="FullScreen" value="false" />
     <property name="options.searchVisible" value="true" />
     <property name="options.splitter.details.proportions" value="0.40216085" />
@@ -224,13 +279,13 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1056" extended-state="0" />
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.1743941" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.1743941" sideWeight="0.6707589" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
@@ -239,7 +294,7 @@
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32924107" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -304,40 +359,10 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="1" />
+      <option name="time" value="2" />
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/lib/jquery.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-          <folding>
-            <element signature="n#!!doc" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/lib/sha1.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-          <folding>
-            <element signature="n#!!doc" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/index.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/index.htm">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="51" column="164" selection-start="2096" selection-end="2096" vertical-scroll-proportion="0.0625">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/js/debug.js">
       <provider selected="true" editor-type-id="text-editor">
         <state line="158" column="45" selection-start="5055" selection-end="5055" vertical-scroll-proportion="0.6583924">
@@ -357,34 +382,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/dice.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="170" column="47" selection-start="4408" selection-end="4408" vertical-scroll-proportion="0.019517796">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/board.htm">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="15" column="104" selection-start="680" selection-end="680" vertical-scroll-proportion="41.192307">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/board.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-          <folding>
-            <element signature="n#!!doc" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/js/networker.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="38" column="12" selection-start="716" selection-end="716" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="38" column="12" selection-start="716" selection-end="716" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/js/tool.js">
@@ -394,30 +394,79 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/js/index.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="158" column="21" selection-start="3704" selection-end="3708" vertical-scroll-proportion="0.332533">
-          <folding>
-            <element signature="n#!!doc" expanded="true" />
-          </folding>
-        </state>
+        <state line="158" column="21" selection-start="3704" selection-end="3708" vertical-scroll-proportion="0.332533" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/js/card.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="397" column="16" selection-start="10039" selection-end="10047" vertical-scroll-proportion="-11.28">
+        <state line="397" column="16" selection-start="10039" selection-end="10047" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/js/net.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="115" column="29" selection-start="2904" selection-end="2904" vertical-scroll-proportion="0.0">
+        <state line="115" column="13" selection-start="2904" selection-end="2904" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/js/main.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="182" column="35" selection-start="5089" selection-end="5089" vertical-scroll-proportion="0.35591274">
+        <state line="182" column="0" selection-start="5089" selection-end="5089" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/canvas.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/dice.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="48" column="18" selection-start="1428" selection-end="1428" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/board.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="881" column="1" selection-start="24472" selection-end="24472" vertical-scroll-proportion="-8.56">
+          <folding>
+            <element signature="n#!!doc" expanded="true" />
+            <marker date="1372834670712" expanded="false" signature="27504:27515" placeholder="..." />
+            <marker date="1372834670712" expanded="false" signature="27907:27918" placeholder="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/board.htm">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="15" column="17" selection-start="680" selection-end="680" vertical-scroll-proportion="-0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/boardani.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="6" column="48" selection-start="249" selection-end="249" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/board.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="269" column="17" selection-start="5512" selection-end="5512" vertical-scroll-proportion="0.9562648">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/effect.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="298" column="28" selection-start="11522" selection-end="11522" vertical-scroll-proportion="0.39716312">
           <folding />
         </state>
       </provider>
