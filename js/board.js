@@ -958,6 +958,7 @@ function SetPlayerImg(pno){
 //################## ダイアログ表示 ####################
 function DispDialog(param){
 	if(param == "none"){
+		$("#DIV_FRAME").css({webkitFilter:""});
 		$("#DIV_DIALOG_BACK").css({display:"none"});
 		$("#DIV_DIALOG").html("");
 	}else{
@@ -1013,6 +1014,7 @@ function DispDialog(param){
 		$("#DIV_DIALOG").css({width:size});
 		$("#DIV_DIALOG").html(html);
 		$("#DIV_DIALOG_BACK").css({display:"block"});
+		$("#DIV_FRAME").css({webkitFilter:"blur(3px)"});
 		//インフォ非表示
 		GridInfo(0);
 		//canvas

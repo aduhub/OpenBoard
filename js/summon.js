@@ -116,44 +116,57 @@ function SummonCost(i_gno, i_cno){
 }
 //使用確認
 function SummonConfirm(arg){
-	switch(arg.step){
-	case 0: //表示
-		//使用確認
-		StepSet(41);
-		Summon.type = arg.type;
-		Summon.pno = Board.role;
-		Summon.cno = Player[Board.role].HandCard(arg.hno);
-		Summon.hand = arg.hno;
-		Summon.gno = (arg.type == "summon") ? Player[Board.role].stand : Territory.gno;
-		Summon.status = "";
-		//ダイアログ
-		var msgarr = ["「"+Card[Summon.cno].name+"」を召喚しますか？"];
-		var btnarr = ["SummonConfirm({type:'"+arg.type+"', step:1})", "SummonConfirm({type:'"+arg.type+"', step:2})"];
-		//ダイアログ
-		DispDialog({msgs:msgarr, btns:btnarr, type:"yesno", timer:true});
-		//アイコン表示
-		Canvas.draw({id:"CVS_HAND"+arg.hno, src:"img/cmd_select.gif", alpha:0.6});
-		break;
-	case 1: //OK
-		//ステップ
-		StepSet(42);
-		//準備設定
-		SummonReady();
-		break;
-	case 2: //NO
-		//ダイアログ非表示
-		DispDialog("none");
-		//アイコン非表示
-		HandImgSet(Summon.hand);
-		if(arg.type == "summon"){
-			//巻き戻し
-			StepSet(40);
-		}else{
-			//キャンセル
-			TerritoryDialog(5);
-		}
-		break;
-	}
+	//確認なし
+	StepSet(41);
+	Summon.type = arg.type;
+	Summon.pno = Board.role;
+	Summon.cno = Player[Board.role].HandCard(arg.hno);
+	Summon.hand = arg.hno;
+	Summon.gno = (arg.type == "summon") ? Player[Board.role].stand : Territory.gno;
+	Summon.status = "";
+	//ステップ
+	StepSet(42);
+	SummonReady();
+
+	//旧ダイアログ確認式
+//	switch(arg.step){
+//	case 0: //表示
+//		//使用確認
+//		StepSet(41);
+//		Summon.type = arg.type;
+//		Summon.pno = Board.role;
+//		Summon.cno = Player[Board.role].HandCard(arg.hno);
+//		Summon.hand = arg.hno;
+//		Summon.gno = (arg.type == "summon") ? Player[Board.role].stand : Territory.gno;
+//		Summon.status = "";
+//		//ダイアログ
+//		var msgarr = ["「"+Card[Summon.cno].name+"」を召喚しますか？"];
+//		var btnarr = ["SummonConfirm({type:'"+arg.type+"', step:1})", "SummonConfirm({type:'"+arg.type+"', step:2})"];
+//		//ダイアログ
+//		DispDialog({msgs:msgarr, btns:btnarr, type:"yesno", timer:true});
+//		//アイコン表示
+//		Canvas.draw({id:"CVS_HAND"+arg.hno, src:"img/cmd_select.gif", alpha:0.6});
+//		break;
+//	case 1: //OK
+//		//ステップ
+//		StepSet(42);
+//		//準備設定
+//		SummonReady();
+//		break;
+//	case 2: //NO
+//		//ダイアログ非表示
+//		DispDialog("none");
+//		//アイコン非表示
+//		HandImgSet(Summon.hand);
+//		if(arg.type == "summon"){
+//			//巻き戻し
+//			StepSet(40);
+//		}else{
+//			//キャンセル
+//			TerritoryDialog(5);
+//		}
+//		break;
+//	}
 }
 //受信処理
 function SummonRecv(){

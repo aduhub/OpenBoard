@@ -145,8 +145,8 @@ function DicePieceMove(i_mvto){
 		}
 		//[ 正常移動 ]
 		if(nextgno >= 1){
-			var waitsec = (Frame.skipchk()) ? 50 : 300;
-			var msec = (Frame.skipchk()) ? 30 : 0;
+			var waitsec = (Frame.skipchk()) ? 50 : 150;
+			var msec = (Frame.skipchk()) ? 30 : 140;
 			//ステップ
 			StepSet(31);
 			//歩数残--

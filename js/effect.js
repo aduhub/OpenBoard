@@ -5,12 +5,12 @@ function EffectBox(arg){
 		var fnc = function(){
 			var effid = "discard"+$T.rndstr();
 			var effdiv = $("<div><canvas id='cvs"+effid+"' height='130' width='100'></canvas></div>");
-			effdiv.addClass("animeDiscard");
 			effdiv.css({position:"fixed", top:245, left:390, zIndex:300});
-			effdiv.one('webkitAnimationEnd', function(){$(this).remove();});
 			$("BODY").append(effdiv);
 			//Img
 			CardImgSet({cvs:"cvs"+effid, cno:arg.cno, zoom:0.5});
+			//CSS
+			CSSAnimation({obj:effdiv, class:"animeDiscard", remove:true});
 		}
 		$T.stacktimer({key:"cardeffect", fnc:fnc, msec:800});
 		break;
@@ -38,10 +38,19 @@ function EffectBox(arg){
 		//img
 		SetPlayerImg(arg.pno);
 		//Move
-		var mvy = Board.grid[arg.gno].top - 64;
-		var mvx = Board.grid[arg.gno].left - 0;
+		var char_mvy = Board.grid[arg.gno].top - 64;
+		var char_mvx = Board.grid[arg.gno].left - 0;
+		var screen_mvy = Board.grid[arg.gno].top - 300;
+		var screen_mvx = Board.grid[arg.gno].left - 340;
 		//css tmp anime
-		CSSAnimation({id:"#DIV_PLAYER"+arg.pno, css:{top:mvy+"px", left:mvx+"px"}, msec:msec});
+		CSSTransition({id:"#DIV_PLAYER"+arg.pno, css:{top:char_mvy+"px", left:char_mvx+"px"}, msec:msec});
+
+		if(!$("#DIV_FRAME").hasClass("CLS_AREAMAP")){
+			//ドラッグストップ
+			dragObject = null;
+			//スクロール
+			$("#DIV_FRAME").animate({scrollTop:screen_mvy, scrollLeft:screen_mvx}, msec);
+		}
 		break;
 	case "taxjump":
 	 	var element = $("#DIV_PLAYER"+arg.pno);
@@ -71,7 +80,7 @@ function EffectBox(arg){
 		break;
 	case "piecespin":
 		//css tmp anime
-		CSSAnimation({id:"#DIV_PLAYER"+arg.pno, css:{"transform":"rotateY(360deg)"}, msec:1000, reset:true});
+		CSSTransition({id:"#DIV_PLAYER"+arg.pno, css:{"transform":"rotateY(360deg)"}, msec:1000, reset:true});
 		break;
 	case "fortpuff": //CastleFort Icon puff
 		var divy = Number(Board.grid[Player[arg.pno].stand].top) - 22;
@@ -134,7 +143,7 @@ function EffectBox(arg){
 		var mvx = Number(Board.grid[arg.gno2].left);
 		//css tmp anime
 		var css = {top:mvy+"px", left:mvx+"px", opacity:0.9};
-		CSSAnimation({id:"#"+effid, css:css, msec:1000, remove:true});
+		CSSTransition({id:"#"+effid, css:css, msec:1000, remove:true});
 		break;
 	case "impact":
 		$("#DIV_GICON"+arg.gno).addClass("animeHitimpact");
@@ -159,7 +168,7 @@ function EffectBox(arg){
 		var fnc = function(){
 			$("#DIV_GICON"+arg.gno).css({display:"block"});
 		}
-		CSSAnimation({id:"#"+effid, css:css, msec:1000, term:fnc, remove:true});
+		CSSTransition({id:"#"+effid, css:css, msec:1000, term:fnc, remove:true});
 		//Sound
 		Audie.seplay("summon");
 		break;
@@ -174,7 +183,7 @@ function EffectBox(arg){
 		$("#DIV_FRAME").append(effdiv);
 		//css tmp anime
 		css = {"transform":"scale(0.2, 1.0)", opacity:0.1};
-		CSSAnimation({id:"#"+effid, css:css, msec:1000, remove:true});
+		CSSTransition({id:"#"+effid, css:css, msec:1000, remove:true});
 		break;
 	case "destroy":
 		var img = "url(img/icon/"+Card[arg.cno].imgsrc.replace(".png", "")+".gif)";
@@ -191,7 +200,7 @@ function EffectBox(arg){
 			effdiv.css({backgroundImage:img, backgroundRpeat:"no-repeat", backgroundPosition:posistr});
 			$("#DIV_FRAME").append(effdiv);
 			//css tmp anime
-			CSSAnimation({id:"#"+effid, css:{top:mvy+"px", left:mvx+"px", opacity:0.1}, msec:800, remove:true});
+			CSSTransition({id:"#"+effid, css:{top:mvy+"px", left:mvx+"px", opacity:0.1}, msec:800, remove:true});
 		}
 		//Sound
 		Audie.seplay("mapdie");
@@ -211,7 +220,7 @@ function EffectBox(arg){
 			effdiv.css({backgroundImage:img, backgroundRpeat:"no-repeat", backgroundPosition:posistr, BackgroundSize:"100px 130px"});
 			$("#DIV_VSBACK").append(effdiv);
 			//css tmp anime
-			CSSAnimation({id:"#"+effid, css:{top:mvy+"px", left:mvx+"px", opacity:0.1}, msec:800, remove:true});
+			CSSTransition({id:"#"+effid, css:{top:mvy+"px", left:mvx+"px", opacity:0.1}, msec:800, remove:true});
 		}
 		break;
 	case "soldout":
@@ -225,7 +234,7 @@ function EffectBox(arg){
 		$("#DIV_FRAME").append(effdiv);
 		//Move
 		css = {"transform":"translate(0px, -48px)", opacity:0.1};
-		CSSAnimation({id:"#"+effid, css:css, msec:1200, remove:true});
+		CSSTransition({id:"#"+effid, css:css, msec:1200, remove:true});
 		break;
 	case "msgpop":
 		var divyopt = (arg.player) ? -64 : -26;
@@ -292,7 +301,7 @@ function EffectBox(arg){
 	}
 }
 //CSS Temp Animation
-function CSSAnimation(arg){
+function CSSTransition(arg){
 	var css = {};
 	var backup = {};
 	var property = [];
@@ -319,4 +328,21 @@ function CSSAnimation(arg){
             arg.term();
         }
     });
+}
+function CSSAnimation(arg){
+	arg.obj.addClass(arg.class);
+	if(arg.remove){
+		arg.obj.one('webkitAnimationEnd', function(){
+			$(this).remove();
+		});
+	}
+	if(arg.hide){
+		arg.obj.one('webkitAnimationEnd', function(){
+			$(this).removeClass(arg.class);
+			$(this).css("display", "none");
+		});
+	}
+	if(arg.fnc){
+		arg.obj.one('webkitAnimationEnd', arg.fnc);
+	}
 }

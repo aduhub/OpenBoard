@@ -14,84 +14,84 @@ var Canvas = {
 		return document.getElementById(id).getContext("2d");
 	},
 	//Method
-	clear:function(arr){
-		if(arr.id){
-			var w = (arr.w) ? arr.w : document.getElementById(arr.id).width;
-			var h = (arr.h) ? arr.h : document.getElementById(arr.id).height;
-			var ctx = Canvas.ctx(arr.id);
+	clear:function(arg){
+		if(arg.id){
+			var w = (arg.w) ? arg.w : document.getElementById(arg.id).width;
+			var h = (arg.h) ? arg.h : document.getElementById(arg.id).height;
+			var ctx = Canvas.ctx(arg.id);
 			ctx.clearRect(0, 0, w, h);
 		}
 	},
-	cache:function(arr){
+	cache:function(arg){
 		var key;
 		if(arg.key.constructor.name == "Array"){
 			key = arg.key.join(":");
 		}else{
 			key = arg.key;
 		}
-		var ctx = Canvas.ctx(arr.id);
+		var ctx = Canvas.ctx(arg.id);
 		var img = new Image();
 		img.src = ctx.toDataURL('image/png');
 		img.onload = function(){
-			Canvas.images[arr.key] = this;
+			Canvas.images[arg.key] = this;
 		}
 	},
-	draw:function(arr){
-		if(arr.src.constructor.name == "Array"){
-			if(arr.src.length > 0){
-				var src = arr.src.shift();
+	draw:function(arg){
+		if(arg.src.constructor.name == "Array"){
+			if(arg.src.length > 0){
+				var src = arg.src.shift();
 				src = Canvas.srcs[src] || src;
 				var oImage = new Image();
 				oImage.src = src;
 				oImage.onload = function(){
-					arr.img = this;
-					Canvas._draw(arr);
-					Canvas.draw(arr);
+					arg.img = this;
+					Canvas._draw(arg);
+					Canvas.draw(arg);
 				}
 			}else{
-				if(arr.fnc){
-					arr.fnc();
+				if(arg.fnc){
+					arg.fnc();
 				}
 			}
 		}else{
 			var oImage = new Image();
-			oImage.src = Canvas.srcs[arr.src] || arr.src;
+			oImage.src = Canvas.srcs[arg.src] || arg.src;
 			oImage.onload = function(){
-				arr.img = this;
-				Canvas._draw(arr);
-				if(arr.fnc){
-					arr.fnc();
+				arg.img = this;
+				Canvas._draw(arg);
+				if(arg.fnc){
+					arg.fnc();
 				}
 			}
 		}
 	},
-	_draw:function(arr){
-		var ctx = Canvas.ctx(arr.id);
-		var posx = (arr.x) ? arr.x : 0;
-		var posy = (arr.y) ? arr.y : 0;
+	_draw:function(arg){
+		var ctx = Canvas.ctx(arg.id);
+		var posx = (arg.x) ? arg.x : 0;
+		var posy = (arg.y) ? arg.y : 0;
 		var sizex, sizey, rotatex, rotatey;
-		var zoom = (arr.zoom) ? arr.zoom : 1.0;
-		if(arr.cut){
-			sizex = Math.round(arr.cut.w * zoom);
-			sizey = Math.round(arr.cut.h * zoom);
+		var zoom = (arg.zoom) ? arg.zoom : 1.0;
+		if(arg.cut){
+			sizex = Math.round(arg.cut.w * zoom);
+			sizey = Math.round(arg.cut.h * zoom);
 		}else{
-			sizex = Math.round(arr.img.width * zoom);
-			sizey = Math.round(arr.img.height * zoom);
+			sizex = Math.round(arg.img.width * zoom);
+			sizey = Math.round(arg.img.height * zoom);
 		}
 		ctx.save();
-		if(arr.r){
+		if(arg.r){
 			rotatex = posx + Math.round(sizex / 2);
 			rotatey = posy + Math.round(sizey / 2);
 			ctx.translate(rotatex, rotatey);
-			ctx.rotate(arr.r * Math.PI / 180);
+			ctx.rotate(arg.r * Math.PI / 180);
 			ctx.translate(rotatex * -1 , rotatey * -1)
 		}
-		if(arr.alpha) ctx.globalAlpha = arr.alpha;
-		if(arr.composite) ctx.globalCompositeOperation = arr.composite;
-		if(arr.cut){
-			ctx.drawImage(arr.img, arr.cut.x, arr.cut.y,  arr.cut.w, arr.cut.h, posx, posy, sizex, sizey);
+		if(arg.alpha) ctx.globalAlpha = arg.alpha;
+		if(arg.composite) ctx.globalCompositeOperation = arg.composite;
+		if(arg.cut){
+			ctx.drawImage(arg.img, arg.cut.x, arg.cut.y,  arg.cut.w, arg.cut.h, posx, posy, sizex, sizey);
 		}else{
-			ctx.drawImage(arr.img, posx, posy, sizex, sizey);
+			ctx.drawImage(arg.img, posx, posy, sizex, sizey);
 		}
 		ctx.restore();
 	},
