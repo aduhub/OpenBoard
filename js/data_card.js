@@ -149,7 +149,7 @@ function CardDataSet(){
 	d.push({id:"S039",type:"S",name:"コントラクト",		cost:120,spell:"CONTRACT",	tgt:"TEG",img:"contract.png",com:"MHP－20：(呪い)通行料が所有者の最大通行料と同額となる"});
 	d.push({id:"S040",type:"S",name:"パニッシャー",		cost:150,spell:"AREADMG",	tgt:"AEGCURSED",opt1:20,img:"panisher.png",com:"呪い状態のクリーチャー全てに20ダメージ"});
 	d.push({id:"S041",type:"S",name:"テレパシー",		cost:50, spell:"SETSTATUSG",tgt:"TEG",opt1:"_TELEPATHY_",opt2:99,img:"telepathy.png",com:"(呪い)常に領地コマンド対象となる：領地コマンド使用時呪い解除"});
-	d.push({id:"S042",type:"S",name:"リンクゲート",		cost:60, spell:"LINKGATE",	tgt:"AMG",opt1:"_LINKGATE_",opt2:99,img:"linkgate.png",com:"(呪い)対象の属性色の支配領地は転送呪い(この領地に停止時支配領地なら他の転送呪いに移動可)となる"});
+	//d.push({id:"S042",type:"S",name:"リンクゲート",		cost:60, spell:"LINKGATE",	tgt:"AMG",opt1:"_LINKGATE_",opt2:99,img:"linkgate.png",com:"(呪い)対象の属性色の支配領地は転送呪い(この領地に停止時支配領地なら他の転送呪いに移動可)となる"});
 	d.push({id:"S043",type:"S",name:"バランス",			cost:30, spell:"BALANCE",	tgt:"AEP",img:"balance.png",com:"全てのプレイヤーは順位×領地数×20Gを得る"});
 	d.push({id:"S044",type:"S",name:"グラビティ",		cost:70, spell:"SETSTATUSG",tgt:"TEG",opt1:"_GRAVITY_",opt2:99,opt3:"draw",img:"gravity.png",com:"(呪い)対象のクリーチャーは「重力」呪い(領地移動不可：戦闘時ＳＴ－10、ＨＰ＋10)となる：カードを1枚引く"});
 	d.push({id:"S045",type:"S",name:"オブリビオン",		cost:40, spell:"SETSTATUSG",tgt:"TEG",opt1:"_FORGET_",opt2:99,img:"oblivion.png",com:"(呪い)対象のクリーチャーは「忘却」呪いとなる"});

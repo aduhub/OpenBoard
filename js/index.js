@@ -43,17 +43,17 @@ window.onload = function(){
 	if(sessionStorage.USERID && sessionStorage.USERID != ""){
 		LoginDisp();
 	}else{
-		if(localStorage.ob_userid){
-			NetSend("LOGIN_STORAGE");
-		}else{
+		//if(localStorage.ob_userid){
+		//	NetSend("LOGIN_STORAGE");
+		//}else{
 			PageOpen(1);
-		}
+		//}
 	}
 	$("#btn_menu1").css("display","block");
 	$("#btn_menu4").css("display","block");
 	$("#btn_menu5").css("display","block");
-	$("#btn_menu6").css("display","block");
-	$("#btn_menu7").css("display","block");
+	//$("#btn_menu6").css("display","block");
+	//$("#btn_menu7").css("display","block");
 	
 	//lobbychat
 	obNet.socketinit();

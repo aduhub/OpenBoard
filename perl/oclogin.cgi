@@ -266,10 +266,6 @@ if($params{"LOGCMD"} eq "KILL"){
 	closedir DIRH;
 }
 
-# OUTPUT
-print "Content-type:text/plane;charset=utf-8\n\n";
-print $ret_dat;
-exit(0);
 # =============[ UPDATE ]===============
 if($params{"LOGCMD"} eq "UPDATE"){
 	### open flock bimode ####
@@ -334,3 +330,8 @@ if($params{"LOGCMD"} eq "RANK_Y"){
 	close(IN);
 	$ret_dat = "RANK".$ret_dat;
 }
+
+# OUTPUT
+print "Content-type:text/plane;charset=utf-8\n\n";
+print $ret_dat;
+exit(0);
