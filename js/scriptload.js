@@ -15,6 +15,7 @@ document.write('<script type="text/javascript" src="js/dice.js?'+d+'"></script>'
 document.write('<script type="text/javascript" src="js/flow.js?'+d+'"></script>');
 document.write('<script type="text/javascript" src="js/net.js?'+d+'"></script>');
 document.write('<script type="text/javascript" src="js/main.js?'+d+'"></script>');
+document.write('<script type="text/javascript" src="js/maker.js?'+d+'"></script>');
 document.write('<script type="text/javascript" src="js/spell.js?'+d+'"></script>');
 document.write('<script type="text/javascript" src="js/summon.js?'+d+'"></script>');
 document.write('<script type="text/javascript" src="js/effect.js?'+d+'"></script>');

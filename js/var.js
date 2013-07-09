@@ -13,8 +13,6 @@ Player[3] = new clsPlayer();
 Player[4] = new clsPlayer();
 //Dice Work
 var Dice = new clsDice();
-//Card
-var Card = new Array();
 //Spell
 var Spell = new clsSpell();
 //Summon

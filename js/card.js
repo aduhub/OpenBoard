@@ -1,29 +1,3 @@
-//初期設定
-function initCard(){
-	var cd = CardDataSet();
-	//配列設定
-	for(i in cd){
-		Card[cd[i].id] = new clsCard();
-		Card[cd[i].id].type = cd[i].type;
-		Card[cd[i].id].name = cd[i].name;
-		Card[cd[i].id].cost = cd[i].cost;
-		Card[cd[i].id].plus = (cd[i].plus) ? cd[i].plus : "";
-		Card[cd[i].id].color = (cd[i].color) ? cd[i].color : 0;
-		Card[cd[i].id].st = (cd[i].st) ? cd[i].st : 0;
-		Card[cd[i].id].lf = (cd[i].lf) ? cd[i].lf : 0;
-		Card[cd[i].id].item = (cd[i].item) ? cd[i].item : "";
-		Card[cd[i].id].walk = (cd[i].walk) ? cd[i].walk : "";
-		Card[cd[i].id].spell = (cd[i].spell) ? cd[i].spell : "";
-		Card[cd[i].id].target = (cd[i].tgt) ? cd[i].tgt : "";
-		Card[cd[i].id].opt1 = (cd[i].opt1) ? cd[i].opt1 : "";
-		Card[cd[i].id].opt2 = (cd[i].opt2) ? cd[i].opt2 : "";
-		Card[cd[i].id].opt3 = (cd[i].opt3) ? cd[i].opt3 : "";
-		Card[cd[i].id].imgsrc = (cd[i].img) ? cd[i].img : "";
-		Card[cd[i].id].atkani = (cd[i].ani) ? cd[i].ani : "";
-		Card[cd[i].id].artist = (cd[i].art) ? cd[i].art : "";
-		Card[cd[i].id].comment = (cd[i].com) ? cd[i].com : "";
-	}
-}
 //
 function CardOptCheck(arg){
 	var ret = false;
@@ -149,7 +123,21 @@ function DeckShuffle(i_pno, i_flg){
 //手札並び替え
 function SortHand(){
 	var pno = Board.role;
+	var hno = 0;
+	var framecnt = $(".CLS_HAND").length;
 	var handnum = Player[pno].HandCount();
+	if(framecnt - handnum < 0){
+		for(var i=1; i<=(handnum - framecnt); i++){
+			hno = framecnt + i;
+			Maker.addHand({no:hno});
+		}
+	}
+	if(framecnt - handnum > 0){
+		for(var i=1; i<=(handnum - framecnt); i++){
+			hno = framecnt + i;
+			Maker.addHand({no:hno});
+		}
+	}
 	if(handnum >= 1){
 		var sortwork = [];
 		var handwork = Player[pno].hand.split(":");
@@ -189,24 +177,14 @@ function Drawcard(arg){
 		break;
 	}
 	//手札追加
-	if(Player[arg.pno].HandCount() == 6 && Board.turn != arg.pno){
+	Player[arg.pno].HandAdd(cno);
+	if(Board.role == arg.pno){
 		if(!(arg.nlog)){
-			Logprint({msg:"##" + cno + "##を破棄", pno:arg.pno});
-		}
-	}else if(Player[arg.pno].HandCount() <= 6){
-		Player[arg.pno].HandAdd(cno);
-		if(Board.role == arg.pno){
-			if(!(arg.nlog)){
-				Logprint({msg:"##" + cno + "##をドロー", pno:arg.pno});
-			}
-		}else{
-			if(!(arg.nlog)){
-				Logprint({msg:"ドロー", pno:arg.pno});
-			}
+			Logprint({msg:"##" + cno + "##をドロー", pno:arg.pno});
 		}
 	}else{
 		if(!(arg.nlog)){
-			Logprint({msg:"##" + cno + "##を破棄", pno:arg.pno});
+			Logprint({msg:"ドロー", pno:arg.pno});
 		}
 	}
 	//zero chk
