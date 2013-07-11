@@ -6,7 +6,7 @@ BODY{
 }
 DIV{
 	-webkit-user-select:none;
-	-moz-user-select:none;
+    user-select:none;
 }
 BUTTON{
 	font-size : 20px;
@@ -327,47 +327,27 @@ BUTTON.CLS_W160{
 #DIV_HANDFRAME{
 	position : fixed;
 	top   :500px;
-	left  :0px;
+	left  :100px;
 	height:100px;
-	width :700px;
+	width :600px;
+    text-alighn:center;
 	z-index : 51;
 }
 DIV.CLS_HAND{
-	background-image : url(img/card/null.gif);
-	background-repeat : no-repeat;
-	position : absolute;
-	top : 0px;
+	display:inline-block;
 	width : 100px;
 	height : 100px;
 	opacity : 0.8;
 	cursor : pointer;
 	overflow:hidden;
+    border-top-left-radius:5px;
+    border-top-right-radius:5px;
 }
 DIV.CLS_HAND:hover{
-	top : -30px;
-	height : 130px;
+    outline: none;
+    border-color: #9ecaed;
+    box-shadow: 0 0 10px #9ecaed;
 	opacity : 1.0;
-}
-#DIV_HAND1{
-	left : 0px;
-}
-#DIV_HAND2{
-	left : 100px;
-}
-#DIV_HAND3{
-	left : 200px;
-}
-#DIV_HAND4{
-	left : 300px;
-}
-#DIV_HAND5{
-	left : 400px;
-}
-#DIV_HAND6{
-	left : 500px;
-}
-#DIV_HAND7{
-	left : 600px;
 }
 #DIV_TIMEKEEP{
 	color:#444444;

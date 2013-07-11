@@ -176,15 +176,21 @@ function Drawcard(arg){
 		cno = Player[arg.pno].DeckShift();
 		break;
 	}
-	//手札追加
-	Player[arg.pno].HandAdd(cno);
-	if(Board.role == arg.pno){
-		if(!(arg.nlog)){
-			Logprint({msg:"##" + cno + "##をドロー", pno:arg.pno});
+	//手札追加(10枚まで)
+	if(Player[arg.pno].HandCount() < 10){
+		Player[arg.pno].HandAdd(cno);
+		if(Board.role == arg.pno){
+			if(!(arg.nlog)){
+				Logprint({msg:"##" + cno + "##をドロー", pno:arg.pno});
+			}
+		}else{
+			if(!(arg.nlog)){
+				Logprint({msg:"ドロー", pno:arg.pno});
+			}
 		}
 	}else{
 		if(!(arg.nlog)){
-			Logprint({msg:"ドロー", pno:arg.pno});
+			Logprint({msg:"##" + cno + "##を破棄", pno:arg.pno});
 		}
 	}
 	//zero chk

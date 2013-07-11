@@ -56,7 +56,7 @@ var Maker = {
 		var hno = $(".CLS_HAND").length + 1;
 		var div_id = "DIV_HAND" + hno;
 		var cvs_id = "CVS_HAND" + hno;
-		var divitem = {base:"#DIV_HANDFRAME", id:div_id, class:"CLS_HAND"}
+		var divitem = {base:"#DIV_HANDFRAME", id:div_id, class:"CLS_HAND", css:{zIndex:hno}}
 		divitem["attr"] = {"onclick":"HandClick("+hno+")", "oncontextmenu":"CardInfo("+hno+");return false;", "onmouseout":"CardInfo(0)"}
 		this.addDiv(divitem);
 		this.addCanvas({div:div_id, id:cvs_id});
