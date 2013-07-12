@@ -327,9 +327,9 @@ BUTTON.CLS_W160{
 #DIV_HANDFRAME{
 	position : fixed;
 	top   :500px;
-	left  :100px;
+	left  :90px;
 	height:100px;
-	width :600px;
+	width :620px;
     text-alighn:center;
 	z-index : 51;
 }
@@ -348,6 +348,12 @@ DIV.CLS_HAND:hover{
     border-color: #9ecaed;
     box-shadow: 0 0 10px #9ecaed;
 	opacity : 1.0;
+}
+#DIV_PHASEEND{
+    position : fixed;
+    top   :520px;
+    left  :720px;
+    z-index : 51;
 }
 #DIV_TIMEKEEP{
 	color:#444444;

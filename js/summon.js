@@ -233,7 +233,8 @@ function SummonGrid(){
 	if(["summon", "change", "territory"].indexOf(Summon.type) >= 0){
 		//手札・矢印表示
 		if(Board.role == Board.turn){
-			Canvas.clear({id:"CVS_HAND7"});
+			//PHASEENDBUTTON
+			$("#DIV_PHASEEND BUTTON").html("");
 		}else{
 			DivImg("DIV_GCLICK"+Summon.gno, "");
 		}

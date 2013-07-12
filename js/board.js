@@ -428,14 +428,6 @@ function GridClick(i_no){
 function HandClick(i_no){
 	if(Board.turn == Board.role){
 		switch(Board.step){
-		case 18: //手札破棄(DRAW)
-		case 28: //手札破棄(SPELL)
-		case 38: //手札破棄(MOVE)
-		case 58: //手札破棄(TERRITORY)
-			if(Board.discardstep == 1){
-				DiscardConfirm({step:0, hno:i_no});
-			}
-			break;
 		case 20:
 			if(i_no <= Player[Board.role].HandCount()){
 				//コストチェック
@@ -443,52 +435,27 @@ function HandClick(i_no){
 					SpellTarget(i_no);
 				}
 			}
-			if(i_no == 7){
-				//Dice
-				DiceRoll();
-			}
 			break;
-		case 21:
-			if(i_no == 7 && Card[Spell.cno].target.match(/^T.G.*$/)){
-				SpellConfirm(2);
-			}
-			break;
-		case 30:
-			if(i_no == 7){
-				DiceRoll();
-			}
-			break;
-		case 40:
+		case 40: //Summon
 			if(i_no <= Player[Board.role].HandCount()){
 				//コストチェック
-				
 				if(SummonCost(Player[Board.role].stand, Player[Board.role].HandCard(i_no)) == "OK"){
 					SummonConfirm({type:"summon", step:0, hno:i_no});
 				}
 			}
-			if(i_no == 7){
-				TurnEnd();
-			}
 			break;
-		case 52:
-			if(i_no == 7){
-				TerritoryDialog(5);
-			}
-			break;
-		case 53:
+		case 53: //Trritory(Summon)
 			if(i_no <= Player[Board.role].HandCount()){
 				//コストチェック
 				if(SummonCost(Territory.gno, Player[Board.role].HandCard(i_no)) == "OK"){
 					SummonConfirm({type:"change", step:0, hno:i_no});
 				}
 			}
-			if(i_no == 7){
-				TerritoryDialog(5);
-			}
 			break;
-		case 54:
-			if(i_no == 7){
-				TerritoryDialog(5);
+		case 98: //Dicard(TurnEnd)
+			if(Board.discardstep == 1){
+				//DiscardConfirm({step:0, hno:i_no});
+				Discard({pno:Board.role, hno:arg.hno});
 			}
 			break;
 		}
@@ -503,9 +470,6 @@ function HandClick(i_no){
 					BattleItem(Board.role, i_no);
 				}
 			}
-			if(i_no == 7){
-				BattleItem(Board.role, 9);
-			}
 			break;
 		}
 	}
@@ -517,28 +481,15 @@ function HandClick(i_no){
 function BoardScroll(i_no){
 	//ドラッグストップ
 	dragObject = null;
-	var def_t, def_l;
-	if(sessionStorage.iPhone != "Y"){
-		def_t = 300;
-		def_l = 400;
-		def_x = 340;
-	}else{
-		def_t = 240;
-		def_l = 320;
-		def_x = 260;
-	}
-//	//縮小クリア
-// 	if($("#DIV_FRAME").hasClass("CLS_AREAMAP")){
-// 		$("#DIV_FRAME").removeClass("CLS_AREAMAP");
-// 		$("#DIV_FRAME").css({width:"", height:""});
-// 		$("#DIV_FRAME").scrollTop(def_t);
-// 		$("#DIV_FRAME").scrollLeft(def_l);
-// 	}
+	var def_t, def_x;
+	def_t = 300; //600
+	def_x = 340; //800
 	if(!$("#DIV_FRAME").hasClass("CLS_AREAMAP")){
 		//スクロール
 		var wk_y = Board.grid[i_no].top - def_t;
 		var wk_x = Board.grid[i_no].left - def_x;
 		$("#DIV_FRAME").animate({scrollTop:wk_y, scrollLeft:wk_x}, 400, 'swing');
+
 	}
 }
 //ドラッグスクロール

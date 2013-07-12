@@ -66,7 +66,8 @@ function SpellTarget(i_no){
 		Spell.tgttype = tgt.substr(2, 1);
 		//Player
 		if(tgt.match(/^T.P.?$/)){
-			Canvas.clear({id:"CVS_HAND7"});
+			//PHASEENDBUTTON
+			$("#DIV_PHASEEND BUTTON").html("");
 			//Target Player
 			SpellTgtPlayer(0);
 		}
@@ -77,8 +78,8 @@ function SpellTarget(i_no){
 			GridLight("clear");
 			//ライト
 			GridLight("set_nosave", Spell.check);
-			//hand
-			Canvas.draw({id:"CVS_HAND7", src:"img/cmd_cancel.gif"});
+			//PHASEENDBUTTON
+			$("#DIV_PHASEEND BUTTON").html("キャンセル");
 			//timer cancel set
 			$("#DIV_HAND7").addClass(Chessclock.set(21));
 		}
@@ -186,8 +187,8 @@ function SpellConfirm(i_num){
 		DispDialog("none");
 		//アイコン再表示
 		SpellCheck();
-		//ダイスマーク
-		Canvas.draw({id:"CVS_HAND7", src:"img/cmd_diceroll.gif"});
+		//PHASEENDBUTTON
+		$("#DIV_PHASEEND BUTTON").html("ダイス");
 		//巻き戻し
 		StepSet(20);
 		break;
@@ -1449,8 +1450,8 @@ function SpellTgtSecond(arg){
 			GridLight("clear");
 			//ライト
 			GridLight("set_nosave", Spell.check);
-			//hand
-			Canvas.clear({id:"CVS_HAND7"});
+			//PHASEENDBUTTON
+			$("#DIV_PHASEEND BUTTON").html("");
 			break;
 		case 1: //OK
 			//ライト
@@ -1476,8 +1477,8 @@ function SpellTgtSecond(arg){
 			}
 			//ダイアログ
 			DispDialog({btns:btnarr});
-			//hand
-			Canvas.clear({id:"CVS_HAND7"});
+			//PHASEENDBUTTON
+			$("#DIV_PHASEEND BUTTON").html("");
 			break;
 		default:
 			//ターゲット追加
@@ -1548,11 +1549,11 @@ function SpellEnd(){
 			//手札ソート
 			SortHand();
 			if(Player[Spell.pno].dicepass){
-				//イメージクリア
-				Canvas.clear({id:"CVS_HAND7"});
+				//PHASEENDBUTTON
+				$("#DIV_PHASEEND BUTTON").html("");
 			}else{
-				//ダイスマーク
-				Canvas.draw({id:"CVS_HAND7", src:"img/cmd_diceroll.gif"});
+				//PHASEENDBUTTON
+				$("#DIV_PHASEEND BUTTON").html("ダイス");
 			}
 		}
 		//再表示

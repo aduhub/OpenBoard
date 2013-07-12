@@ -831,7 +831,7 @@ function GridTrans(i_no){
 					//ライト
 					GridLight("clear");
 					//ターン終了
-					setTimeout(function(){TurnClose(2);}, 4000);
+					setTimeout(function(){TurnEndFlow(9);}, 4000);
 				}
 			}
 		}else{
@@ -839,7 +839,7 @@ function GridTrans(i_no){
 			//ライト
 			GridLight("clear");
 			//ターン終了
-			setTimeout(function(){TurnClose(2);}, 2000);
+			setTimeout(function(){TurnEndFlow(9);}, 2000);
 		}
 	}else{
 		//【領地売却】

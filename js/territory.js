@@ -155,8 +155,8 @@ function TerritoryDialog(i_mode){
 			GridLight("set_nosave", Territory.mvgno);
 			//移動先入力
 			StepSet(52);
-			//card 7
-			Canvas.draw({id:"CVS_HAND7", src:"img/cmd_cancel.gif"});
+			//PHASEENDBUTTON
+			$("#DIV_PHASEEND BUTTON").html("キャンセル");
 			//timer cancel set
 			$("#DIV_HAND7").addClass(Chessclock.set(52));
 			//ウィンドウクローズ
@@ -171,8 +171,8 @@ function TerritoryDialog(i_mode){
 		GridLight("set_nosave", [Territory.gno]);
 		//交換カード選択
 		StepSet(53);
-		//
-		Canvas.draw({id:"CVS_HAND7", src:"img/cmd_cancel.gif"});
+		//PHASEENDBUTTON
+		$("#DIV_PHASEEND BUTTON").html("キャンセル");
 		//
 		$("#DIV_HAND7").addClass(Chessclock.set(53));
 		//ウィンドウクローズ
@@ -189,8 +189,8 @@ function TerritoryDialog(i_mode){
 		GridLight("set_memory");
 		//キャンセル
 		StepSet(40);
-		//表示
-		Canvas.draw({id:"CVS_HAND7", src:"img/cmd_turnend.gif"});
+		//PHASEENDBUTTON
+		$("#DIV_PHASEEND BUTTON").html("ターンエンド");
 		DisplaySet("DIV_INFOGRID", 0);
 		break;
 	}
@@ -981,8 +981,8 @@ function TerritoryAbiTarget(tgttype){
 		GridLight("clear");
 		//ライト
 		GridLight("set_nosave", Territory.mvgno);
-		//hand
-		Canvas.draw({id:"CVS_HAND7", src:"img/cmd_cancel.gif"});
+		//PHASEENDBUTTON
+		$("#DIV_PHASEEND BUTTON").html("キャンセル");
 		break;
 	}
 }
@@ -1025,8 +1025,8 @@ function TerritoryEnd(){
 	}else{
 		if(Board.wait > 0){
 			if(Territory.pno == Board.role){
-				//イメージクリア
-				Canvas.clear({id:"CVS_HAND7"});
+				//PHASEENDBUTTON
+				$("#DIV_PHASEEND BUTTON").html("");
 			}
 			var msec = Board.wait * 1000;
 			Board.wait = 0;

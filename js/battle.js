@@ -139,10 +139,10 @@ function BattleInit(){
 	if(Battle.p[0].pno == Board.role || Battle.p[1].pno == Board.role){
 		//再表示
 		SortHand();
-		//キャンセル表示
-		Canvas.draw({id:"CVS_HAND7", src:"img/cmd_cancel.gif"});
+		//PHASEENDBUTTON
+		$("#DIV_PHASEEND BUTTON").html("キャンセル");
 		//使用可能チェック
-		setTimeout(ItemCheck, 500);;
+		setTimeout(ItemCheck, 500);
 	}else{
 		//結果待ち
 		StepSet(73);
@@ -212,16 +212,14 @@ function BattleItem(){
 			if(arg[0] == Board.role && Board.step == 72){
 				//結果待ち
 				StepSet(73);
-				//表示クリア
-				Canvas.clear({id:"CVS_HAND7"});
+				//PHASEENDBUTTON
+				$("#DIV_PHASEEND BUTTON").html("");
 				//アイコン設定
-				if(arg[1] == 9){
-					Canvas.draw({id:"CVS_HAND7", src:"img/cmd_select.gif", alpha:0.6});
-				}else{
+				if(arg[1] <= 10){
 					Canvas.draw({id:"CVS_HAND"+arg[1], src:"img/cmd_select.gif", alpha:0.6});
 				}
 				//コマンド送信
-				var wkcno = (arg[1] == 9) ? "FIST" : Player[Board.role].HandCard(arg[1]);
+				var wkcno = (arg[1] == 99) ? "FIST" : Player[Board.role].HandCard(arg[1]);
 				var rndarr = $T.rndsort([1,2,3,4,5,6,7]);
 				var wkcmd = "item:"+wkcno+":"+rndarr.join("");
 				//送信

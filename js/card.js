@@ -88,8 +88,8 @@ function DrawStepEnd(){
 		if(Board.role == Board.turn){
 			//スペルチェック
 			SpellCheck();
-			//ダイスマーク
-			Canvas.draw({id:"CVS_HAND7", src:"img/cmd_diceroll.gif"});
+			//PHASEENDBUTTON
+			$("#DIV_PHASEEND BUTTON").html("ダイス");
 			//timer
 			$("#DIV_HAND7").addClass(Chessclock.set(20));
 		}
@@ -122,45 +122,40 @@ function DeckShuffle(i_pno, i_flg){
 }
 //手札並び替え
 function SortHand(){
-	var pno = Board.role;
-	var hno = 0;
 	var framecnt = $(".CLS_HAND").length;
-	var handnum = Player[pno].HandCount();
-	if(framecnt - handnum < 0){
-		for(var i=1; i<=(handnum - framecnt); i++){
-			hno = framecnt + i;
-			Maker.addHand({no:hno});
+	var handcnt = Player[Board.role].HandCount();
+
+	// Hand Frame Check
+	if(framecnt - handcnt < 0){
+		for(var i=1; i<=handcnt - framecnt; i++){
+			Maker.addHand();
 		}
 	}
-	if(framecnt - handnum > 0){
-		for(var i=1; i<=(handnum - framecnt); i++){
-			hno = framecnt + i;
-			Maker.addHand({no:hno});
+	if(framecnt - handcnt > 0){
+		for(var i=1; i<=framecnt - handcnt; i++){
+			Maker.remHand();
 		}
 	}
-	if(handnum >= 1){
-		var sortwork = [];
-		var handwork = Player[pno].hand.split(":");
-		//ソートワーク
-		for(var i=1; i<=handnum; i++){
-			var cno = handwork.shift();
-			var wkstr = Card[cno].type + ":" + Card[cno].color + ":" + cno;
-			sortwork.push(wkstr);
-		}
-		//配列ソート
+
+	//Hand Image
+	if(handcnt >= 1){
+		//Sort
+		var sortwork = Player[Board.role].hand.split(":");
 		sortwork.sort();
-		//手札クリア
-		Player[pno].hand = "";
-		for(var i=1; i<=handnum; i++){
-			var wkstr = sortwork.shift();
-			var wkarr = wkstr.split(":");
-			Player[pno].HandAdd(wkarr[2]);
+		Player[Board.role].hand = sortwork.join(":");
+		//Margin
+		if(handcnt <= 6){
+			$(".CLS_HAND").css({margin:"4px"});
+		}else if(handcnt <= 8){
+			$(".CLS_HAND").css({margin:"-7px"});
 		}
-	}
-	//手札再表示
-	oldHandset = [];
-	for(var i=1; i<=7; i++){
-		HandImgSet(i);
+		else if(handcnt <= 10){
+			$(".CLS_HAND").css({margin:"-20px"});
+		}
+		//再表示
+		for(var i=1; i<=handcnt; i++){
+			HandImgSet(i);
+		}
 	}
 }
 //###################################################################
@@ -193,7 +188,7 @@ function Drawcard(arg){
 			Logprint({msg:"##" + cno + "##を破棄", pno:arg.pno});
 		}
 	}
-	//zero chk
+	//Deck枚数チェック
 	if(Player[arg.pno].DeckCount() == 0){
 		//NextSet
 		Player[arg.pno].deck = Player[arg.pno].decknext.shift();
@@ -220,25 +215,6 @@ function DiscardInit(){
 		DispDialog({msgs:["破棄カード選択中・・・"]});
 	}
 }
-function DiscardConfirm(arg){
-	switch(arg.step){
-	case 0: //表示
-		Board.discardstep = 2;
-		var cno = Player[Board.role].HandCard(arg.hno);
-		var msgarr = [Card[cno].name+"を破棄しますか？"];
-		var btnarr = ["DiscardConfirm({step:1, hno:"+arg.hno+"})", "DiscardConfirm({step:2})"];
-		//ダイアログ表示
-		DispDialog({msgs:msgarr, btns:btnarr, type:"yesno", timer:true});
-		break;
-	case 1: //YES
-		Discard({pno:Board.role, hno:arg.hno});
-		break;
-	case 2: //NO
-		//ダイアログ
-		DiscardInit();
-		break;
-	}
-}
 //手札破棄 (pno, hno | pno, cno)
 function Discard(arg){
 	var tgtcno;
@@ -254,8 +230,6 @@ function Discard(arg){
 	}
 	//手札破棄
 	Player[arg.pno].HandDel(tgtcno);
-	//msgpop
-	//EffectBox({pattern:"msgpop", gno:Player[arg.pno].stand, msg:"Dicard", player:true});
 	//Animation
 	EffectBox({pattern:"discard", cno:tgtcno});
 	//ログ
@@ -267,31 +241,13 @@ function Discard(arg){
 		SortHand();
 	}
 	//Step 処理
-	switch(Board.step){
-	case 18:
-		//ドロー終了
-		DrawStepEnd();
-		break;
-	case 28:
-		//Spell End
-		SpellEnd();
-		break;
-	case 38:
-		MoveEnd();
-		break;
-	case 58:
-		//Territory End
-		TerritoryEnd();
-		break;
-	}
+	TurnEndFlow(1);
 }
 //#######################################################################
 //手札表示
-function HandImgSet(i_num){
-	if(Player[Board.role].HandCount() >= i_num){
-		CardImgSet({cvs:"CVS_HAND"+i_num, cno:Player[Board.role].HandCard(i_num), zoom:0.5});
-	}else{
-		Canvas.clear({id:"CVS_HAND"+i_num});
+function HandImgSet(hno){
+	if(Player[Board.role].HandCount() >= hno){
+		CardImgSet({cvs:"CVS_HAND"+hno, cno:Player[Board.role].HandCard(hno), zoom:0.5});
 	}
 }
 //

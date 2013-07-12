@@ -9,8 +9,10 @@ function DiceRoll(){
 		if(Board.step == 20 || (Board.step == 30 && Player[Board.turn].dicepass == false)){
 			//ステップ（移動開始）
 			StepSet(31);
-			//hand
-			Canvas.clear({id:"CVS_HAND7"});
+
+			//PHASEENDBUTTON
+			$("#DIV_PHASEEND BUTTON").html("");
+
 			//スクロール
 			BoardScroll(Player[Board.role].stand);
 			//初期値
@@ -79,8 +81,8 @@ function NoDiceRoll(){
 		//ステップ（移動開始）
 		StepSet(31);
 		if(Board.turn == Board.role){
-			//hand
-			Canvas.clear({id:"CVS_HAND7"});
+			//PHASEENDBUTTON
+			$("#DIV_PHASEEND BUTTON").html("");
 		}
 		//スクロール
 		BoardScroll(Player[Board.turn].stand);
@@ -461,8 +463,10 @@ function DiceStepTeleport(arg){
 			Dice.teleport = arg.tgt;
 			//ライト
 			GridLight("set_nosave", arg.tgt);
-			//hand
-			Canvas.clear({id:"CVS_HAND7"});
+
+			//PHASEENDBUTTON
+			$("#DIV_PHASEEND BUTTON").html("");
+
 			//Dialog
 			DispDialog({msgs:["テレポート先を選択してください"], type:"ok"});
 		}
@@ -594,8 +598,10 @@ function MoveEnd(){
 			}
 			//
 			SummonCheck(Player[Board.role].stand);
-			//ハンド
-			Canvas.draw({id:"CVS_HAND7", src:"img/cmd_turnend.gif"});
+
+			//PHASEENDBUTTON
+			$("#DIV_PHASEEND BUTTON").html("ターンエンド");
+
 			//timer
 			$("#DIV_HAND7").addClass(Chessclock.set(40));
 		}

@@ -315,7 +315,7 @@ var Frame = {
 					if((Board.step >= 40 && Board.step <= 90 && Board.step % 10 == 0) || Board.round == 0){
 						runflg = 1;
 						//ターン終了
-						TurnClose(0, logpno);
+						TurnEndFlow(0, logpno);
 					}
 					break;
 				case "trans":

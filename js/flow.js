@@ -100,7 +100,7 @@ function FlowSet(){
 			//##### Debug #####
 			if(sessionStorage.Mode == "debug"){
 				if(Board.turn != Board.role){
-					setTimeout(function(){TurnClose(0);}, 500);
+					setTimeout(function(){TurnEndFlow(0);}, 500);
 				}
 			}
 		}
@@ -117,6 +117,41 @@ function StepSet(stepno){
 	DispInfoPlus(stepno);
 	//timer
 	Chessclock.stepchk();
+}
+//
+function PhaseEnd(){
+	if(Board.turn == Board.role){
+		switch(Board.step){
+			case 20: //Spell
+				DiceRoll();
+				break;
+			case 21: //Spell(Cancel)
+				if(Card[Spell.cno].target.match(/^T.G.*$/)){
+					SpellConfirm(2);
+				}
+				break;
+			case 30: //Dice
+				DiceRoll();
+				break;
+			case 40: //Summon
+				TurnEnd();
+				break;
+			case 52: //Trritory(Move)
+			case 53: //Trritory(Summon)
+			case 54: //T Ability
+				TerritoryDialog(5);
+				break;
+		}
+	}
+	if(Battle.p[0].pno == Board.role || Battle.p[1].pno == Board.role){
+		switch(Board.step){
+		case 72: //Battle(NoItem)
+			BattleItem(Board.role, 99);
+			break;
+		}
+	}
+	//Sound Effect
+	Audie.seplay("click");
 }
 //####################################################
 //
@@ -196,30 +231,41 @@ function TurnEnd(){
 			DispInfo();
 			DispPlayer();
 			SortHand();
-			//Clear
-			Canvas.clear({id:"CVS_HAND7"});
+			//PHASEENDBUTTON
+			$("#DIV_PHASEEND BUTTON").html("");
 			//GridLightクリア
 			GridLight("clear");
 
 			//Close
-			TurnClose(0);
+			TurnEndFlow(0);
 		}
 	}
 }
-//
-function TurnClose(step){
+//終了処理
+function TurnEndFlow(step){
 	switch(step){
-	case 0: //Tax
+	case 0: //Discard
+		//ハンドチェック
+		if(Player[Board.turn].HandCount() >= 7){
+			//ディスカードステップ
+			StepSet(98);
+			//ダイアログ
+			DiscardInit();
+		}else{
+			TurnEndFlow(1);
+		}
+		break;
+	case 1: //Tax
 		StepSet(91);
 		//##### GridAbi #####
 		var ret = GridAbility({gno:Player[Board.turn].stand, time:"TURNCLOSE"});
 		//通行料支払い
 		var wait = TaxPayment();
 		//再実行
-		setTimeout(function(){TurnClose(1);}, wait);
+		setTimeout(function(){TurnEndFlow(2);}, wait);
 		break;
-	case 1: //Trans
-		//魔力マイナスチェック
+	case 2: //Trans
+		//マイナスチェック
 		if(Player[Board.turn].gold < 0){
 			if(Board.role == Board.turn){
 				if(GridCount(Board.turn) >= 1){
@@ -230,10 +276,10 @@ function TurnClose(step){
 			//トランス
 			GridTrans(0);
 		}else{
-			TurnClose(2);
+			TurnEndFlow(9);
 		}
 		break;
-	case 2: //Close
+	case 9: //Close
 		//アップキープ
 		TurnUpkeep();
 		//Log
