@@ -216,7 +216,11 @@ function BattleItem(){
 				$("#DIV_PHASEEND BUTTON").html("");
 				//アイコン設定
 				if(arg[1] <= 10){
+<<<<<<< HEAD
 					Canvas.draw({id:"CVS_HAND"+arg[1], src:"imgsrc/cmd_select.gif", alpha:0.6});
+=======
+					Canvas.draw({id:"CVS_HAND"+arg[1], src:"img/cmd_select.gif", alpha:0.6});
+>>>>>>> 78bfffd2a63fe028679dde653023fc36a00d3442
 				}
 				//コマンド送信
 				var wkcno = (arg[1] == 99) ? "FIST" : Player[Board.role].HandCard(arg[1]);
