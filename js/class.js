@@ -157,7 +157,7 @@ function clsPlayer() {
 			var handcnt = handarr.length;
 			for(var i=1; i<=handcnt; i++){
 				cno = handarr.shift();
-				sortwork.push(Card[cno].type + ":" + Card[cno].color + ":" + cno);
+				sortwork.push(Card[cno].ctype + ":" + Card[cno].color + ":" + cno);
 			}
 			sortwork.sort();
 			for(var i=1; i<=handcnt; i++){
@@ -219,7 +219,7 @@ function clsPlayer() {
 function clsCard(){
 	this.cardid = "X001";
 	this.name   = "";
-	this.type   = "C";
+	this.ctype  = "C";
 	this.cost   = 0;
 	this.plus   = "";
 	this.limit  ="";
@@ -262,7 +262,7 @@ function clsSpell(){
 }
 //Summon
 function clsSummon(){
-	this.type  = "";
+	this.stype = "";
 	this.pno   = 0;
 	this.gno   = 0;
 	this.cno   = "";
@@ -308,7 +308,7 @@ function clsFighter(){
 }
 //Battle
 function clsBattle(){
-	this.type    = 0;
+	this.btype    = 0;
 	this.result  = 0;
 	this.gno     = 0;
 	this.gno_atk = 0;

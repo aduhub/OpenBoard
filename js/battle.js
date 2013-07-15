@@ -8,7 +8,7 @@ function BattleInit(){
 	//変数設定
 	Battle.result = 0;
 	Battle.check = [];
-	Battle.type = arg[0];
+	Battle.btype = arg[0];
 	Battle.gno = arg[1];
 	Battle.p[0].pno = arg[2];
 	Battle.p[0].cno = arg[3];
@@ -31,11 +31,11 @@ function BattleInit(){
 	Audie.stop("map");
 	Audie.play("battle");
 	//Back Image TEST
-	$("#DIV_VSBACK").css("backgroundImage", "url(img/back/battle"+Board.grid[Battle.gno].color+".gif)");
+	$("#DIV_VSBACK").css("backgroundImage", "url(imgsrc/back/battle"+Board.grid[Battle.gno].color+".gif)");
 
 	//矢印クリア
 	DivImg("DIV_GCLICK"+Battle.gno, "");
-	if(Battle.type == "M"){
+	if(Battle.btype == "M"){
 		DivImg("DIV_GCLICK"+Territory.gno, "");
 	}
 	//表示
@@ -49,13 +49,13 @@ function BattleInit(){
 		BattleBar("LF" + i, 0, 0);
 		$("#DIV_VSDMG" + i).html("");
 	}
-	$("#DIV_VSNAME0").css("background-image", "url(img/bticon_sword"+Battle.p[0].pno+".gif)");
-	$("#DIV_VSNAME1").css("background-image", "url(img/bticon_shield"+Battle.p[1].pno+".gif)");
+	$("#DIV_VSNAME0").css("background-image", "url(imgsrc/bticon_sword"+Battle.p[0].pno+".gif)");
+	$("#DIV_VSNAME1").css("background-image", "url(imgsrc/bticon_shield"+Battle.p[1].pno+".gif)");
 	DisplaySet("DIV_VSBACK", 40);
 
 	//数値・取得
 	//【攻撃側】
-	if(Battle.type == "M"){
+	if(Battle.btype == "M"){
 		Battle.p[0].st = Board.grid[Battle.gno_atk].st;
 		Battle.p[0].lf = Board.grid[Battle.gno_atk].lf;
 		Battle.p[0].maxlf = Board.grid[Battle.gno_atk].maxlf;
@@ -88,7 +88,7 @@ function BattleInit(){
 	Battle.p[1].status = Board.grid[Battle.gno].status;
 
 	//移動侵略
-	if(Battle.type == "M"){
+	if(Battle.btype == "M"){
 		//領地クリア
 		Board.grid[Battle.gno_atk].flush();
 		//ステータスクリア
@@ -139,10 +139,10 @@ function BattleInit(){
 	if(Battle.p[0].pno == Board.role || Battle.p[1].pno == Board.role){
 		//再表示
 		SortHand();
-		//キャンセル表示
-		Canvas.draw({id:"CVS_HAND7", src:"img/cmd_cancel.gif"});
+		//PHASEENDBUTTON
+		$("#DIV_PHASEEND BUTTON").html("キャンセル");
 		//使用可能チェック
-		setTimeout(ItemCheck, 500);;
+		setTimeout(ItemCheck, 500);
 	}else{
 		//結果待ち
 		StepSet(73);
@@ -162,13 +162,13 @@ function ItemCheck(){
 		if(fig.status.match(/_BIND_/)){
 			chkflg = "CLOSE";
 		}else{
-			if(Card[handcno].type == "I"){
+			if(Card[handcno].ctype == "I"){
 				if(Card[fig.cno].item != "" && Card[fig.cno].item.match(Card[handcno].item)){
 					chkflg = "LIMIT";
 				}else if(Player[Board.role].gold < Card[handcno].cost){
 					chkflg = "GOLD";
 				}
-			}else if(Card[handcno].type == "C"){
+			}else if(Card[handcno].ctype == "C"){
 				opts =  Card[handcno].opts();
 				if(fig.active.match(/@BAND@|@REFLECT@/)){
 					if(Player[Board.role].gold < Card[handcno].cost){
@@ -193,10 +193,10 @@ function ItemCheck(){
 			Canvas.rect("CVS_HAND"+i, {rgb:[0,0,0], alpha:0.6, x:0, y:0, w:100, h:130});
 			break;
 		case "LIMIT":
-			Canvas.draw({id:"CVS_HAND"+i, src:"img/icon_limit.gif"});
+			Canvas.draw({id:"CVS_HAND"+i, src:"imgsrc/icon_limit.gif"});
 			break;
 		case "GOLD":
-			Canvas.draw({id:"CVS_HAND"+i, src:"img/icon_nogold.gif"});
+			Canvas.draw({id:"CVS_HAND"+i, src:"imgsrc/icon_nogold.gif"});
 			break;
 		default:
 			Battle.check.push(handcno);
@@ -212,16 +212,14 @@ function BattleItem(){
 			if(arg[0] == Board.role && Board.step == 72){
 				//結果待ち
 				StepSet(73);
-				//表示クリア
-				Canvas.clear({id:"CVS_HAND7"});
+				//PHASEENDBUTTON
+				$("#DIV_PHASEEND BUTTON").html("");
 				//アイコン設定
-				if(arg[1] == 9){
-					Canvas.draw({id:"CVS_HAND7", src:"img/cmd_select.gif", alpha:0.6});
-				}else{
-					Canvas.draw({id:"CVS_HAND"+arg[1], src:"img/cmd_select.gif", alpha:0.6});
+				if(arg[1] <= 10){
+					Canvas.draw({id:"CVS_HAND"+arg[1], src:"imgsrc/cmd_select.gif", alpha:0.6});
 				}
 				//コマンド送信
-				var wkcno = (arg[1] == 9) ? "FIST" : Player[Board.role].HandCard(arg[1]);
+				var wkcno = (arg[1] == 99) ? "FIST" : Player[Board.role].HandCard(arg[1]);
 				var rndarr = $T.rndsort([1,2,3,4,5,6,7]);
 				var wkcmd = "item:"+wkcno+":"+rndarr.join("");
 				//送信
@@ -280,7 +278,7 @@ function BattleFightReady1(){
 	for(var i=0; i<=1; i++){
 		var cno = [Battle.p[i].item, Battle.p[$r(i)].item];
 		//No FIST
-		if(cno[0] != "FIST" && Card[cno[0]].type == "I"){
+		if(cno[0] != "FIST" && Card[cno[0]].ctype == "I"){
 			var opts = [Card[cno[0]].opt1, Card[cno[0]].opt2, Card[cno[0]].opt3];
 			for(var i2=0; i2<opts.length; i2++){
 				if(AbilityActive({type:"item", bno:i, opt:opts[i2]})){
@@ -308,7 +306,7 @@ function BattleFightReady1(){
 	for(var i=0; i<=1; i++){
 		var cno = Battle.p[i].item;
 		//No FIST
-		if(cno != "FIST" && Card[cno].type == "I"){
+		if(cno != "FIST" && Card[cno].ctype == "I"){
 			var opts = [Card[cno].opt1, Card[cno].opt2, Card[cno].opt3];
 			for(var i2=0; i2<opts.length; i2++){
 				if(AbilityActive({type:"item", bno:i, opt:opts[i2]})){
@@ -338,7 +336,7 @@ function BattleFightReady2(){
 		//No FIST
 		if(wkcno != "FIST"){
 			//効果
-			if(Card[wkcno].type == "I"){
+			if(Card[wkcno].ctype == "I"){
 				var opts = [Card[wkcno].opt1, Card[wkcno].opt2, Card[wkcno].opt3];
 				for(var i2=0; i2<opts.length; i2++){
 					if(AbilityActive({type:"item", bno:i, opt:opts[i2]})){
@@ -406,7 +404,7 @@ function BattleFightReady2(){
 						}
 					}
 				}
-			}else if(Card[wkcno].type == "C"){
+			}else if(Card[wkcno].ctype == "C"){
 				var opts = Card[wkcno].opts();
 				if(Battle.p[i].active.match(/@BAND@/)){
 					//援護
@@ -671,7 +669,7 @@ function BattleResult(){
 		//Animation
 		EffectBox({pattern:"destroy", cno:Battle.p[1].cno, gno:Battle.gno});
 		//クリア(移動元)
-		if(Battle.type == "M"){
+		if(Battle.btype == "M"){
 			//クリア
 			GridClear({gno:Battle.gno_atk, pno:Battle.p[0].pno});
 			//Animation
@@ -685,12 +683,12 @@ function BattleResult(){
 		Board.grid[Battle.gno].flush();
 		GridSetPlayerTax(Battle.p[1].pno);
 		//移動時
-		if(Battle.type == "M"){
+		if(Battle.btype == "M"){
 			//クリア
 			GridClear({gno:Battle.gno_atk, pno:Battle.p[0].pno});
 		}
 		//召還
-		Summon.type = "battle";
+		Summon.stype = "battle";
 		Summon.pno = Battle.p[0].pno;
 		Summon.cno = Battle.p[0].cno;
 		Summon.hand = 0;
@@ -721,7 +719,7 @@ function BattleResult(){
 		//攻撃側生存
 		if(Battle.p[0].lf >= 1){
 			//召還侵略
-			if(Battle.type == "S"){
+			if(Battle.btype == "S"){
 				//手札追加
 				if(Player[Battle.p[0].pno].HandCount() <= 5){
 					Player[Battle.p[0].pno].HandAdd(Battle.p[0].cno);
@@ -731,7 +729,7 @@ function BattleResult(){
 				}
 			}
 			//移動侵略
-			if(Battle.type == "M"){
+			if(Battle.btype == "M"){
 				//ダメージ反映・ステータスクリア
 				Board.grid[Battle.gno_atk].owner = Battle.p[0].pno;
 				Board.grid[Battle.gno_atk].cno = Battle.p[0].cno;
@@ -745,7 +743,7 @@ function BattleResult(){
 			}
 		}else{
 			//移動時
-			if(Battle.type == "M"){
+			if(Battle.btype == "M"){
 				//クリア
 				GridClear({gno:Battle.gno_atk, pno:Battle.p[0].pno});
 			}
@@ -820,7 +818,7 @@ function BattleStPlus(i_bno){
 	for(var i=0; i<=3; i++){
 		gno = Board.grid[Battle.gno].linkarr[i];
 		if(gno != 0){
-			if(Battle.type == "M" && Battle.gno_atk == gno){
+			if(Battle.btype == "M" && Battle.gno_atk == gno){
 			}else{
 				if(Team(Board.grid[gno].owner) == Team(Battle.p[i_bno].pno)){
 					wkret += 10;
@@ -891,7 +889,7 @@ function AbilityActive(arg){
 	var o_bno = $r(arg.bno);
 	var act, abi;
 	
-	switch(arg.type){
+	switch(arg.ctype){
 	case "abillity":
 		opt = [fig.opt1, fig.opt2, fig.opt3, fig.status];
 		//clear
@@ -996,7 +994,7 @@ function AbilityActive(arg){
 			}
 			//Active!!
 			if(act){
-				if(arg.type == "abillity"){
+				if(arg.ctype == "abillity"){
 					//後方優先(opt < status)
 					switch(abi[0]){
 					case "@SMASH@":
@@ -1020,7 +1018,7 @@ function AbilityActive(arg){
 			}
 		}
 	}
-	if(arg.type == "item"){
+	if(arg.ctype == "item"){
 		//retun
 		return ret;
 	}
@@ -1045,7 +1043,7 @@ function BattleAbiAction(arg){
 			var itemcnt = 0;
 			if(Player[def.pno].HandCount() >= 1){
 				for(var i=1; i<=Player[def.pno].HandCount(); i++){
-					if(Card[Player[def.pno].HandCard(i)].type == "I"){
+					if(Card[Player[def.pno].HandCard(i)].ctype == "I"){
 						itemcnt++;
 					}
 				}
@@ -1063,7 +1061,7 @@ function BattleAbiAction(arg){
 			if(atk.item == "FIST" && def.item != "FIST"){
 				atk.item = cno;
 				def.item = "FIST";
-				//img
+				//imgsrc
 				CardImgSet({cvs:"CVS_VSITEM"+arg.bno, cno:cno, zoom:0.5});
 				$("#DIV_VSITEM"+$r(arg.bno)).css("display", "none");
 				EffectBox({pattern:"itemdestroy", bno:$r(arg.bno), cno:cno});
@@ -1097,7 +1095,7 @@ function BattleAbiAction(arg){
 				if(wkgno == 0){
 					continue;
 				}
-				if(Battle.type == "M" && Battle.gno_atk == wkgno){
+				if(Battle.btype == "M" && Battle.gno_atk == wkgno){
 					continue;
 				}
 				if(Team(Board.grid[wkgno].owner) == Team(atk.pno)){
@@ -1121,7 +1119,7 @@ function BattleAbiAction(arg){
 			for(var i=0; i<=3; i++){
 				var wkgno = Board.grid[Battle.gno].linkarr[i];
 				if(wkgno != 0){
-					if(Battle.type == "M" && Battle.gno_atk == wkgno){
+					if(Battle.btype == "M" && Battle.gno_atk == wkgno){
 					}else{
 						if(Team(Board.grid[wkgno].owner) == Team(Battle.p[arg.bno].pno)){
 							atk.lfplus += 20;
@@ -1260,7 +1258,7 @@ function BattleAbiAction(arg){
 			BattleLog($r(arg.bno), Dic("@PROTECTION@"));
 		}
 		if(def.active.match(/@AEGIS@/)){
-			if(atk.item != "FIST" && (Card[atk.item].type == "I" || (Card[atk.item].type == "C" && !def.active.match(/@BAND@/))) && Card[atk.item].item == "W"){
+			if(atk.item != "FIST" && (Card[atk.item].ctype == "I" || (Card[atk.item].ctype == "C" && !def.active.match(/@BAND@/))) && Card[atk.item].item == "W"){
 				atk.damage = 0;
 				BattleLog($r(arg.bno), Dic("@PROTECTION@"));
 			}
@@ -1275,7 +1273,7 @@ function BattleAbiAction(arg){
 			}
 		}
 		if(def.active.match(/@REFLECT@/)){
-			if(def.item != "FIST" && Card[def.item].type == "C" && Card[atk.cno].color == Card[def.item].color){
+			if(def.item != "FIST" && Card[def.item].ctype == "C" && Card[atk.cno].color == Card[def.item].color){
 				ret.push({act:"nodamage"});
 				ret.push({act:"reflect"});
 				BattleLog($r(arg.bno), Dic("@REFLECT@"));

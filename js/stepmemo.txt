@@ -35,4 +35,5 @@ No Timer Detail
 91 - turn - tax
 92 - turn - trans wait
 93 - turn - trans do
+98 - Discard
 100 game end

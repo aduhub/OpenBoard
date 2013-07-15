@@ -9,8 +9,10 @@ function DiceRoll(){
 		if(Board.step == 20 || (Board.step == 30 && Player[Board.turn].dicepass == false)){
 			//ステップ（移動開始）
 			StepSet(31);
-			//hand
-			Canvas.clear({id:"CVS_HAND7"});
+
+			//PHASEENDBUTTON
+			$("#DIV_PHASEEND BUTTON").html("");
+
 			//スクロール
 			BoardScroll(Player[Board.role].stand);
 			//初期値
@@ -32,7 +34,7 @@ function DiceRoll(){
 				var msgarr = ["どちらの結果を使用しますか？"];
 				var btnarr = [["ダイス["+dice1+"]", "DiceRollResult({pow:"+dice1+", roll:false})"], ["ダイス["+dice2+"]", "DiceRollResult({pow:"+dice2+", roll:false})"]];
 				//ダイアログ
-				DispDialog({msgs:msgarr, btns:btnarr, type:"line2"});
+				DispDialog({msgs:msgarr, btns:btnarr, dtype:"line2"});
 				//中断
 				mvresult = false;
 			}
@@ -79,8 +81,8 @@ function NoDiceRoll(){
 		//ステップ（移動開始）
 		StepSet(31);
 		if(Board.turn == Board.role){
-			//hand
-			Canvas.clear({id:"CVS_HAND7"});
+			//PHASEENDBUTTON
+			$("#DIV_PHASEEND BUTTON").html("");
 		}
 		//スクロール
 		BoardScroll(Player[Board.turn].stand);
@@ -327,7 +329,7 @@ function CastleCheck(){
 				msgarr.push("領地ボーナス <span class='g'>" + bonus1 + "G</span>");
 				msgarr.push("ボーナス合計 <span class='g'>" + bonus9 + "G</span>");
 				msgarr.push("クリーチャー20%回復");
-				Logprint({msg:msgarr, pno:Dice.pno, type:"block"});
+				Logprint({msg:msgarr, pno:Dice.pno, ltype:"block"});
 				//Light
 				GridLightFort();
 				//Scroll
@@ -352,7 +354,7 @@ function CastleCheck(){
 				if(retcode){
 					//次の移動
 					setTimeout(function(){
-						//img
+						//imgsrc
 						SetPlayerImg(Dice.pno);
 						//next
 						DiceNextMove();
@@ -364,7 +366,7 @@ function CastleCheck(){
 			//今回通過
 			if(encflg[0] != "forgery" && Player[Dice.pno].flag.indexOf(nswe[color]) < 0){
 				//Log
-				Logprint({msg:["砦　ボーナス <span class='g'>" + Board.bonus_f + "G</span>"], pno:Dice.pno, type:"block"});
+				Logprint({msg:["砦　ボーナス <span class='g'>" + Board.bonus_f + "G</span>"], pno:Dice.pno, ltype:"block"});
 				Player[Dice.pno].gold += Board.bonus_f;
 				Player[Dice.pno].flag += nswe[color];
 				imgsrc = "gicon_" + nswe[color];
@@ -461,10 +463,12 @@ function DiceStepTeleport(arg){
 			Dice.teleport = arg.tgt;
 			//ライト
 			GridLight("set_nosave", arg.tgt);
-			//hand
-			Canvas.clear({id:"CVS_HAND7"});
+
+			//PHASEENDBUTTON
+			$("#DIV_PHASEEND BUTTON").html("");
+
 			//Dialog
-			DispDialog({msgs:["テレポート先を選択してください"], type:"ok"});
+			DispDialog({msgs:["テレポート先を選択してください"], dtype:"ok"});
 		}
 		break;
 	case 1:
@@ -501,8 +505,8 @@ function DiceStepDraw(i_flg){
 			var typeflg = {C:0, I:0, S:0};
 			var Plyr = Player[Board.turn];
 			for(var i=1; i<=Plyr.DeckCount(); i++){
-				if(typeflg[Card[Plyr.DeckCard(i)].type] == 0){
-					typeflg[Card[Plyr.DeckCard(i)].type] = i;
+				if(typeflg[Card[Plyr.DeckCard(i)].ctype] == 0){
+					typeflg[Card[Plyr.DeckCard(i)].ctype] = i;
 				}
 			}
 			var mstarr = ["デッキから引くカードを選択してください"];
@@ -594,8 +598,10 @@ function MoveEnd(){
 			}
 			//
 			SummonCheck(Player[Board.role].stand);
-			//ハンド
-			Canvas.draw({id:"CVS_HAND7", src:"img/cmd_turnend.gif"});
+
+			//PHASEENDBUTTON
+			$("#DIV_PHASEEND BUTTON").html("ターンエンド");
+
 			//timer
 			$("#DIV_HAND7").addClass(Chessclock.set(40));
 		}

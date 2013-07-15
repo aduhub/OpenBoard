@@ -24,7 +24,7 @@ function GridMove(arg){
 	Board.grid[arg.gno2].status = "";
 	Board.grid[arg.gno2].statime = 0;
 	//Icon
-	$("#DIV_GICON"+arg.gno2).css("backgroundImage", "url(img/icon/"+Card[cno].imgsrc.replace(".png", "")+".gif)");
+	$("#DIV_GICON"+arg.gno2).css("backgroundImage", "url(imgsrc/icon/"+Card[cno].imgsrc.replace(".png", "")+".gif)");
 	GridSetImage(arg.gno2);
 	//Clear From
 	GridClear({gno:arg.gno1});
@@ -328,7 +328,7 @@ function GridSetImage(){
 	//Canvas
 	var pos = {x:Number(Board.grid[arg[0]].left), y:Number(Board.grid[arg[0]].top)};
 	var img1 = "GRID" + Board.grid[arg[0]].color;
-	var img2 = "img/border" + Team(Board.grid[arg[0]].owner) + Board.grid[arg[0]].level + ".gif";
+	var img2 = "imgsrc/border" + Team(Board.grid[arg[0]].owner) + Board.grid[arg[0]].level + ".gif";
 	Canvas.draw({id:"CVS_BACK", src:[Canvas.srcs[img1], img2], x:pos.x, y:pos.y});
 	//
 	if(Board.grid[arg[0]].owner >= 1){
@@ -347,7 +347,7 @@ function GridSetTax(gno){
 		//Status
 		if(Board.grid[gno].status != ""){
 			var imgsrc = StatusIcon(Board.grid[gno].status);
-			html = "<img src='img/"+imgsrc+".gif' width='32' height='22' style='margin-top:28px;'><br>";
+			html = "<imgsrc src='imgsrc/"+imgsrc+".gif' width='32' height='22' style='margin-top:28px;'><br>";
 		}else{
 			html = "<div style='height:50px;'></div>";
 		}
@@ -355,13 +355,13 @@ function GridSetTax(gno){
 		case 0: //Tax
 			var wktax = String(GridTax(gno));
 			for(var i2=1; i2<=wktax.length; i2++){
-				html += "<IMG src='img/num"+wktax.substr(i2 - 1, 1)+".gif' width='11' height='14'>";
+				html += "<IMG src='imgsrc/num"+wktax.substr(i2 - 1, 1)+".gif' width='11' height='14'>";
 			}
 			break;
 		case 1: //ST
 			var wkst = String(Board.grid[gno].st);
 			for(var i2=1; i2<=wkst.length; i2++){
-				html += "<IMG src='img/numr"+wkst.substr(i2 - 1, 1)+".gif' width='11' height='14'>";
+				html += "<IMG src='imgsrc/numr"+wkst.substr(i2 - 1, 1)+".gif' width='11' height='14'>";
 			}
 			break;
 		case 2: //HP/MHP
@@ -369,11 +369,11 @@ function GridSetTax(gno){
 			var wkmhp = String(Board.grid[gno].maxlf);
 			var clrstr = (wkhp == wkmhp) ? "b" : "";
 			for(var i2=1; i2<=wkhp.length; i2++){
-				html += "<IMG src='img/num"+clrstr+wkhp.substr(i2 - 1, 1)+".gif' width='11' height='14'>";
+				html += "<IMG src='imgsrc/num"+clrstr+wkhp.substr(i2 - 1, 1)+".gif' width='11' height='14'>";
 			}
-			html += "<IMG src='img/numbs.gif' width='10' height='14'>";
+			html += "<IMG src='imgsrc/numbs.gif' width='10' height='14'>";
 			for(var i2=1; i2<=wkmhp.length; i2++){
-				html += "<IMG src='img/numb"+wkmhp.substr(i2 - 1, 1)+".gif' width='11' height='14'>";
+				html += "<IMG src='imgsrc/numb"+wkmhp.substr(i2 - 1, 1)+".gif' width='11' height='14'>";
 			}
 			break;
 		}
@@ -819,7 +819,7 @@ function GridTrans(i_no){
 					//ライト
 					GridLight("set", wkarr);
 					//Log
-					Logprint({msg:"土地売却", pno:Board.turn, type:"system"});
+					Logprint({msg:"土地売却", pno:Board.turn, ltype:"system"});
 				}
 			}else{
 				if(Board.suddenon){
@@ -831,7 +831,7 @@ function GridTrans(i_no){
 					//ライト
 					GridLight("clear");
 					//ターン終了
-					setTimeout(function(){TurnClose(2);}, 4000);
+					setTimeout(function(){TurnEndFlow(9);}, 4000);
 				}
 			}
 		}else{
@@ -839,7 +839,7 @@ function GridTrans(i_no){
 			//ライト
 			GridLight("clear");
 			//ターン終了
-			setTimeout(function(){TurnClose(2);}, 2000);
+			setTimeout(function(){TurnEndFlow(9);}, 2000);
 		}
 	}else{
 		//【領地売却】
@@ -1050,7 +1050,7 @@ function GridAbility(arg){
 									//Board.grid[arg.gno].lf = Math.ceil(Board.grid[arg.gno].lf / 2);
 									//copy
 									for(var ilink=0; ilink<summonarr.length; ilink++){
-										Summon.type = "copy";
+										Summon.stype = "copy";
 										Summon.pno = Board.turn;
 										Summon.gno = summonarr[ilink];
 										Summon.cno = cno;

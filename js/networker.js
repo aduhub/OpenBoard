@@ -36,7 +36,7 @@ function xhrget(arr){
 	(function(){
         if(arr != null){
             var xhr = new XMLHttpRequest();
-            var url = "/openboard/" + arr[0] + '?' + arr[1];
+            var url = "/opentest/" + arr[0] + '?' + arr[1];
             xhr.open('GET', url, true);
             xhr.onreadystatechange = function(){
                 if(xhr.readyState == 4){

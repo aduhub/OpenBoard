@@ -23,7 +23,7 @@ function TerritoryInit(i_gno){
 function TerritoryDialog(i_mode){
 	var panels = "";
 	var imgname = ["", "mark_n", "mark_r", "mark_b", "mark_g", "mark_y"];
-	var imgsrc = "<IMG src='img/"+imgname[Board.grid[Territory.gno].color]+".gif' height='26' width='26'>";
+	var imgsrc = "<IMG src='imgsrc/"+imgname[Board.grid[Territory.gno].color]+".gif' height='26' width='26'>";
 	panels += Infoblock.line({m:["基本", imgsrc, "レベル"+Board.grid[Territory.gno].level], w:[50, 30, 100]});
 	panels += Infoblock.line({m:[Card[Board.grid[Territory.gno].cno].name], w:[180]});
 	//
@@ -105,11 +105,11 @@ function TerritoryDialog(i_mode){
 		var tgtgrid = Board.grid[Territory.gno];
 		for(var i=2; i<=5; i++){
 			if(tgtgrid.color == i){
-				panels += Infoblock.line({m:"<IMG src='img/"+imgname[i]+".gif' height='26' width='26'>   0G", b:"disabled'"});
+				panels += Infoblock.line({m:"<IMG src='imgsrc/"+imgname[i]+".gif' height='26' width='26'>   0G", b:"disabled'"});
 			}else{
 				var wkvalue = (tgtgrid.color != 1) ? 200 : 0;
 				wkvalue += (tgtgrid.level * 100);
-				var btnsrc = "<IMG src='img/"+imgname[i]+".gif' height='26' width='26'> "+wkvalue+"G";
+				var btnsrc = "<IMG src='imgsrc/"+imgname[i]+".gif' height='26' width='26'> "+wkvalue+"G";
 				if(Player[Board.role].gold >= wkvalue){
 					panels += Infoblock.line({m:btnsrc, b:"onclick='TerritoryColor("+i+")'"});
 				}else{
@@ -155,8 +155,8 @@ function TerritoryDialog(i_mode){
 			GridLight("set_nosave", Territory.mvgno);
 			//移動先入力
 			StepSet(52);
-			//card 7
-			Canvas.draw({id:"CVS_HAND7", src:"img/cmd_cancel.gif"});
+			//PHASEENDBUTTON
+			$("#DIV_PHASEEND BUTTON").html("キャンセル");
 			//timer cancel set
 			$("#DIV_HAND7").addClass(Chessclock.set(52));
 			//ウィンドウクローズ
@@ -171,8 +171,8 @@ function TerritoryDialog(i_mode){
 		GridLight("set_nosave", [Territory.gno]);
 		//交換カード選択
 		StepSet(53);
-		//
-		Canvas.draw({id:"CVS_HAND7", src:"img/cmd_cancel.gif"});
+		//PHASEENDBUTTON
+		$("#DIV_PHASEEND BUTTON").html("キャンセル");
 		//
 		$("#DIV_HAND7").addClass(Chessclock.set(53));
 		//ウィンドウクローズ
@@ -189,8 +189,8 @@ function TerritoryDialog(i_mode){
 		GridLight("set_memory");
 		//キャンセル
 		StepSet(40);
-		//表示
-		Canvas.draw({id:"CVS_HAND7", src:"img/cmd_turnend.gif"});
+		//PHASEENDBUTTON
+		$("#DIV_PHASEEND BUTTON").html("ターンエンド");
 		DisplaySet("DIV_INFOGRID", 0);
 		break;
 	}
@@ -673,7 +673,7 @@ function TerritoryAbility(i_flg){
 		if(Board.turn == Board.role){
 			diagimg.push(cno);
 			//ダイアログ
-			DispDialog({type:"ok", cnos:diagimg});
+			DispDialog({dtype:"ok", cnos:diagimg});
 			SortHand();
 		}
 		//msgpop
@@ -780,7 +780,7 @@ function TerritoryAbility(i_flg){
 			//スクロール
 			BoardScroll(tgtgno);
 			//変数設定
-			Summon.type = "territory";
+			Summon.ctype = "territory";
 			Summon.pno = Territory.pno;
 			Summon.cno = "C106";
 			Summon.gno = tgtgno;
@@ -829,7 +829,7 @@ function TerritoryAbility(i_flg){
 					var id = setTimeout(wkcmd, 1500);
 				}else{
 					//変数設定
-					Summon.type = "territory";
+					Summon.ctype = "territory";
 					Summon.pno = Territory.pno;
 					Summon.cno = cno;
 					Summon.gno = i_flg;
@@ -925,7 +925,7 @@ function TerritoryAbility(i_flg){
 				if(Board.role != i){
 					for(var i2=1; i2<=Player[i].HandCount(); i2++){
 						cno = Player[i].HandCard(i2);
-						if(Card[cno].type == "I" && Card[cno].item == "W"){
+						if(Card[cno].ctype == "I" && Card[cno].item == "W"){
 							tgthand.push(cno);
 						}
 					}
@@ -981,8 +981,8 @@ function TerritoryAbiTarget(tgttype){
 		GridLight("clear");
 		//ライト
 		GridLight("set_nosave", Territory.mvgno);
-		//hand
-		Canvas.draw({id:"CVS_HAND7", src:"img/cmd_cancel.gif"});
+		//PHASEENDBUTTON
+		$("#DIV_PHASEEND BUTTON").html("キャンセル");
 		break;
 	}
 }
@@ -1025,8 +1025,8 @@ function TerritoryEnd(){
 	}else{
 		if(Board.wait > 0){
 			if(Territory.pno == Board.role){
-				//イメージクリア
-				Canvas.clear({id:"CVS_HAND7"});
+				//PHASEENDBUTTON
+				$("#DIV_PHASEEND BUTTON").html("");
 			}
 			var msec = Board.wait * 1000;
 			Board.wait = 0;

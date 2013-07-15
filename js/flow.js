@@ -20,7 +20,7 @@ function FlowSet(){
 	case "ROUND_START":
 		Board.round++;
 		//Log
-		Logprint({msg:Board.round+" ラウンド", type:"round"});
+		Logprint({msg:Board.round+" ラウンド", ltype:"round"});
 		break;
 	case "TURN_START":
 		var wait = 10;
@@ -62,7 +62,7 @@ function FlowSet(){
 					$("#DIV_MSG2").html("サドンデス");
 					EffectBox({pattern:"roundmsgpop"});
 					//Mssage Pop
-					Logprint({msg:"サドンデス", type:"round"});
+					Logprint({msg:"サドンデス", ltype:"round"});
 					Board.suddenon = true;
 					wait = 2000;
 					break;
@@ -76,7 +76,7 @@ function FlowSet(){
 			//ターン開始処理
 			StepSet(11);
 			//Log
-			Logprint({msg:Board.turn+" プレイヤーターン", pno:Board.turn, type:"system"});
+			Logprint({msg:Board.turn+" プレイヤーターン", pno:Board.turn, ltype:"system"});
 			//BGM
 			Audie.bgmchk();
 			//.Z-INDEX セット
@@ -100,7 +100,7 @@ function FlowSet(){
 			//##### Debug #####
 			if(sessionStorage.Mode == "debug"){
 				if(Board.turn != Board.role){
-					setTimeout(function(){TurnClose(0);}, 500);
+					setTimeout(function(){TurnEndFlow(0);}, 500);
 				}
 			}
 		}
@@ -117,6 +117,41 @@ function StepSet(stepno){
 	DispInfoPlus(stepno);
 	//timer
 	Chessclock.stepchk();
+}
+//
+function PhaseEnd(){
+	if(Board.turn == Board.role){
+		switch(Board.step){
+			case 20: //Spell
+				DiceRoll();
+				break;
+			case 21: //Spell(Cancel)
+				if(Card[Spell.cno].target.match(/^T.G.*$/)){
+					SpellConfirm(2);
+				}
+				break;
+			case 30: //Dice
+				DiceRoll();
+				break;
+			case 40: //Summon
+				TurnEnd();
+				break;
+			case 52: //Trritory(Move)
+			case 53: //Trritory(Summon)
+			case 54: //T Ability
+				TerritoryDialog(5);
+				break;
+		}
+	}
+	if(Battle.p[0].pno == Board.role || Battle.p[1].pno == Board.role){
+		switch(Board.step){
+		case 72: //Battle(NoItem)
+			BattleItem(Board.role, 99);
+			break;
+		}
+	}
+	//Sound Effect
+	Audie.seplay("click");
 }
 //####################################################
 //
@@ -196,48 +231,59 @@ function TurnEnd(){
 			DispInfo();
 			DispPlayer();
 			SortHand();
-			//Clear
-			Canvas.clear({id:"CVS_HAND7"});
+			//PHASEENDBUTTON
+			$("#DIV_PHASEEND BUTTON").html("");
 			//GridLightクリア
 			GridLight("clear");
 
 			//Close
-			TurnClose(0);
+			TurnEndFlow(0);
 		}
 	}
 }
-//
-function TurnClose(step){
+//終了処理
+function TurnEndFlow(step){
 	switch(step){
-	case 0: //Tax
+	case 0: //Discard
+		//ハンドチェック
+		if(Player[Board.turn].HandCount() >= 7){
+			//ディスカードステップ
+			StepSet(98);
+			//ダイアログ
+			DiscardInit();
+		}else{
+			TurnEndFlow(1);
+		}
+		break;
+	case 1: //Tax
 		StepSet(91);
 		//##### GridAbi #####
 		var ret = GridAbility({gno:Player[Board.turn].stand, time:"TURNCLOSE"});
 		//通行料支払い
 		var wait = TaxPayment();
 		//再実行
-		setTimeout(function(){TurnClose(1);}, wait);
+		setTimeout(function(){TurnEndFlow(2);}, wait);
 		break;
-	case 1: //Trans
-		//魔力マイナスチェック
+	case 2: //Trans
+		//マイナスチェック
 		if(Player[Board.turn].gold < 0){
 			if(Board.role == Board.turn){
 				if(GridCount(Board.turn) >= 1){
 					var msgs = ["売却する土地を選択して下さい"];
-					DispDialog({msgs:msgs, type:"ok"});
+					DispDialog({msgs:msgs, dtype:"ok"});
 				}
 			}
 			//トランス
 			GridTrans(0);
 		}else{
-			TurnClose(2);
+			TurnEndFlow(9);
 		}
 		break;
-	case 2: //Close
+	case 9: //Close
 		//アップキープ
 		TurnUpkeep();
 		//Log
-		Logprint({msg:"ターンエンド", pno:Board.turn, type:"system"});
+		Logprint({msg:"ターンエンド", pno:Board.turn, ltype:"system"});
 		//次ターン
 		FlowSet("TURN_START", Board.turn);
 		break;
@@ -357,7 +403,7 @@ function PopBigMsg(i_msg, i_flg){
 	//Effect
 	EffectBox({pattern:"bigmsgdown"});
 	//Log
-	Logprint({msg:i_msg, type:"pop"});
+	Logprint({msg:i_msg, ltype:"pop"});
 	//Delay Next
 	switch(i_flg){
 	case 0:
@@ -396,8 +442,8 @@ function Logprint(arg){
 	if(arg.pno){
 		style = "style='border-left:solid 4px "+rgb[arg.pno]+";'";
 	}
-	if(arg.type){
-		switch(arg.type){
+	if(arg.ltype){
+		switch(arg.ltype){
 		case "pop":
 			wkstr = "<div class='pop'>" + msg + "</div>";
 			break;
@@ -446,7 +492,7 @@ function LogChkCard(msg){
 function CustomLog(arg){
 	var elestr = ["", "無属性", "火属性", "水属性", "地属性", "風属性"];
 	var msgstr = "";
-	switch(arg.type){
+	switch(arg.ltype){
 	case "colorcnt":
 		if($T.typer(arg.color) == "Number"){
 			if($T.inrange(arg.color, 2, 5) && GridCount(arg.pno, arg.color) >= 2){

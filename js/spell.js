@@ -6,7 +6,7 @@ function SpellCheck(){
 		if(cno == ""){
 			Canvas.clear({id:"CVS_HAND"+i});
 		}else{
-			if(Card[cno].type != "S"){
+			if(Card[cno].ctype != "S"){
 				SpellCardImgSet("CVS_HAND"+i, cno, 0);
 			}else{
 				if(Player[Board.role].gold < Card[cno].cost){
@@ -20,17 +20,17 @@ function SpellCheck(){
 }
 function SpellCardImgSet(i_id, i_cno, i_flg){
 	//Card CardImgSet function Custom
-	var frameid = "CARDFRAME"+Card[i_cno].type;
-	frameid += (Card[i_cno].type == "C") ? Card[i_cno].color : "";
+	var frameid = "CARDFRAME"+Card[i_cno].ctype;
+	frameid += (Card[i_cno].ctype == "C") ? Card[i_cno].color : "";
 	var imgtype = (Card[i_cno].imgsrc.match(/.png$/)) ? "" : ".gif";
-	var imgsrc = "img/card/"+Card[i_cno].imgsrc+imgtype;
+	var imgsrc = "imgsrc/card/"+Card[i_cno].imgsrc+imgtype;
 	var termfnc = function(){
 		switch(i_flg){
 		case 0:
 			Canvas.rect(i_id, {rgb:[0,0,0], alpha:0.6, x:0, y:0, w:100, h:130});
 			break;
 		case 2:
-			Canvas.draw({id:i_id, src:"img/icon_nogold.gif"});
+			Canvas.draw({id:i_id, src:"imgsrc/icon_nogold.gif"});
 			break;
 		}
 	};
@@ -40,7 +40,7 @@ function SpellCardImgSet(i_id, i_cno, i_flg){
 function SpellCost(i_no){
 	var cno = Player[Board.role].HandCard(i_no);
 	//タイプチェック
-	if(Card[cno].type == "S"){
+	if(Card[cno].ctype == "S"){
 		//コストチェック
 		return (Player[Board.role].gold >= Card[cno].cost) ? true : false;
 	}else{
@@ -59,14 +59,15 @@ function SpellTarget(i_no){
 	Spell.check = [];
 	Spell.target = [];
 	//アイコン表示
-	Canvas.draw({id:"CVS_HAND"+Spell.hand, src:"img/cmd_select.gif", alpha:0.6});
+	Canvas.draw({id:"CVS_HAND"+Spell.hand, src:"imgsrc/cmd_select.gif", alpha:0.6});
 	//ターゲット・対象の～
 	if(tgt.match(/^T.*$/)){
 		//タイプ
 		Spell.tgttype = tgt.substr(2, 1);
 		//Player
 		if(tgt.match(/^T.P.?$/)){
-			Canvas.clear({id:"CVS_HAND7"});
+			//PHASEENDBUTTON
+			$("#DIV_PHASEEND BUTTON").html("");
 			//Target Player
 			SpellTgtPlayer(0);
 		}
@@ -77,8 +78,8 @@ function SpellTarget(i_no){
 			GridLight("clear");
 			//ライト
 			GridLight("set_nosave", Spell.check);
-			//hand
-			Canvas.draw({id:"CVS_HAND7", src:"img/cmd_cancel.gif"});
+			//PHASEENDBUTTON
+			$("#DIV_PHASEEND BUTTON").html("キャンセル");
 			//timer cancel set
 			$("#DIV_HAND7").addClass(Chessclock.set(21));
 		}
@@ -151,7 +152,7 @@ function SpellTgtGirdCheck(i_gno){
 			//ライト
 			GridLight("set_nosave", Spell.check);
 			//
-			DispDialog({msgs:["次のターゲットを選択してください"], type:"ok"});
+			DispDialog({msgs:["次のターゲットを選択してください"], dtype:"ok"});
 		}
 	}
 }
@@ -165,7 +166,7 @@ function SpellConfirm(i_num){
 		var msgarr = ["["+Card[Spell.cno].name+"]を使用しますか？"];
 		var btnarr = ["SpellConfirm(1)", "SpellConfirm(2)"];
 		//ダイアログ
-		DispDialog({msgs:msgarr, btns:btnarr, type:"yesno" ,timer:true});
+		DispDialog({msgs:msgarr, btns:btnarr, dtype:"yesno" ,timer:true});
 		break;
 	case 1: //OK
 		//ダイアログ非表示
@@ -186,8 +187,8 @@ function SpellConfirm(i_num){
 		DispDialog("none");
 		//アイコン再表示
 		SpellCheck();
-		//ダイスマーク
-		Canvas.draw({id:"CVS_HAND7", src:"img/cmd_diceroll.gif"});
+		//PHASEENDBUTTON
+		$("#DIV_PHASEEND BUTTON").html("ダイス");
 		//巻き戻し
 		StepSet(20);
 		break;
@@ -258,7 +259,7 @@ function SpellFire(i_flg){
 		var tgtcno;
 		for(var i=Player[Spell.pno].HandCount(); i>=1; i--){
 			tgtcno = Player[Spell.pno].HandCard(i);
-			if(Card[tgtcno].type == "C"){
+			if(Card[tgtcno].ctype == "C"){
 				Player[Spell.pno].HandDel(i);
 				Logprint({msg:"##" + tgtcno + "##を破棄", pno:Spell.pno});
 				wkgold += Number(Card[Spell.cno].opt1);
@@ -293,7 +294,7 @@ function SpellFire(i_flg){
 		EffectBox({pattern:"msgpop", gno:Player[Spell.pno].stand, msg:wkgold+"G", color:"#ffcc00", player:true});
 		//Log
 		Logprint({msg:"<span class='g'>"+wkgold+"G</span>を得た", pno:Spell.pno});
-		Logprint({msg:"墓地カウントクリア", type:"system"});
+		Logprint({msg:"墓地カウントクリア", ltype:"system"});
 		//WAIT
 		wait = 200;
 		break;
@@ -440,7 +441,7 @@ function SpellFire(i_flg){
 		}
 		if(Board.turn == Board.role){
 			//ダイアログ
-			DispDialog({type:"ok", cnos:diagimg});
+			DispDialog({dtype:"ok", cnos:diagimg});
 		}
 		//msgpop
 		EffectBox({pattern:"msgpop", gno:Player[Spell.pno].stand, msg:"Draw", player:true});
@@ -758,7 +759,7 @@ function SpellFire(i_flg){
 				var tgtpno = Board.grid[tgtgno].owner;
 				var tgtlist = [];
 				for(var i=1; i<=Player[tgtpno].DeckCount(); i++){
-					if(Card[Player[tgtpno].DeckCard(i)].type == "C"){
+					if(Card[Player[tgtpno].DeckCard(i)].ctype == "C"){
 						tgtlist.push(i);
 					}
 				}
@@ -926,8 +927,8 @@ function SpellFire(i_flg){
 		Board.grid[tgtgno1].statime = 0;
 		Board.grid[tgtgno2].statime = 0;
 		//表示
-		$("#DIV_GICON"+tgtgno1).css("backgroundImage", "url(img/icon/"+Card[Board.grid[tgtgno1].cno].imgsrc.replace(".png", "")+".gif)");
-		$("#DIV_GICON"+tgtgno2).css("backgroundImage", "url(img/icon/"+Card[Board.grid[tgtgno2].cno].imgsrc.replace(".png", "")+".gif)");
+		$("#DIV_GICON"+tgtgno1).css("backgroundImage", "url(imgsrc/icon/"+Card[Board.grid[tgtgno1].cno].imgsrc.replace(".png", "")+".gif)");
+		$("#DIV_GICON"+tgtgno2).css("backgroundImage", "url(imgsrc/icon/"+Card[Board.grid[tgtgno2].cno].imgsrc.replace(".png", "")+".gif)");
 		GridSetTax(tgtgno1);
 		GridSetTax(tgtgno2);
 		//矢印
@@ -1034,7 +1035,7 @@ function SpellFire(i_flg){
 			diagimg.push(cno);
 			if(Board.turn == Board.role){
 				//ダイアログ
-				setTimeout(function(){DispDialog({type:"ok", cnos:diagimg});}, 1000);
+				setTimeout(function(){DispDialog({dtype:"ok", cnos:diagimg});}, 1000);
 			}
 			//msgpop
 			EffectBox({pattern:"msgpop", gno:Player[Spell.pno].stand, msg:"Draw", player:true});
@@ -1100,7 +1101,7 @@ function SpellFire(i_flg){
 			var wkgold = 0;
 			if(Player[tgtpno].HandCount() >= 1){
 				for(var i2=1; i2<=Player[tgtpno].HandCount(); i2++){
-					if(Card[Player[tgtpno].HandCard(i2)].type == "I"){
+					if(Card[Player[tgtpno].HandCard(i2)].ctype == "I"){
 						wkgold += 30;
 					}
 				}
@@ -1167,7 +1168,7 @@ function SpellFire(i_flg){
 				hcnt = Player[tgtpno].HandCount();
 				for(var i2=hcnt; i2>=1; i2--){
 					tgtcno = Player[tgtpno].HandCard(i2);
-					if(Card[tgtcno].type == "I" && Card[tgtcno].item == "I"){
+					if(Card[tgtcno].ctype == "I" && Card[tgtcno].item == "I"){
 						//手札削除
 						Player[tgtpno].HandDel(i2);
 						Logprint({msg:"##" + tgtcno + "##を破棄", pno:tgtpno});
@@ -1311,7 +1312,7 @@ function SpellTgtSecond(arg){
 			if(Player[tgtpno].HandCount() > 0){
 				for(var i=1; i<=Player[tgtpno].HandCount(); i++){
 					cno = Player[tgtpno].HandCard(i);
-					if(Card[cno].type == "I" || Card[cno].type == "S"){
+					if(Card[cno].ctype == "I" || Card[cno].ctype == "S"){
 						imgarr.push([cno, "SpellTgtSecond({step:1, cno:'"+cno+"'})"]);
 					}
 				}
@@ -1381,7 +1382,7 @@ function SpellTgtSecond(arg){
 				var chkcnt = Player[tgtpno].HandCount();
 				var hands = [];
 				for(var ic=1; ic<=chkcnt; ic++){
-					if(Card[Player[tgtpno].HandCard(ic)].type == "S"){
+					if(Card[Player[tgtpno].HandCard(ic)].ctype == "S"){
 						var rnd = Math.floor(Math.random() * 50000) + 10000;
 						hands.push([rnd, Player[tgtpno].HandCard(ic), tgtpno]);
 					}
@@ -1449,8 +1450,8 @@ function SpellTgtSecond(arg){
 			GridLight("clear");
 			//ライト
 			GridLight("set_nosave", Spell.check);
-			//hand
-			Canvas.clear({id:"CVS_HAND7"});
+			//PHASEENDBUTTON
+			$("#DIV_PHASEEND BUTTON").html("");
 			break;
 		case 1: //OK
 			//ライト
@@ -1471,13 +1472,13 @@ function SpellTgtSecond(arg){
 			var btnarr = [];
 			var imgname = ["", "mark_n", "mark_r", "mark_b", "mark_g", "mark_y"];
 			for(var i=1; i<=5; i++){
-				imgtag = "<IMG src='img/"+imgname[i]+".gif' height='26' width='26'>";
+				imgtag = "<IMG src='imgsrc/"+imgname[i]+".gif' height='26' width='26'>";
 				btnarr.push([imgtag, "SpellTgtSecond({step:1, colorno:"+i+"})"]);
 			}
 			//ダイアログ
 			DispDialog({btns:btnarr});
-			//hand
-			Canvas.clear({id:"CVS_HAND7"});
+			//PHASEENDBUTTON
+			$("#DIV_PHASEEND BUTTON").html("");
 			break;
 		default:
 			//ターゲット追加
@@ -1548,11 +1549,11 @@ function SpellEnd(){
 			//手札ソート
 			SortHand();
 			if(Player[Spell.pno].dicepass){
-				//イメージクリア
-				Canvas.clear({id:"CVS_HAND7"});
+				//PHASEENDBUTTON
+				$("#DIV_PHASEEND BUTTON").html("");
 			}else{
-				//ダイスマーク
-				Canvas.draw({id:"CVS_HAND7", src:"img/cmd_diceroll.gif"});
+				//PHASEENDBUTTON
+				$("#DIV_PHASEEND BUTTON").html("ダイス");
 			}
 		}
 		//再表示
@@ -1609,7 +1610,7 @@ function Enchant(arg){
 			case "_WARCRY_":
 				Logprint({msg:"##" + arg.cno + "##をドロー", pno:arg.pno});
 				EffectBox({pattern:"drawcard", cno:arg.cno});
-				if(Card[arg.cno].type.match(/[C]/)){
+				if(Card[arg.cno].ctype.match(/[C]/)){
 					var gold = Card[arg.cno].cost;
 					//Bonus
 					Player[arg.pno].gold += gold;

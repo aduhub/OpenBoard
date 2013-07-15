@@ -83,7 +83,7 @@ Chessclock = {
 					if(Chessclock._time[idx] % 10 == 0){
 						//timeup check
 						if(Chessclock._time[Chessclock._type] == 0){
-							Logprint({msg:"タイムアップ", type:"system"});
+							Logprint({msg:"タイムアップ", ltype:"system"});
 							$("#DIV_TIMEKEEP").html("");
 						}else{
 							Chessclock._disp();
@@ -93,8 +93,8 @@ Chessclock = {
 							if(bak == 0 && Chessclock._time[0] == 0){
 								Chessclock._bank--;
 								if(Chessclock._bank <= 0){
-									Logprint({msg:"持ち時間オーバー", type:"system"});
-									Logprint({msg:"以降は15カウントとなります", type:"system"});
+									Logprint({msg:"持ち時間オーバー", ltype:"system"});
+									Logprint({msg:"以降は15カウントとなります", ltype:"system"});
 									Chessclock._switch = 1;
 								}
 							}
@@ -106,7 +106,7 @@ Chessclock = {
 	},
 	stepchk:function(){
 		if(Chessclock.use){
-			if(Chessclock.type == 2 && Board.step != Chessclock._step){
+			if(Chessclock._type == 2 && Board.step != Chessclock._step){
 				Chessclock._type = 0;
 			}
 			Chessclock._step = Board.step;

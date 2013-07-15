@@ -81,8 +81,6 @@ function initBoard(){
 function createBoard(){
 	//wait Info
 	$("#waitdiv").remove();
-	//カードDB
-	initCard();
 	//マップデータ
 	var Mapdata = MapDataSet(Board.mapno);
 	var Mapinfo = Mapdata[0].split(":");
@@ -118,9 +116,9 @@ function createBoard(){
 	msgarr.push("目標Ｇ："+Board.target);
 	msgarr.push("終了Ｒ："+Board.endround);
 	msgarr.push("ダイス："+Board.dice);
-	Logprint({msg:msgarr, type:"block"});
+	Logprint({msg:msgarr, ltype:"block"});
 	//MAP背景
-	$("#DIV_BACK").css("backgroundImage", "url(img/mapdefault.gif)");
+	$("#DIV_BACK").css("backgroundImage", "url(imgsrc/mapdefault.gif)");
 
 	//グリッド生成
 	for(var i in Board.grid){
@@ -156,7 +154,7 @@ function createBoard(){
 			var pos = {x:Number(Board.grid[i].left), y:Number(Board.grid[i].top)};
 			Canvas.draw({id:"CVS_BACK", src:wkimgid, x:pos.x, y:pos.y, composite:wkcomposite});
 			//GRID
-			CreateLay("DIV_GICON"+i , 128, 90, pos.x, pos.y - 26, 10, "img", wkicon);
+			CreateLay("DIV_GICON"+i , 128, 90, pos.x, pos.y - 26, 10, "imgsrcsrc", wkicon);
 			CreateLay("DIV_GCLICK"+i , 64, 64, pos.x + 32, pos.y, 150, "click", i);
 		}
 	}
@@ -181,7 +179,7 @@ function PlayerSetup(){
 		Player[i].shadow = 1;
 		Player[i].gold = Board.bonus;
 		//ICON
-		CreateLay("DIV_PLAYER"+i, 128, 128, Number(Board.grid[1].left), Number(Board.grid[1].top) - 64, 11, "img", "");
+		CreateLay("DIV_PLAYER"+i, 128, 128, Number(Board.grid[1].left), Number(Board.grid[1].top) - 64, 11, "imgsrcsrc", "");
 		$("#DIV_PLAYER"+i).html("<div id='DIV_PNO"+i+"'>"+i+"P</div>");
 		PlayerImgSetup(i);
 	}
@@ -236,7 +234,7 @@ function PlayerHandSetup(i_flg){
 			var msgarr = ["手札を引き直しますか？"];
 			var btnarr;
 			btnarr = ["PlayerHandSetup(1)", "PlayerHandSetup(2)"];
-			DispDialog({type:"yesno", msgs:msgarr, btns:btnarr});
+			DispDialog({dtype:"yesno", msgs:msgarr, btns:btnarr});
 		}
 	}
 	if(i_flg == 1 || i_flg == 2){
@@ -428,14 +426,6 @@ function GridClick(i_no){
 function HandClick(i_no){
 	if(Board.turn == Board.role){
 		switch(Board.step){
-		case 18: //手札破棄(DRAW)
-		case 28: //手札破棄(SPELL)
-		case 38: //手札破棄(MOVE)
-		case 58: //手札破棄(TERRITORY)
-			if(Board.discardstep == 1){
-				DiscardConfirm({step:0, hno:i_no});
-			}
-			break;
 		case 20:
 			if(i_no <= Player[Board.role].HandCount()){
 				//コストチェック
@@ -443,52 +433,27 @@ function HandClick(i_no){
 					SpellTarget(i_no);
 				}
 			}
-			if(i_no == 7){
-				//Dice
-				DiceRoll();
-			}
 			break;
-		case 21:
-			if(i_no == 7 && Card[Spell.cno].target.match(/^T.G.*$/)){
-				SpellConfirm(2);
-			}
-			break;
-		case 30:
-			if(i_no == 7){
-				DiceRoll();
-			}
-			break;
-		case 40:
+		case 40: //Summon
 			if(i_no <= Player[Board.role].HandCount()){
 				//コストチェック
-				
 				if(SummonCost(Player[Board.role].stand, Player[Board.role].HandCard(i_no)) == "OK"){
 					SummonConfirm({type:"summon", step:0, hno:i_no});
 				}
 			}
-			if(i_no == 7){
-				TurnEnd();
-			}
 			break;
-		case 52:
-			if(i_no == 7){
-				TerritoryDialog(5);
-			}
-			break;
-		case 53:
+		case 53: //Trritory(Summon)
 			if(i_no <= Player[Board.role].HandCount()){
 				//コストチェック
 				if(SummonCost(Territory.gno, Player[Board.role].HandCard(i_no)) == "OK"){
 					SummonConfirm({type:"change", step:0, hno:i_no});
 				}
 			}
-			if(i_no == 7){
-				TerritoryDialog(5);
-			}
 			break;
-		case 54:
-			if(i_no == 7){
-				TerritoryDialog(5);
+		case 98: //Dicard(TurnEnd)
+			if(Board.discardstep == 1){
+				//DiscardConfirm({step:0, hno:i_no});
+				Discard({pno:Board.role, hno:arg.hno});
 			}
 			break;
 		}
@@ -503,9 +468,6 @@ function HandClick(i_no){
 					BattleItem(Board.role, i_no);
 				}
 			}
-			if(i_no == 7){
-				BattleItem(Board.role, 9);
-			}
 			break;
 		}
 	}
@@ -517,28 +479,15 @@ function HandClick(i_no){
 function BoardScroll(i_no){
 	//ドラッグストップ
 	dragObject = null;
-	var def_t, def_l;
-	if(sessionStorage.iPhone != "Y"){
-		def_t = 300;
-		def_l = 400;
-		def_x = 340;
-	}else{
-		def_t = 240;
-		def_l = 320;
-		def_x = 260;
-	}
-//	//縮小クリア
-// 	if($("#DIV_FRAME").hasClass("CLS_AREAMAP")){
-// 		$("#DIV_FRAME").removeClass("CLS_AREAMAP");
-// 		$("#DIV_FRAME").css({width:"", height:""});
-// 		$("#DIV_FRAME").scrollTop(def_t);
-// 		$("#DIV_FRAME").scrollLeft(def_l);
-// 	}
+	var def_t, def_x;
+	def_t = 300; //600
+	def_x = 340; //800
 	if(!$("#DIV_FRAME").hasClass("CLS_AREAMAP")){
 		//スクロール
 		var wk_y = Board.grid[i_no].top - def_t;
 		var wk_x = Board.grid[i_no].left - def_x;
 		$("#DIV_FRAME").animate({scrollTop:wk_y, scrollLeft:wk_x}, 400, 'swing');
+
 	}
 }
 //ドラッグスクロール
@@ -716,12 +665,12 @@ function DispInfoMap(flg){
 	if(flg){
 		html += "<div>領地</div>";
 		for(var i=1; i<=5; i++){
-			html += "<div><img src='img/"+colorimg[i]+".gif' height='26' width='26'>";
+			html += "<div><imgsrc src='imgsrc/"+colorimg[i]+".gif' height='26' width='26'>";
 			html += "x" + GridCount(9, i) + "</div>";
 		}
 		html += "<div>召還</div>";
 		for(var i=1; i<=5; i++){
-			html += "<div><img src='img/"+colorimg[i]+".gif' height='26' width='26'>";
+			html += "<div><imgsrc src='imgsrc/"+colorimg[i]+".gif' height='26' width='26'>";
 			html += "x" + GridCnoCount(9, i) + "</div>";
 		}
 		$("#DIV_INFOMAP").html(html);
@@ -758,7 +707,7 @@ function DispPlayer(i_pno){
 		//NSWE
 		msgstr = "";
 		for(var i2=0; i2<=3; i2++){
-			imgsrc = "img/nswe" + wknswe[i2];
+			imgsrc = "imgsrc/nswe" + wknswe[i2];
 			if(Board.flag.indexOf(wknswe[i2]) >= 0){
 				if(Player[i].flag.indexOf(wknswe[i2]) >= 0){
 					imgsrc += "2";
@@ -773,9 +722,9 @@ function DispPlayer(i_pno){
 		//Hand
 		for(var i2=1; i2<=Player[i].HandCount(); i2++){
 			if(sessionStorage.iPhone == "Y"){
-				msgstr += "<IMG src='img/icon_card_i.gif' height='20' width='12'>";
+				msgstr += "<IMG src='imgsrc/icon_card_i.gif' height='20' width='12'>";
 			}else{
-				msgstr += "<IMG src='img/icon_card.gif' height='20' width='14'>";
+				msgstr += "<IMG src='imgsrc/icon_card.gif' height='20' width='14'>";
 			}
 		}
 		dispstr += Infoblock.line({cls:"point2", m:[msgstr], w:[170 + iplus], pd:[4], bg:"#FEFEFE"});
@@ -795,7 +744,7 @@ function DispPlayer(i_pno){
 							wkgold += GridValue(i3);
 						}
 					}
-					msgstr = "<IMG src='img/"+imgname[i2]+".gif' height='26' width='26'>";
+					msgstr = "<IMG src='imgsrc/"+imgname[i2]+".gif' height='26' width='26'>";
 					dispstr += Infoblock.line({m:[msgstr, "x"+GridCount(wkpno,i2), wkgold], w:[34, 56, 80 + iplus], pd:[4,4,4], ta:["","r","r"], bd:true, bg:"FEFEFE"});
 				}
 				//Book
@@ -811,7 +760,7 @@ function DispPlayer(i_pno){
 						if(Player[wkpno].statime <= 9){
 							namestr += " " + Player[wkpno].statime + "R";
 						}
-						dispstr += Infoblock.line({m:["<img src='img/"+iconsrc+"'>", namestr], w:[40, 130 + iplus], h:26, pd:[4,4], bg:"FEFEFE"});
+						dispstr += Infoblock.line({m:["<imgsrc src='imgsrc/"+iconsrc+"'>", namestr], w:[40, 130 + iplus], h:26, pd:[4,4], bg:"FEFEFE"});
 					}
 				}else{
 					//spell
@@ -864,9 +813,9 @@ function DisplaySet(){
 	}else{
 		if(arg[2] != undefined){
 			if(arg[0].substr(0, 3) == "IMG"){
-				$(divid).attr("src", "img/"+arg[2]+".gif");
+				$(divid).attr("src", "imgsrc/"+arg[2]+".gif");
 			}else{
-				$(divid).css("backgroundImage", "url(img/"+arg[2]+".gif)");
+				$(divid).css("backgroundImage", "url(imgsrc/"+arg[2]+".gif)");
 			}
 		}
 		$(divid).css({visibility:"visible", zIndex:arg[1]});
@@ -875,7 +824,7 @@ function DisplaySet(){
 //DIVタグbackgroundImage変更の空状態をなくす。
 function DivImg(i_id, i_src){
 	if(i_src != ""){
-		$("#"+i_id).css("backgroundImage", "url(img/"+i_src+".gif)");
+		$("#"+i_id).css("backgroundImage", "url(imgsrc/"+i_src+".gif)");
 	}else{
 		$("#"+i_id).css("backgroundImage", "");
 	}
@@ -985,7 +934,7 @@ function DispDialog(param){
 			}
 		}
 		if(param.btns){
-			if(param.type == "yesno"){
+			if(param.dtype == "yesno"){
 				if(html != "") html += "<br>";
 				for(var i=0; i<=1; i++){
 					cls = (i == 1 && param.timer) ? " class='"+Chessclock.set()+"'" : "";
@@ -1007,7 +956,7 @@ function DispDialog(param){
 				}
 			}
 		}else{
-			if(param.type == "ok"){
+			if(param.dtype == "ok"){
 				html += "<br><button onclick=\"DispDialog('none')\" style='width:160px'>閉じる</button>";
 			}
 		}
@@ -1066,10 +1015,10 @@ function CreateLay(){
         top:arg[4]+"px",
         zIndex:arg[5]
     }
-    if(arg[6] == "img"){
+    if(arg[6] == "imgsrcsrc"){
         jQ_Css["textAlign"] = "center";
         if(arg[7] != ""){
-            jQ_Css["backgroundImage"] = "url(img/"+arg[7]+".gif)";
+            jQ_Css["backgroundImage"] = "url(imgsrc/"+arg[7]+".gif)";
             jQ_Css["backgroundRepeat"] = "no-repeat";
         }
     }
@@ -1081,7 +1030,7 @@ function SetPlayerIcon(pno, file){
 		$("#DIV_PICON"+pno).remove();
 	}else{
 		$("#DIV_PICON"+pno).remove();
-		var img = "<img src='img/"+file+".gif' width='32' height='22'>";
+		var img = "<imgsrc src='imgsrc/"+file+".gif' width='32' height='22'>";
 		var div = "<div id='DIV_PICON"+pno+"' style='position:absolute;top:-18px;left:48px;'>"+img+"</div>";
 		$("#DIV_PLAYER"+pno).append(div);
 		switch(Player[pno].direction){
@@ -1098,21 +1047,21 @@ function SetPlayerIcon(pno, file){
 }
 //#############[ IMAGE DATA ]###############
 function LoadImage(){
-	Canvas.srcs["CARDFRAMEC1"] = "img/card/frame_glay.gif";
-	Canvas.srcs["CARDFRAMEC2"] = "img/card/frame_red.gif";
-	Canvas.srcs["CARDFRAMEC3"] = "img/card/frame_blue.gif";
-	Canvas.srcs["CARDFRAMEC4"] = "img/card/frame_green.gif";
-	Canvas.srcs["CARDFRAMEC5"] = "img/card/frame_yellow.gif";
-	Canvas.srcs["CARDFRAMEI"] = "img/card/frame_item.gif";
-	Canvas.srcs["CARDFRAMES"] = "img/card/frame_spell.gif";
-	Canvas.srcs["GRID0"] = "img/grid0.gif";
-	Canvas.srcs["GRID1"] = "img/grid1.gif";
-	Canvas.srcs["GRID2"] = "img/grid2.gif";
-	Canvas.srcs["GRID3"] = "img/grid3.gif";
-	Canvas.srcs["GRID4"] = "img/grid4.gif";
-	Canvas.srcs["GRID5"] = "img/grid5.gif";
-	Canvas.srcs["GRIDT"] = "img/gicon_tele.gif";
-	Canvas.srcs["GRIDF"] = "img/gicon_drop.gif";
+	Canvas.srcs["CARDFRAMEC1"] = "imgsrc/card/frame_glay.gif";
+	Canvas.srcs["CARDFRAMEC2"] = "imgsrc/card/frame_red.gif";
+	Canvas.srcs["CARDFRAMEC3"] = "imgsrc/card/frame_blue.gif";
+	Canvas.srcs["CARDFRAMEC4"] = "imgsrc/card/frame_green.gif";
+	Canvas.srcs["CARDFRAMEC5"] = "imgsrc/card/frame_yellow.gif";
+	Canvas.srcs["CARDFRAMEI"] = "imgsrc/card/frame_item.gif";
+	Canvas.srcs["CARDFRAMES"] = "imgsrc/card/frame_spell.gif";
+	Canvas.srcs["GRID0"] = "imgsrc/grid0.gif";
+	Canvas.srcs["GRID1"] = "imgsrc/grid1.gif";
+	Canvas.srcs["GRID2"] = "imgsrc/grid2.gif";
+	Canvas.srcs["GRID3"] = "imgsrc/grid3.gif";
+	Canvas.srcs["GRID4"] = "imgsrc/grid4.gif";
+	Canvas.srcs["GRID5"] = "imgsrc/grid5.gif";
+	Canvas.srcs["GRIDT"] = "imgsrc/gicon_tele.gif";
+	Canvas.srcs["GRIDF"] = "imgsrc/gicon_drop.gif";
 }
 //
 function GifURI(filename, pno, direction){
@@ -1123,10 +1072,10 @@ function GifURI(filename, pno, direction){
 	case "piece2":
 	case "piece3":
 	case "piece4":
-		returi = "img/avator/"+filename+pno+dirno[direction]+".gif";
+		returi = "imgsrc/avator/"+filename+pno+dirno[direction]+".gif";
 		break;
 	default:
-		returi = "img/avator/"+filename+dirno[direction]+".gif";
+		returi = "imgsrc/avator/"+filename+dirno[direction]+".gif";
 		break;
 	}
 	return returi;

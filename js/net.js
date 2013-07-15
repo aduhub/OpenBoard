@@ -21,7 +21,7 @@ var Net = {
 		Net._channel = "ch_room" + sessionStorage.RoomID;
 		Net.pubnub_init();
 		//Log
-		Logprint({msg:"ROOMID:"+sessionStorage.RoomID, type:"system"});
+		Logprint({msg:"ROOMID:"+sessionStorage.RoomID, ltype:"system"});
 	},
 	//=====[ Pubnub ]=====
 	pubnub_init:function(){
@@ -41,7 +41,7 @@ var Net = {
 			},
 			disconnect : function(){
 				//Log
-				Logprint({msg:"*通信が切断されました*", pno:Board.role, type:"system"});
+				Logprint({msg:"*通信が切断されました*", pno:Board.role, ltype:"system"});
 				//console
 				console.log("pubnub Disconnect");
 			},

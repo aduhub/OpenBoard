@@ -36,9 +36,9 @@ var Frame = {
 			//Log
 			if(Frame.lastchatter != chatitem[0]){
 				Frame.lastchatter = chatitem[0];
-				Logprint({msg:"<span class='n'>"+chatitem[0]+"</span>", type:"chat"});
+				Logprint({msg:"<span class='n'>"+chatitem[0]+"</span>", ltype:"chat"});
 			}
-			Logprint({msg:chatitem[1], type:"chat"});
+			Logprint({msg:chatitem[1], ltype:"chat"});
 			break;
 		}
 	},
@@ -146,7 +146,7 @@ var Frame = {
 							}
 						}
 						//Log
-						Logprint({msg:pinfo[1]+" 参加", type:"system"});
+						Logprint({msg:pinfo[1]+" 参加", ltype:"system"});
 
 						//##### Debug #####
 						if(sessionStorage.Mode == "debug"){
@@ -315,7 +315,7 @@ var Frame = {
 					if((Board.step >= 40 && Board.step <= 90 && Board.step % 10 == 0) || Board.round == 0){
 						runflg = 1;
 						//ターン終了
-						TurnClose(0, logpno);
+						TurnEndFlow(0, logpno);
 					}
 					break;
 				case "trans":

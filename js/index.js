@@ -56,7 +56,7 @@ window.onload = function(){
 	//$("#btn_menu7").css("display","block");
 	
 	//lobbychat
-	obNet.socketinit();
+	//obNet.socketinit();
 }
 function AlertPop(msg){
 	$("#div_alert").html(msg);
@@ -317,7 +317,7 @@ function NetRecv(recvstr){
 						break;
 					case "ALLIANCE":
 					case "ALLIANCER":
-						roomline += "<div><img src='img/alliance.gif' width='20' height='18'>"+maprule[0]+"</div>";
+						roomline += "<div><imgsrc src='imgsrc/alliance.gif' width='20' height='18'>"+maprule[0]+"</div>";
 						break;
 					}
 					roomline += "<div>"+wklist[4]+"G</div>";
@@ -325,7 +325,7 @@ function NetRecv(recvstr){
 					roomline += "<div>";
 					for(var i=1; i<=playcnt; i++){
 						var gifno = (joincnt >= i) ? 1 : 0;
-						roomline += "<img src='img/man"+gifno+".gif' width='12' height='18'>";
+						roomline += "<imgsrc src='imgsrc/man"+gifno+".gif' width='12' height='18'>";
 					}
 					roomline += "</div><div>";
 					//button
@@ -580,21 +580,21 @@ function MapWrite(arg){
 }
 //
 function initMap(){
-	Canvas.srcs["GICON10"] = "img/gicon_cas.gif";
-	Canvas.srcs["GICON11"] = "img/gicon_n.gif";
-	Canvas.srcs["GICON12"] = "img/gicon_s.gif";
-	Canvas.srcs["GICON13"] = "img/gicon_w.gif";
-	Canvas.srcs["GICON14"] = "img/gicon_e.gif";
-	Canvas.srcs["GICON22"] = "img/gicon_brd.gif";
-	Canvas.srcs["GICON23"] = "img/gicon_alt.gif";
-	Canvas.srcs["GRID0"] = "img/grid0.gif";
-	Canvas.srcs["GRID1"] = "img/grid1.gif";
-	Canvas.srcs["GRID2"] = "img/grid2.gif";
-	Canvas.srcs["GRID3"] = "img/grid3.gif";
-	Canvas.srcs["GRID4"] = "img/grid4.gif";
-	Canvas.srcs["GRID5"] = "img/grid5.gif";
-	Canvas.srcs["GRIDT"] = "img/gicon_tele.gif";
-	Canvas.srcs["GRIDF"] = "img/gicon_drop.gif";
+	Canvas.srcs["GICON10"] = "imgsrc/gicon_cas.gif";
+	Canvas.srcs["GICON11"] = "imgsrc/gicon_n.gif";
+	Canvas.srcs["GICON12"] = "imgsrc/gicon_s.gif";
+	Canvas.srcs["GICON13"] = "imgsrc/gicon_w.gif";
+	Canvas.srcs["GICON14"] = "imgsrc/gicon_e.gif";
+	Canvas.srcs["GICON22"] = "imgsrc/gicon_brd.gif";
+	Canvas.srcs["GICON23"] = "imgsrc/gicon_alt.gif";
+	Canvas.srcs["GRID0"] = "imgsrc/grid0.gif";
+	Canvas.srcs["GRID1"] = "imgsrc/grid1.gif";
+	Canvas.srcs["GRID2"] = "imgsrc/grid2.gif";
+	Canvas.srcs["GRID3"] = "imgsrc/grid3.gif";
+	Canvas.srcs["GRID4"] = "imgsrc/grid4.gif";
+	Canvas.srcs["GRID5"] = "imgsrc/grid5.gif";
+	Canvas.srcs["GRIDT"] = "imgsrc/gicon_tele.gif";
+	Canvas.srcs["GRIDF"] = "imgsrc/gicon_drop.gif";
 }
 //############################################################
 function BookDisplay(){
@@ -609,7 +609,7 @@ function BookDisplay(){
 		for(var i=0; i<listdata.length; i++){
 			listno++;
 			listcol = listdata[i].split(",");
-			type = Card[listcol[3]].type + Card[listcol[3]].color;
+			type = Card[listcol[3]].ctype + Card[listcol[3]].color;
 			if(typebak != type){
 				if(listno % 2 == 0){
 					y += 140;
@@ -630,44 +630,44 @@ function BookDisplay(){
 function BookListItem(arg){
 	//detail
 	var frasrc = {C1:"frame_glay",C2:"frame_red",C3:"frame_blue",C4:"frame_green",C5:"frame_yellow",I0:"frame_item",S0:"frame_spell"}
-	var frano = Card[arg.cno].type + Card[arg.cno].color;
+	var frano = Card[arg.cno].ctype + Card[arg.cno].color;
 	var imgtype = (Card[arg.cno].imgsrc.match(/.png$/)) ? "" : ".gif";
 	var html = "<div class='item_frame' style='top:"+arg.y+"px; left:"+arg.x+"px;'>";
 
 	html += "<div class='item_back'>";
-	html += "<div class='item_cardb'><img src='img/card/"+Card[arg.cno].imgsrc+imgtype+"' width='100' height='130'></div>";
-	html += "<div class='item_cardf'><img src='img/card/"+frasrc[frano]+".gif' width='100' height='130'></div>";
+	html += "<div class='item_cardb'><imgsrc src='imgsrc/card/"+Card[arg.cno].imgsrc+imgtype+"' width='100' height='130'></div>";
+	html += "<div class='item_cardf'><imgsrc src='imgsrc/card/"+frasrc[frano]+".gif' width='100' height='130'></div>";
 	if(Flavor[arg.cno]){
 		html += "<div class='item_flavor'>"+Flavor[arg.cno]+"</div>";
 	}
 	html += "</div>";
 
 	html += "<div class='item_info'>";
-	switch(Card[arg.cno].type){
+	switch(Card[arg.cno].ctype){
 	case "C":
 		var colorno = {N:1, F:2, W:3, E:4, D:5};
 		var imgname = ["", "mark_n", "mark_r", "mark_b", "mark_g", "mark_y"];
 		var itemimg = {"W":"iconweapon", "I":"iconitem"};
-		var img = "<img src='img/"+imgname[Card[arg.cno].color]+".gif' height='26' width='26'>";
+		var img = "<imgsrc src='imgsrc/"+imgname[Card[arg.cno].color]+".gif' height='26' width='26'>";
 		html += "<div class='book_frame_r0'>"+img+"</div><div class='book_frame_r1'>"+Card[arg.cno].name+"</div>";
 		html += "<div class='book_frame_r2'>";
-		html += "<img src='img/infog.gif' height='12' width='11'><span class='book_g'>"+Card[arg.cno].cost;
+		html += "<imgsrc src='imgsrc/infog.gif' height='12' width='11'><span class='book_g'>"+Card[arg.cno].cost;
 		for(var i=0; i<Card[arg.cno].plus.length; i++){
-			html += " <img src='img/"+imgname[colorno[Card[arg.cno].plus.substr(i, 1)]]+".gif' height='13' width='13'>";
+			html += " <imgsrc src='imgsrc/"+imgname[colorno[Card[arg.cno].plus.substr(i, 1)]]+".gif' height='13' width='13'>";
 		}
 		html += "</span>";
-		html += "<img src='img/infost.gif' height='12' width='11'><span class='book_st'>"+Card[arg.cno].st+"</span> ";
-		html += "<img src='img/infohp.gif' height='12' width='11'><span class='book_hp'>"+Card[arg.cno].lf+"</span></div>";
+		html += "<imgsrc src='imgsrc/infost.gif' height='12' width='11'><span class='book_st'>"+Card[arg.cno].st+"</span> ";
+		html += "<imgsrc src='imgsrc/infohp.gif' height='12' width='11'><span class='book_hp'>"+Card[arg.cno].lf+"</span></div>";
 		if(Card[arg.cno].item != "" || Card[arg.cno].walk != ""){
 			html += "<div class='book_frame_r3'>不可";
 			for(var i2=0; i2<=1; i2++){
 				if(Card[arg.cno].item.match(["W", "I"][i2])){
-					html += "<img src='img/x_"+["weapon","item"][i2]+".gif' height='13' width='13'>";
+					html += "<imgsrc src='imgsrc/x_"+["weapon","item"][i2]+".gif' height='13' width='13'>";
 				}
 			}
 			for(var i2=0; i2<=6; i2++){
 				if(Card[arg.cno].walk.match(["N", "F", "W", "E", "D", "T", "I"][i2])){
-					html += "<img src='img/x_"+["newtral", "fire", "water", "earth", "wind", "walk", "invasion"][i2]+".gif' height='13' width='13' title='"+["無属性侵入", "火属性侵入", "水属性侵入", "地属性侵入", "風属性侵入", "領地移動", "侵略召喚"][i2]+"不可'>";
+					html += "<imgsrc src='imgsrc/x_"+["newtral", "fire", "water", "earth", "wind", "walk", "invasion"][i2]+".gif' height='13' width='13' title='"+["無属性侵入", "火属性侵入", "水属性侵入", "地属性侵入", "風属性侵入", "領地移動", "侵略召喚"][i2]+"不可'>";
 				}
 			}
 			html += "</div>";
@@ -678,15 +678,15 @@ function BookListItem(arg){
 		break;
 	case "I":
 		var imgname = {"W":"iconweapon", "I":"iconitem"};
-		var img = "<img src='img/"+imgname[Card[arg.cno].item]+".gif' height='26' width='26'>";
+		var img = "<imgsrc src='imgsrc/"+imgname[Card[arg.cno].item]+".gif' height='26' width='26'>";
 		html += "<div class='book_frame_r0'>"+img+"</div><div class='book_frame_r1'>"+Card[arg.cno].name+"</div>";
-		html += "<div class='book_frame_r2'><img src='img/infog.gif' height='12' width='11'><span class='book_g'>"+Card[arg.cno].cost+"</span></div>";
+		html += "<div class='book_frame_r2'><imgsrc src='imgsrc/infog.gif' height='12' width='11'><span class='book_g'>"+Card[arg.cno].cost+"</span></div>";
 		html += "<div class='book_frame_r4'>"+WordReplace(Card[arg.cno].comment)+"</div>";
 		break;
 	case "S":
-		var img = "<IMG src='img/iconspell.gif' height='26' width='26'>";
+		var img = "<IMG src='imgsrc/iconspell.gif' height='26' width='26'>";
 		html += "<div class='book_frame_r0'>"+img+"</div><div class='book_frame_r1'>"+Card[arg.cno].name+"</div>";
-		html += "<div class='book_frame_r2'><img src='img/infog.gif' height='12' width='11'><span class='book_g'>"+Card[arg.cno].cost+"</span></div>";
+		html += "<div class='book_frame_r2'><imgsrc src='imgsrc/infog.gif' height='12' width='11'><span class='book_g'>"+Card[arg.cno].cost+"</span></div>";
 		html += "<div class='book_frame_r4'>"+WordReplace(Card[arg.cno].comment)+"</div>";
 		break;
 	}

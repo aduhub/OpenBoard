@@ -152,7 +152,7 @@ var $T = {
 			return 0;
 		}
 	},
-	//object type string
+	//object ctype string
 	typer:function(o){
 		//var a = Object.prototype.toString.call(o);
 		//var b = a.match(/\[object (.*)\]/)[1];
