@@ -252,10 +252,10 @@ function HandImgSet(hno){
 }
 //
 function CardImgSet(arg){
-	var frameid = "CARDFRAME"+Card[arg.cno].ctype;
-	frameid += (Card[arg.cno].ctype == "C") ? Card[arg.cno].color : "";
+	var frameid = "CARDFRAME"+Card[arg.cno].type;
+	frameid += (Card[arg.cno].type == "C") ? Card[arg.cno].color : "";
 	var imgtype = (Card[arg.cno].imgsrc.match(/.png$/)) ? "" : ".gif";
-	var imgsrc = "imgsrc/card/"+Card[arg.cno].imgsrc+imgtype;
+	var imgsrc = "img/card/"+Card[arg.cno].imgsrc+imgtype;
 	var para = {id:arg.cvs, src:[imgsrc, frameid]}
 	if(arg.zoom){
 		para.zoom = arg.zoom;
@@ -319,7 +319,7 @@ function DeckSelect(deckstr){
 		if(deckdat.length > 0){
             deckdat.sort();
 			for(var i=0; i<deckdat.length; i++){
-				var clrno = Card[deckdat[i]].ctype;
+				var clrno = Card[deckdat[i]].type;
 				if(clrno == "C") clrno += Card[deckdat[i]].color;
 				var button = "<button oncontextmenu='CardInfo(\""+deckdat[i]+"\");return false;' style='background-color:#"+palet[clrno]+";'>" + Card[deckdat[i]].name + "</button>";
 				$("#SEL_DECKSET").append(button);
@@ -400,7 +400,7 @@ function CardInfoSet(arg){
 		//detail
 		var infoarg = [];
 		infoarg.push({type:"width", px:190});
-		switch(Card[arg.cno].ctype){
+		switch(Card[arg.cno].type){
 		case "C":
 			infoarg.push({type:"clname", color:Card[arg.cno].color, name:Card[arg.cno].name});
 			infoarg.push({type:"cost", cost:Card[arg.cno].cost, plus:Card[arg.cno].plus});
@@ -420,7 +420,7 @@ function CardInfoSet(arg){
 		case "S":
 			infoarg.push({type:"spname", name:Card[arg.cno].name});
 			infoarg.push({type:"cost", cost:Card[arg.cno].cost, plus:Card[arg.cno].plus});
-			//infoarg.push({ctype:"sptarget", target:Card[cno].target});
+			//infoarg.push({type:"sptarget", target:Card[cno].target});
 			infoarg.push({type:"comment", comment:Card[arg.cno].comment});
 			break;
 		}

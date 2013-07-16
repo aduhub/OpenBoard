@@ -24,7 +24,7 @@ function GridMove(arg){
 	Board.grid[arg.gno2].status = "";
 	Board.grid[arg.gno2].statime = 0;
 	//Icon
-	$("#DIV_GICON"+arg.gno2).css("backgroundImage", "url(imgsrc/icon/"+Card[cno].imgsrc.replace(".png", "")+".gif)");
+	$("#DIV_GICON"+arg.gno2).css("backgroundImage", "url(img/icon/"+Card[cno].imgsrc.replace(".png", "")+".gif)");
 	GridSetImage(arg.gno2);
 	//Clear From
 	GridClear({gno:arg.gno1});
@@ -328,7 +328,7 @@ function GridSetImage(){
 	//Canvas
 	var pos = {x:Number(Board.grid[arg[0]].left), y:Number(Board.grid[arg[0]].top)};
 	var img1 = "GRID" + Board.grid[arg[0]].color;
-	var img2 = "imgsrc/border" + Team(Board.grid[arg[0]].owner) + Board.grid[arg[0]].level + ".gif";
+	var img2 = "img/border" + Team(Board.grid[arg[0]].owner) + Board.grid[arg[0]].level + ".gif";
 	Canvas.draw({id:"CVS_BACK", src:[Canvas.srcs[img1], img2], x:pos.x, y:pos.y});
 	//
 	if(Board.grid[arg[0]].owner >= 1){
@@ -347,7 +347,7 @@ function GridSetTax(gno){
 		//Status
 		if(Board.grid[gno].status != ""){
 			var imgsrc = StatusIcon(Board.grid[gno].status);
-			html = "<imgsrc src='imgsrc/"+imgsrc+".gif' width='32' height='22' style='margin-top:28px;'><br>";
+			html = "<img src='img/"+imgsrc+".gif' width='32' height='22' style='margin-top:28px;'><br>";
 		}else{
 			html = "<div style='height:50px;'></div>";
 		}
@@ -355,13 +355,13 @@ function GridSetTax(gno){
 		case 0: //Tax
 			var wktax = String(GridTax(gno));
 			for(var i2=1; i2<=wktax.length; i2++){
-				html += "<IMG src='imgsrc/num"+wktax.substr(i2 - 1, 1)+".gif' width='11' height='14'>";
+				html += "<IMG src='img/num"+wktax.substr(i2 - 1, 1)+".gif' width='11' height='14'>";
 			}
 			break;
 		case 1: //ST
 			var wkst = String(Board.grid[gno].st);
 			for(var i2=1; i2<=wkst.length; i2++){
-				html += "<IMG src='imgsrc/numr"+wkst.substr(i2 - 1, 1)+".gif' width='11' height='14'>";
+				html += "<IMG src='img/numr"+wkst.substr(i2 - 1, 1)+".gif' width='11' height='14'>";
 			}
 			break;
 		case 2: //HP/MHP
@@ -369,11 +369,11 @@ function GridSetTax(gno){
 			var wkmhp = String(Board.grid[gno].maxlf);
 			var clrstr = (wkhp == wkmhp) ? "b" : "";
 			for(var i2=1; i2<=wkhp.length; i2++){
-				html += "<IMG src='imgsrc/num"+clrstr+wkhp.substr(i2 - 1, 1)+".gif' width='11' height='14'>";
+				html += "<IMG src='img/num"+clrstr+wkhp.substr(i2 - 1, 1)+".gif' width='11' height='14'>";
 			}
-			html += "<IMG src='imgsrc/numbs.gif' width='10' height='14'>";
+			html += "<IMG src='img/numbs.gif' width='10' height='14'>";
 			for(var i2=1; i2<=wkmhp.length; i2++){
-				html += "<IMG src='imgsrc/numb"+wkmhp.substr(i2 - 1, 1)+".gif' width='11' height='14'>";
+				html += "<IMG src='img/numb"+wkmhp.substr(i2 - 1, 1)+".gif' width='11' height='14'>";
 			}
 			break;
 		}
@@ -876,9 +876,13 @@ function GridAbility(arg){
 	//所持者あり
 	if(tgtgrid.owner >= 1){
 		var tgtcno = tgtgrid.cno;
-		var ability = [Card[tgtcno].opt1, Card[tgtcno].opt2, Card[tgtcno].opt3, tgtgrid.status];
-		if(tgtgrid.status.match(/_BIND_/)){
-			ability = [];
+		var ability = [];
+		//BINDでない
+		if(!tgtgrid.status.match(/_BIND_/)){
+			//Option
+			ability = Card[tgtcno].opt.concat();
+			//Status
+			ability.push(tgtgrid.status);
 		}
 		for(var i=0; i<ability.length; i++){
 			//タイミング分岐
@@ -1050,7 +1054,7 @@ function GridAbility(arg){
 									//Board.grid[arg.gno].lf = Math.ceil(Board.grid[arg.gno].lf / 2);
 									//copy
 									for(var ilink=0; ilink<summonarr.length; ilink++){
-										Summon.stype = "copy";
+										Summon.from = "copy";
 										Summon.pno = Board.turn;
 										Summon.gno = summonarr[ilink];
 										Summon.cno = cno;
@@ -1145,15 +1149,15 @@ function GridAbility(arg){
 //AREA
 function GridAreaAbility(arg){
 	var retitem = [];
-	var grid, cno, ability;
+	var ability = [];
+	var grid, cno;
 	for(var gno=1; gno<Board.grid.length; gno++){
 		if(Board.grid[gno].owner >= 1){
 			cno = Board.grid[gno].cno;
-			if(Board.grid[gno].status.match(/_BIND_/)){
-				ability = [Board.grid[gno].status];
-			}else{
-				ability = [Card[cno].opt1, Card[cno].opt2, Card[cno].opt3, Board.grid[gno].status];
+			if(!Board.grid[gno].status.match(/_BIND_/)){
+				ability = Card[cno].opt.concat();
 			}
+			ability.push(Board.grid[gno].status);
 			for(var i=0; i<ability.length; i++){
 				//タイミング分岐
 				switch(arg.time){

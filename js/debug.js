@@ -99,7 +99,7 @@ function DebugGridInfo(i_gno){
 				//Creature
 				optstr = "";
 				for(var i=0; i<listdata.length; i++){
-					var clrno = Card[listdata[i]].ctype;
+					var clrno = Card[listdata[i]].type;
 					if(clrno == "C"){
 						optstr += "<option value='"+listdata[i]+"'>"+Card[listdata[i]].name+"</option>";
 					}
@@ -140,7 +140,7 @@ function DebugGridSetup(i_gno){
 	if(Board.grid[i_gno].owner == 0){
 		$("#DIV_GICON"+i_gno).css({display:"none", backgroundImage: ""});
 	}else{
-		$("#DIV_GICON"+i_gno).css({display:"block", backgroundImage: "url(imgsrc/icon/"+Card[Board.grid[i_gno].cno].imgsrc.replace(".png", "")+".gif)"});
+		$("#DIV_GICON"+i_gno).css({display:"block", backgroundImage: "url(img/icon/"+Card[Board.grid[i_gno].cno].imgsrc.replace(".png", "")+".gif)"});
 	}
 	for(var i=1; i<=4; i++){
 		GridSetPlayerTax(i);

@@ -157,7 +157,7 @@ function clsPlayer() {
 			var handcnt = handarr.length;
 			for(var i=1; i<=handcnt; i++){
 				cno = handarr.shift();
-				sortwork.push(Card[cno].ctype + ":" + Card[cno].color + ":" + cno);
+				sortwork.push(Card[cno].type + ":" + Card[cno].color + ":" + cno);
 			}
 			sortwork.sort();
 			for(var i=1; i<=handcnt; i++){
@@ -216,31 +216,31 @@ function clsPlayer() {
 	}
 }
 //Card クラス
-function clsCard(){
-	this.cardid = "X001";
-	this.name   = "";
-	this.ctype  = "C";
-	this.cost   = 0;
-	this.plus   = "";
-	this.limit  ="";
-	this.color  = "N";
-	this.st     = 0;
-	this.lf     = 0;
-	this.item   = "";
-	this.walk   = "";
-	this.spell  = "";
-	this.opt1   = 0;
-	this.opt2   = 0;
-	this.opt3   = 0;
-	this.target = "";
-	this.imgsrc = "";
-	this.atkani = "";
-	this.artist = "";
-	this.comment= "";
-	this.opts = function(){
-		return [this.opt1, this.opt2, this.opt3];
-	}
-}
+//function clsCard(){
+//	this.cardid = "X001";
+//	this.name   = "";
+//	this.ctype  = "C";
+//	this.cost   = 0;
+//	this.plus   = "";
+//	this.limit  ="";
+//	this.color  = "N";
+//	this.st     = 0;
+//	this.lf     = 0;
+//	this.item   = "";
+//	this.walk   = "";
+//	this.spell  = "";
+//	this.opt1   = 0;
+//	this.opt2   = 0;
+//	this.opt3   = 0;
+//	this.target = "";
+//	this.imgsrc = "";
+//	this.atkani = "";
+//	this.artist = "";
+//	this.comment= "";
+//	this.opts = function(){
+//		return [this.opt1, this.opt2, this.opt3];
+//	}
+//}
 //Dice クラス
 function clsDice(){
 	this.pno   = 0;
@@ -262,7 +262,7 @@ function clsSpell(){
 }
 //Summon
 function clsSummon(){
-	this.stype = "";
+	this.from = "";
 	this.pno   = 0;
 	this.gno   = 0;
 	this.cno   = "";
@@ -299,16 +299,14 @@ function clsFighter(){
 	this.attack = 0;
 	this.item   = "";
 	this.rnd    = "";
-	this.opt1   = "";
-	this.opt2   = "";
-	this.opt3   = "";
+	this.opt    = [];
 	this.status = "";
 	this.active = "";
 	this.direct = false;
 }
 //Battle
 function clsBattle(){
-	this.btype    = 0;
+	this.from    = 0;
 	this.result  = 0;
 	this.gno     = 0;
 	this.gno_atk = 0;

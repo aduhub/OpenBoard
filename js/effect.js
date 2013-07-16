@@ -85,7 +85,7 @@ function EffectBox(arg){
 	case "fortpuff": //CastleFort Icon puff
 		var divy = Number(Board.grid[Player[arg.pno].stand].top) - 22;
 		var divx = Number(Board.grid[Player[arg.pno].stand].left);
-		var effdiv = $("<div><imgsrc src='imgsrc/"+arg.imgsrc+".gif' height='90' width='128'></div>");
+		var effdiv = $("<div><img src='img/"+arg.imgsrc+".gif' height='90' width='128'></div>");
 		effdiv.addClass("animePuff");
 		effdiv.css({position:"absolute", top:divy, left:divx});
 		effdiv.one('webkitAnimationEnd', function(){
@@ -108,7 +108,7 @@ function EffectBox(arg){
 	case "focusin": //Territory Color
 		var divy = Number(Board.grid[arg.gno].top);
 		var divx = Number(Board.grid[arg.gno].left);
-		var effdiv = $("<div><imgsrc src='imgsrc/grid"+Board.grid[arg.gno].color+".gif' height='64' width='128'></div>");
+		var effdiv = $("<div><img src='img/grid"+Board.grid[arg.gno].color+".gif' height='64' width='128'></div>");
 		effdiv.addClass("animeFocusin");
 		effdiv.css({position:"absolute", top:divy, left:divx});
 		effdiv.one('webkitAnimationEnd', function(){$(this).remove();});
@@ -119,10 +119,10 @@ function EffectBox(arg){
 		}
 		break;
 	case "levelup":
-		var img = "imgsrc/border" + Board.grid[arg.gno].owner + Board.grid[arg.gno].level + ".gif";
+		var img = "img/border" + Board.grid[arg.gno].owner + Board.grid[arg.gno].level + ".gif";
 		var divy = Number(Board.grid[arg.gno].top);
 		var divx = Number(Board.grid[arg.gno].left);
-		var effdiv = $("<div><imgsrc src='"+img+"' height='64' width='128'></div>");
+		var effdiv = $("<div><img src='"+img+"' height='64' width='128'></div>");
 		effdiv.addClass("animeLevelup");
 		effdiv.css({position:"absolute", top:divy, left:divx});
 		effdiv.one('webkitAnimationEnd', function(){$(this).remove();});
@@ -131,11 +131,11 @@ function EffectBox(arg){
 		Audie.seplay("tr_levelup");
 		break;
 	case "invasion":
-		var img = "imgsrc/icon/"+Card[arg.cno].imgsrc.replace(".png", "")+".gif";
+		var img = "img/icon/"+Card[arg.cno].imgsrc.replace(".png", "")+".gif";
 		var divy = Number(Board.grid[arg.gno1].top) - 26;
 		var divx = Number(Board.grid[arg.gno1].left);
 		var effid = "invasion"+$T.rndstr();
-		var effdiv = $("<div id='"+effid+"'><imgsrc src='"+img+"' height='90' width='128'></div>");
+		var effdiv = $("<div id='"+effid+"'><img src='"+img+"' height='90' width='128'></div>");
 		effdiv.css({position:"absolute", top:divy, left:divx, zIndex:200, opacity:0.2});
 		$("#DIV_FRAME").append(effdiv);
 		//Move
@@ -155,11 +155,11 @@ function EffectBox(arg){
 		break;
 	case "summon":
 		var css;
-		var img = "imgsrc/icon/"+Card[arg.cno].imgsrc.replace(".png", "")+".gif";
+		var img = "img/icon/"+Card[arg.cno].imgsrc.replace(".png", "")+".gif";
 		var divy = Number(Board.grid[arg.gno].top) - 26;
 		var divx = Number(Board.grid[arg.gno].left);
 		var effid = "summon"+$T.rndstr();
-		var effdiv = $("<div id='"+effid+"'><imgsrc src='"+img+"' height='90' width='128'></div>");
+		var effdiv = $("<div id='"+effid+"'><img src='"+img+"' height='90' width='128'></div>");
 		effdiv.css({position:"absolute", top:divy, left:divx, zIndex:200, "transform":"scale(0.6, 1.0)", opacity:0.0});
 		$("#DIV_FRAME").append(effdiv);
 		$("#DIV_GICON"+arg.gno).css({display:"none", backgroundImage:"url("+img+")"});
@@ -174,11 +174,11 @@ function EffectBox(arg){
 		break;
 	case "unsummon":
 		var css;
-		var img = "imgsrc/icon/"+Card[arg.cno].imgsrc.replace(".png", "")+".gif";
+		var img = "img/icon/"+Card[arg.cno].imgsrc.replace(".png", "")+".gif";
 		var divy = Number(Board.grid[arg.gno].top) - 26;
 		var divx = Number(Board.grid[arg.gno].left);
 		var effid = "unsummon"+$T.rndstr();
-		var effdiv = $("<div id='"+effid+"'><imgsrc src='"+img+"' height='90' width='128'></div>");
+		var effdiv = $("<div id='"+effid+"'><img src='"+img+"' height='90' width='128'></div>");
 		effdiv.css({position:"absolute", top:divy, left:divx, zIndex:200});
 		$("#DIV_FRAME").append(effdiv);
 		//css tmp anime
@@ -186,7 +186,7 @@ function EffectBox(arg){
 		CSSTransition({id:"#"+effid, css:css, msec:1000, remove:true});
 		break;
 	case "destroy":
-		var img = "url(imgsrc/icon/"+Card[arg.cno].imgsrc.replace(".png", "")+".gif)";
+		var img = "url(img/icon/"+Card[arg.cno].imgsrc.replace(".png", "")+".gif)";
 		for(var i=0; i<=3; i++){
 			var effid = "destroy"+$T.rndstr();
 			var effdiv = $("<div id='"+effid+"'></div>");
@@ -207,7 +207,7 @@ function EffectBox(arg){
 		break;
 	case "itemdestroy":
 		var gif = (Card[arg.cno].imgsrc.match(".png")) ? "": ".gif";
-		var img = "url(imgsrc/card/"+Card[arg.cno].imgsrc+gif+")";
+		var img = "url(img/card/"+Card[arg.cno].imgsrc+gif+")";
 		for(var i=0; i<=3; i++){
 			var effid = "itemdestroy"+$T.rndstr();
 			var effdiv = $("<div id='"+effid+"'></div>");
@@ -225,11 +225,11 @@ function EffectBox(arg){
 		break;
 	case "soldout":
 		var css;
-		var img = "imgsrc/border" + Board.grid[arg.gno].owner + Board.grid[arg.gno].level + ".gif";
+		var img = "img/border" + Board.grid[arg.gno].owner + Board.grid[arg.gno].level + ".gif";
 		var divy = Number(Board.grid[arg.gno].top);
 		var divx = Number(Board.grid[arg.gno].left);
 		var effid = "sold"+$T.rndstr(8);
-		var effdiv = $("<div id='"+effid+"'><imgsrc src='"+img+"' height='64' width='128'></div>");
+		var effdiv = $("<div id='"+effid+"'><img src='"+img+"' height='64' width='128'></div>");
 		effdiv.css({position:"absolute", top:divy, left:divx, zIndex:200, opacity:0.9});
 		$("#DIV_FRAME").append(effdiv);
 		//Move

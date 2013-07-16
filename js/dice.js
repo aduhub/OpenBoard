@@ -505,8 +505,8 @@ function DiceStepDraw(i_flg){
 			var typeflg = {C:0, I:0, S:0};
 			var Plyr = Player[Board.turn];
 			for(var i=1; i<=Plyr.DeckCount(); i++){
-				if(typeflg[Card[Plyr.DeckCard(i)].ctype] == 0){
-					typeflg[Card[Plyr.DeckCard(i)].ctype] = i;
+				if(typeflg[Card[Plyr.DeckCard(i)].type] == 0){
+					typeflg[Card[Plyr.DeckCard(i)].type] = i;
 				}
 			}
 			var mstarr = ["デッキから引くカードを選択してください"];

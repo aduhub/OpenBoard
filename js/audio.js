@@ -52,10 +52,6 @@ var Audie = {
 						}
 					});
 					Audie.bank[id].load();
-// 					Audie.bank[id].addEventListener('ended', function() {
-// 						this.currentTime = 0;
-// 						this.play();
-// 					}, false);
 				}
 				$("#spanbgm"+id).html("loading...");
 				reader.readAsDataURL(file);

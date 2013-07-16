@@ -23,7 +23,7 @@ function TerritoryInit(i_gno){
 function TerritoryDialog(i_mode){
 	var panels = "";
 	var imgname = ["", "mark_n", "mark_r", "mark_b", "mark_g", "mark_y"];
-	var imgsrc = "<IMG src='imgsrc/"+imgname[Board.grid[Territory.gno].color]+".gif' height='26' width='26'>";
+	var imgsrc = "<IMG src='img/"+imgname[Board.grid[Territory.gno].color]+".gif' height='26' width='26'>";
 	panels += Infoblock.line({m:["基本", imgsrc, "レベル"+Board.grid[Territory.gno].level], w:[50, 30, 100]});
 	panels += Infoblock.line({m:[Card[Board.grid[Territory.gno].cno].name], w:[180]});
 	//
@@ -31,12 +31,9 @@ function TerritoryDialog(i_mode){
 	case 0:
 		//Ability Command
 		var cno = Board.grid[Territory.gno].cno;
-		var opts = "";
+		var opts = Card[cno].opt.join(",");
 		var cmdflg, btnstr, btncmd;
 		//MapSkill
-		if(Card[cno].opt1) opts += Card[cno].opt1;
-		if(Card[cno].opt2) opts += "," + Card[cno].opt2;
-		if(Card[cno].opt3) opts += "," + Card[cno].opt3;
 		var hits = opts.match(/(@[A-Z]+@)[:0-9A-Z]*=([0-9]+)/);
 		if(hits != null){
 			//Check
@@ -105,11 +102,11 @@ function TerritoryDialog(i_mode){
 		var tgtgrid = Board.grid[Territory.gno];
 		for(var i=2; i<=5; i++){
 			if(tgtgrid.color == i){
-				panels += Infoblock.line({m:"<IMG src='imgsrc/"+imgname[i]+".gif' height='26' width='26'>   0G", b:"disabled'"});
+				panels += Infoblock.line({m:"<IMG src='img/"+imgname[i]+".gif' height='26' width='26'>   0G", b:"disabled'"});
 			}else{
 				var wkvalue = (tgtgrid.color != 1) ? 200 : 0;
 				wkvalue += (tgtgrid.level * 100);
-				var btnsrc = "<IMG src='imgsrc/"+imgname[i]+".gif' height='26' width='26'> "+wkvalue+"G";
+				var btnsrc = "<IMG src='img/"+imgname[i]+".gif' height='26' width='26'> "+wkvalue+"G";
 				if(Player[Board.role].gold >= wkvalue){
 					panels += Infoblock.line({m:btnsrc, b:"onclick='TerritoryColor("+i+")'"});
 				}else{
@@ -925,7 +922,7 @@ function TerritoryAbility(i_flg){
 				if(Board.role != i){
 					for(var i2=1; i2<=Player[i].HandCount(); i2++){
 						cno = Player[i].HandCard(i2);
-						if(Card[cno].ctype == "I" && Card[cno].item == "W"){
+						if(Card[cno].type == "I" && Card[cno].item == "W"){
 							tgthand.push(cno);
 						}
 					}

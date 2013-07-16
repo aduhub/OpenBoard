@@ -34,16 +34,12 @@ var Maker = {
 			div_id = "#" + div_id;
 		}
 		//Base
-		jQ_Canvas = $("<canvas/>");
+		jQ_Canvas = $("<canvas></canvas>");
 		//id設定
-		jQ_Canvas.attr("id", cvs_id);
+		jQ_Canvas.attr({id:cvs_id, height:arg.h, width:arg.w});
 		//Style
 		if(arg["css"]){
 			jQ_Canvas.css(arg["css"]);
-		}else{
-			var h = $(div_id).css("height");
-			var w = $(div_id).css("width");
-			jQ_Canvas.css({height:h, width:w});
 		}
 		//Class
 		if(arg["class"]){
@@ -56,10 +52,10 @@ var Maker = {
 		var hno = $(".CLS_HAND").length + 1;
 		var div_id = "DIV_HAND" + hno;
 		var cvs_id = "CVS_HAND" + hno;
-		var divitem = {base:"#DIV_HANDFRAME", id:div_id, class:"CLS_HAND", css:{zIndex:hno}}
+		var divitem = {base:"#DIV_HANDFRAME", id:div_id, class:"CLS_HAND", css:{zIndex:hno, overflow:"hidden"}}
 		divitem["attr"] = {"onclick":"HandClick("+hno+")", "oncontextmenu":"CardInfo("+hno+");return false;", "onmouseout":"CardInfo(0)"}
 		this.addDiv(divitem);
-		this.addCanvas({div:div_id, id:cvs_id});
+		this.addCanvas({div:div_id, id:cvs_id, h:"130", w:"100"});
 	},
 	remHand:function(){
 		var hno = $(".CLS_HAND").length;

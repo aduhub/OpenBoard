@@ -137,7 +137,7 @@ function DeckSelect(deckstr){
 		$("#DECKID").val(seldeckid);
 		$("#DECKNAME").val(seldecknm);
 		for(var i=0; i<deckdat.length; i++){
-			additem = [Card[deckdat[i]].ctype, Card[deckdat[i]].color, Card[deckdat[i]].name, deckdat[i]].join(",");
+			additem = [Card[deckdat[i]].type, Card[deckdat[i]].color, Card[deckdat[i]].name, deckdat[i]].join(",");
 			deckdata.push(additem);
 		}
 		DeckDisplay();
@@ -152,11 +152,11 @@ function DeckDisplay(){
 	if(deckdata.length > 0){
 		for(var i=0; i<deckdata.length; i++){
 			var listcol = deckdata[i].split(",");
-			var clrno = Card[listcol[3]].ctype;
+			var clrno = Card[listcol[3]].type;
 			if(clrno == "C") clrno += Card[listcol[3]].color;
 			var button = "<button onclick=\"delList('"+listcol[3]+"')\" oncontextmenu='CardInfo(\""+listcol[3]+"\");return false;' style='background-color:#"+palet[clrno]+";'>" + Card[listcol[3]].name + "</button>";
 			$("#SEL_DECKSET").append(button);
-			cardcnt[Card[listcol[3]].ctype]++;
+			cardcnt[Card[listcol[3]].type]++;
 			cardcnt["ALL"]++;
 		}
 	}
@@ -180,7 +180,7 @@ function addList(cno){
 	var additem;
 	if(deckdata.length < 50){
 		var cnt = 0;
-		additem = [Card[cno].ctype, Card[cno].color, Card[cno].name, cno].join(",");
+		additem = [Card[cno].type, Card[cno].color, Card[cno].name, cno].join(",");
 		if(deckdata.length >= 1){
 			for(var i=0; i<deckdata.length; i++){
 				if(deckdata[i] == additem){
@@ -195,7 +195,7 @@ function addList(cno){
 	}
 }
 function delList(cno){
-	var delitem = [Card[cno].ctype, Card[cno].color, Card[cno].name, cno].join(",");
+	var delitem = [Card[cno].type, Card[cno].color, Card[cno].name, cno].join(",");
 	var idx = $.inArray(delitem, deckdata);
 	deckdata = $.grep(deckdata, function(v, i){return i != idx;});
 	DeckDisplay();
@@ -220,7 +220,7 @@ function ListDisplay(){
 	if(listdata.length > 0){
 		for(var i=0; i<listdata.length; i++){
 			var listcol = listdata[i].split(",");
-			var clrno = Card[listcol[3]].ctype;
+			var clrno = Card[listcol[3]].type;
 			if(clrno == "C") clrno += Card[listcol[3]].color;
 			if(btns[clrno] == 1){
 				var button = "<button onclick=\"addList('"+listcol[3]+"')\" oncontextmenu='CardInfo(\""+listcol[3]+"\");return false;' style='background-color:#"+palet[clrno]+";'>" + Card[listcol[3]].name + "</button>";
@@ -251,9 +251,9 @@ function DeckView(deckstr){
 			//draw
 			for(var i=0; i<deckdat.length; i++){
 				var imgtype = (Card[deckdat[i]].imgsrc.match(/.png$/)) ? "" : ".gif";
-				var imgsrc = "imgsrc/card/"+Card[deckdat[i]].imgsrc+imgtype;
-				frameid = "CARDFRAME"+Card[deckdat[i]].ctype;
-				frameid += (Card[deckdat[i]].ctype == "C") ? Card[deckdat[i]].color : "";
+				var imgsrc = "img/card/"+Card[deckdat[i]].imgsrc+imgtype;
+				frameid = "CARDFRAME"+Card[deckdat[i]].type;
+				frameid += (Card[deckdat[i]].type == "C") ? Card[deckdat[i]].color : "";
 				x = 54 * (i % 10);
 				y = 79 * Math.floor(i / 10);
 				Canvas.draw({id:"CVSDECKVIEW", src:[imgsrc, Canvas.srcs[frameid]], x:x, y:y, zoom:0.25});
@@ -281,7 +281,7 @@ function CardInfoSet(arg){
 		//detail
 		var infoarg = [];
 		infoarg.push({type:"width", px:190});
-		switch(Card[arg.cno].ctype){
+		switch(Card[arg.cno].type){
 		case "C":
 			infoarg.push({type:"clname", color:Card[arg.cno].color, name:Card[arg.cno].name});
 			infoarg.push({type:"cost", cost:Card[arg.cno].cost, plus:Card[arg.cno].plus});
@@ -301,7 +301,7 @@ function CardInfoSet(arg){
 		case "S":
 			infoarg.push({type:"spname", name:Card[arg.cno].name});
 			infoarg.push({type:"cost", cost:Card[arg.cno].cost, plus:Card[arg.cno].plus});
-			//infoarg.push({ctype:"sptarget", target:Card[cno].target});
+			//infoarg.push({type:"sptarget", target:Card[cno].target});
 			infoarg.push({type:"comment", comment:Card[arg.cno].comment});
 			break;
 		}
@@ -310,46 +310,26 @@ function CardInfoSet(arg){
 }
 //###################################################################
 function CardImgSet(cvsid, cno){
-	var frameid = "CARDFRAME"+Card[cno].ctype;
-	frameid += (Card[cno].ctype == "C") ? Card[cno].color : ""
+	var frameid = "CARDFRAME"+Card[cno].type;
+	frameid += (Card[cno].type == "C") ? Card[cno].color : ""
 	var imgtype = (Card[cno].imgsrc.match(/.png$/)) ? "" : ".gif";
-	var imgsrc = "imgsrc/card/"+Card[cno].imgsrc+imgtype;
+	var imgsrc = "img/card/"+Card[cno].imgsrc+imgtype;
 	Canvas.draw({id:cvsid, src:[imgsrc, Canvas.srcs[frameid]]});
 }
 //初期設定 [card.js]
 function initEditor(){
 	var sortkey;
-	var cd = CardDataSet();
 	//配列設定
-	for(i in cd){
-		Card[cd[i].id] = new clsCard();
-		Card[cd[i].id].ctype = cd[i].ctype;
-		Card[cd[i].id].name = cd[i].name;
-		Card[cd[i].id].cost = cd[i].cost;
-		Card[cd[i].id].plus = (cd[i].plus) ? cd[i].plus : "";
-		Card[cd[i].id].color = (cd[i].color) ? cd[i].color : 0;
-		Card[cd[i].id].st = (cd[i].st) ? cd[i].st : 0;
-		Card[cd[i].id].lf = (cd[i].lf) ? cd[i].lf : 0;
-		Card[cd[i].id].item = (cd[i].item) ? cd[i].item : "";
-		Card[cd[i].id].walk = (cd[i].walk) ? cd[i].walk : "";
-		Card[cd[i].id].spell = (cd[i].spell) ? cd[i].spell : "";
-		Card[cd[i].id].target = (cd[i].tgt) ? cd[i].tgt : "";
-		Card[cd[i].id].opt1 = (cd[i].opt1) ? cd[i].opt1 : "";
-		Card[cd[i].id].opt2 = (cd[i].opt2) ? cd[i].opt2 : "";
-		Card[cd[i].id].opt3 = (cd[i].opt3) ? cd[i].opt3 : "";
-		Card[cd[i].id].imgsrc = (cd[i].imgsrc) ? cd[i].imgsrc : "";
-		Card[cd[i].id].artist = (cd[i].art) ? cd[i].art : "";
-		Card[cd[i].id].comment = (cd[i].com) ? cd[i].com : "";
-		//add
-		sortkey = [Card[cd[i].id].ctype, Card[cd[i].id].color, Card[cd[i].id].name, cd[i].id].join(",");
+	for(i in Card){
+		sortkey = [Card[i].type, Card[i].color, Card[i].name, i].join(",");
 		listdata.push(sortkey);
 	}
 	//Image Load
-	Canvas.srcs["CARDFRAMEC1"] = "imgsrc/card/frame_glay.gif";
-	Canvas.srcs["CARDFRAMEC2"] = "imgsrc/card/frame_red.gif";
-	Canvas.srcs["CARDFRAMEC3"] = "imgsrc/card/frame_blue.gif";
-	Canvas.srcs["CARDFRAMEC4"] = "imgsrc/card/frame_green.gif";
-	Canvas.srcs["CARDFRAMEC5"] = "imgsrc/card/frame_yellow.gif";
-	Canvas.srcs["CARDFRAMEI"] = "imgsrc/card/frame_item.gif";
-	Canvas.srcs["CARDFRAMES"] = "imgsrc/card/frame_spell.gif";
+	Canvas.srcs["CARDFRAMEC1"] = "img/card/frame_glay.gif";
+	Canvas.srcs["CARDFRAMEC2"] = "img/card/frame_red.gif";
+	Canvas.srcs["CARDFRAMEC3"] = "img/card/frame_blue.gif";
+	Canvas.srcs["CARDFRAMEC4"] = "img/card/frame_green.gif";
+	Canvas.srcs["CARDFRAMEC5"] = "img/card/frame_yellow.gif";
+	Canvas.srcs["CARDFRAMEI"] = "img/card/frame_item.gif";
+	Canvas.srcs["CARDFRAMES"] = "img/card/frame_spell.gif";
 }

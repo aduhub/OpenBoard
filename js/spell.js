@@ -6,7 +6,7 @@ function SpellCheck(){
 		if(cno == ""){
 			Canvas.clear({id:"CVS_HAND"+i});
 		}else{
-			if(Card[cno].ctype != "S"){
+			if(Card[cno].type != "S"){
 				SpellCardImgSet("CVS_HAND"+i, cno, 0);
 			}else{
 				if(Player[Board.role].gold < Card[cno].cost){
@@ -20,17 +20,17 @@ function SpellCheck(){
 }
 function SpellCardImgSet(i_id, i_cno, i_flg){
 	//Card CardImgSet function Custom
-	var frameid = "CARDFRAME"+Card[i_cno].ctype;
-	frameid += (Card[i_cno].ctype == "C") ? Card[i_cno].color : "";
+	var frameid = "CARDFRAME"+Card[i_cno].type;
+	frameid += (Card[i_cno].type == "C") ? Card[i_cno].color : "";
 	var imgtype = (Card[i_cno].imgsrc.match(/.png$/)) ? "" : ".gif";
-	var imgsrc = "imgsrc/card/"+Card[i_cno].imgsrc+imgtype;
+	var imgsrc = "img/card/"+Card[i_cno].imgsrc+imgtype;
 	var termfnc = function(){
 		switch(i_flg){
 		case 0:
 			Canvas.rect(i_id, {rgb:[0,0,0], alpha:0.6, x:0, y:0, w:100, h:130});
 			break;
 		case 2:
-			Canvas.draw({id:i_id, src:"imgsrc/icon_nogold.gif"});
+			Canvas.draw({id:i_id, src:"img/icon_nogold.gif"});
 			break;
 		}
 	};
@@ -40,7 +40,7 @@ function SpellCardImgSet(i_id, i_cno, i_flg){
 function SpellCost(i_no){
 	var cno = Player[Board.role].HandCard(i_no);
 	//タイプチェック
-	if(Card[cno].ctype == "S"){
+	if(Card[cno].type == "S"){
 		//コストチェック
 		return (Player[Board.role].gold >= Card[cno].cost) ? true : false;
 	}else{
@@ -59,7 +59,7 @@ function SpellTarget(i_no){
 	Spell.check = [];
 	Spell.target = [];
 	//アイコン表示
-	Canvas.draw({id:"CVS_HAND"+Spell.hand, src:"imgsrc/cmd_select.gif", alpha:0.6});
+	Canvas.draw({id:"CVS_HAND"+Spell.hand, src:"img/cmd_select.gif", alpha:0.6});
 	//ターゲット・対象の～
 	if(tgt.match(/^T.*$/)){
 		//タイプ
@@ -259,10 +259,10 @@ function SpellFire(i_flg){
 		var tgtcno;
 		for(var i=Player[Spell.pno].HandCount(); i>=1; i--){
 			tgtcno = Player[Spell.pno].HandCard(i);
-			if(Card[tgtcno].ctype == "C"){
+			if(Card[tgtcno].type == "C"){
 				Player[Spell.pno].HandDel(i);
 				Logprint({msg:"##" + tgtcno + "##を破棄", pno:Spell.pno});
-				wkgold += Number(Card[Spell.cno].opt1);
+				wkgold += Number(Card[Spell.cno].opt[0]);
 			}
 		}
 		Player[Spell.pno].gold += wkgold;
@@ -287,7 +287,7 @@ function SpellFire(i_flg){
 		wait = 200;
 		break;
 	case "SOULCOLECT":
-		var wkgold = Board.grave.length * Number(Card[Spell.cno].opt1);
+		var wkgold = Board.grave.length * Number(Card[Spell.cno].opt[0]);
 		Board.grave = [];
 		Player[Spell.pno].gold += wkgold;
 		//msgpop
@@ -301,10 +301,10 @@ function SpellFire(i_flg){
 	case "SETSTATUSP":
 		var tgtpno = Number(Spell.target[0]);
 		//status
-		Player[tgtpno].status = Card[Spell.cno].opt1;
-		Player[tgtpno].statime = Card[Spell.cno].opt2;
+		Player[tgtpno].status = Card[Spell.cno].opt[0];
+		Player[tgtpno].statime = Card[Spell.cno].opt[1];
 		//icon set
-		SetPlayerIcon(tgtpno, StatusIcon(Card[Spell.cno].opt1));
+		SetPlayerIcon(tgtpno, StatusIcon(Card[Spell.cno].opt[0]));
 		//msgpop
 		EffectBox({pattern:"msgpop", gno:Player[tgtpno].stand, msg:"Cursed", color:"#F0D4FF", player:true});
 		//log
@@ -316,7 +316,7 @@ function SpellFire(i_flg){
 		var tgtpno = Number(Spell.target[0]);
 		//chk
 		for(var i=1; i<=Board.playcnt; i++){
-			if(Player[i].status == Card[Spell.cno].opt1){
+			if(Player[i].status == Card[Spell.cno].opt[0]){
 				//Clear
 				Player[i].status = "";
 				Player[i].statime = 0;
@@ -329,10 +329,10 @@ function SpellFire(i_flg){
 			}
 		}
 		//status
-		Player[tgtpno].status = Card[Spell.cno].opt1;
-		Player[tgtpno].statime = Card[Spell.cno].opt2;
+		Player[tgtpno].status = Card[Spell.cno].opt[0];
+		Player[tgtpno].statime = Card[Spell.cno].opt[1];
 		//icon set
-		SetPlayerIcon(tgtpno, StatusIcon(Card[Spell.cno].opt1));
+		SetPlayerIcon(tgtpno, StatusIcon(Card[Spell.cno].opt[0]));
 		//msgpop
 		EffectBox({pattern:"msgpop", gno:Player[tgtpno].stand, msg:"Cursed", color:"#F0D4FF", player:true});
 		//log
@@ -343,10 +343,10 @@ function SpellFire(i_flg){
 	case "QUEST":
 		var tgtpno = Number(Spell.target[0]);
 		//status
-		Player[tgtpno].status = Card[Spell.cno].opt1+":"+Analytics.invasionwin[tgtpno];
-		Player[tgtpno].statime = Card[Spell.cno].opt2;
+		Player[tgtpno].status = Card[Spell.cno].opt[0]+":"+Analytics.invasionwin[tgtpno];
+		Player[tgtpno].statime = Card[Spell.cno].opt[1];
 		//icon set
-		SetPlayerIcon(tgtpno, StatusIcon(Card[Spell.cno].opt1));
+		SetPlayerIcon(tgtpno, StatusIcon(Card[Spell.cno].opt[0]));
 		//msgpop
 		EffectBox({pattern:"msgpop", gno:Player[tgtpno].stand, msg:"Cursed", color:"#F0D4FF", player:true});
 		//log
@@ -356,7 +356,7 @@ function SpellFire(i_flg){
 		break;
 	case "DRAIN":
 		var tgtpno = Number(Spell.target[0]);
-		var wkgold = Math.floor(Player[tgtpno].gold * Number(Card[Spell.cno].opt1) / 100);
+		var wkgold = Math.floor(Player[tgtpno].gold * Number(Card[Spell.cno].opt[0]) / 100);
 		Player[Spell.pno].gold += wkgold;
 		Player[tgtpno].gold -= wkgold;
 		//スクロール
@@ -379,7 +379,7 @@ function SpellFire(i_flg){
 		var pno = Number(Spell.target[0]);
 		var mvto = [];
 		if(i_flg == 0){
-			switch(Card[Spell.cno].opt1){
+			switch(Card[Spell.cno].opt[0]){
 			case "castle":
 				for(var i=1; i<=Board.grid.length - 1; i++){
 					if(Board.grid[i].color == 10){
@@ -432,7 +432,7 @@ function SpellFire(i_flg){
 		break;
 	case "DRAW":
 		var diagimg = [];
-		var drawcnt = Card[Spell.cno].opt1;
+		var drawcnt = Card[Spell.cno].opt[0];
 		//Draw X
 		for(var i=1; i<=drawcnt; i++){
 			//手札追加
@@ -450,7 +450,7 @@ function SpellFire(i_flg){
 		//ReDisp
 		DispPlayer();
 		//復帰
-		if(Card[Spell.cno].opt2 == "hand"){
+		if(Card[Spell.cno].opt[1] == "hand"){
 			cardback = "hand";
 		}
 		//WAIT
@@ -568,7 +568,7 @@ function SpellFire(i_flg){
 		var tgtgrid = Board.grid[tgtgno];
 		var tgtpno = Board.grid[tgtgno].owner;
 		var elestr = new Array("", "無", "火", "水", "地", "風");
-		var wkcolor = [Board.grid[tgtgno].color, Card[Spell.cno].opt1];
+		var wkcolor = [Board.grid[tgtgno].color, Card[Spell.cno].opt[0]];
 		//設定
 		tgtgrid.color = wkcolor[1];
 		//地形表示
@@ -701,13 +701,13 @@ function SpellFire(i_flg){
 		break;
 	case "DAMAGE":
 		var tgtgno = Spell.target[0];
-		var dmg = Number(Card[Spell.cno].opt1);
+		var dmg = Number(Card[Spell.cno].opt[0]);
 		//Map Damage
 		GridDamage({gno:tgtgno, dmg:dmg, arrow:true, scroll:true});
 		wait = 2000;
 		break;
 	case "AREADMG":
-		var dmg = Number(Card[Spell.cno].opt1);
+		var dmg = Number(Card[Spell.cno].opt[0]);
 		//Map Damage
 		GridDamage({target:Spell.target, dmg:dmg, arrow:true});
 		wait = 3000;
@@ -741,7 +741,7 @@ function SpellFire(i_flg){
 		break;
 	case "INCINERATE":
 		var tgtgno = Spell.target[0];
-		var dmg = Number(Card[Spell.cno].opt1);
+		var dmg = Number(Card[Spell.cno].opt[0]);
 		for(var i=0; i<Board.spelled.length; i++){
 			if(Card[Board.spelled[i]].spell == "INCINERATE" && dmg < 40){
 				dmg += 10;
@@ -759,7 +759,7 @@ function SpellFire(i_flg){
 				var tgtpno = Board.grid[tgtgno].owner;
 				var tgtlist = [];
 				for(var i=1; i<=Player[tgtpno].DeckCount(); i++){
-					if(Card[Player[tgtpno].DeckCard(i)].ctype == "C"){
+					if(Card[Player[tgtpno].DeckCard(i)].type == "C"){
 						tgtlist.push(i);
 					}
 				}
@@ -927,8 +927,8 @@ function SpellFire(i_flg){
 		Board.grid[tgtgno1].statime = 0;
 		Board.grid[tgtgno2].statime = 0;
 		//表示
-		$("#DIV_GICON"+tgtgno1).css("backgroundImage", "url(imgsrc/icon/"+Card[Board.grid[tgtgno1].cno].imgsrc.replace(".png", "")+".gif)");
-		$("#DIV_GICON"+tgtgno2).css("backgroundImage", "url(imgsrc/icon/"+Card[Board.grid[tgtgno2].cno].imgsrc.replace(".png", "")+".gif)");
+		$("#DIV_GICON"+tgtgno1).css("backgroundImage", "url(img/icon/"+Card[Board.grid[tgtgno1].cno].imgsrc.replace(".png", "")+".gif)");
+		$("#DIV_GICON"+tgtgno2).css("backgroundImage", "url(img/icon/"+Card[Board.grid[tgtgno2].cno].imgsrc.replace(".png", "")+".gif)");
 		GridSetTax(tgtgno1);
 		GridSetTax(tgtgno2);
 		//矢印
@@ -1027,9 +1027,9 @@ function SpellFire(i_flg){
 	case "SETSTATUSG":
 		var tgtgno = Number(Spell.target[0]);
 		//Status
-		GridStatusChg({gno:tgtgno, status:Card[Spell.cno].opt1, statime:Card[Spell.cno].opt2, arrow:true, scroll:true});
+		GridStatusChg({gno:tgtgno, status:Card[Spell.cno].opt[0], statime:Card[Spell.cno].opt[1], arrow:true, scroll:true});
 		//cantrip
-		if(Card[Spell.cno].opt3 == "draw"){
+		if(Card[Spell.cno].opt[2] == "draw"){
 			var diagimg = [];
 			var cno = Drawcard({pno:Spell.pno, from:"deck"});
 			diagimg.push(cno);
@@ -1049,9 +1049,9 @@ function SpellFire(i_flg){
 		break;
 	case "AREASTATUS":
 		//Status
-		var opt2 = Number(Card[Spell.cno].opt2);
+		var opt2 = Number(Card[Spell.cno].opt[1]);
 		var time = ($T.inrange(opt2, 1, 9)) ? opt2 * Board.playcnt : 99;
-		GridStatusChg({target:Spell.target, status:Card[Spell.cno].opt1, statime:Card[Spell.cno].opt2});
+		GridStatusChg({target:Spell.target, status:Card[Spell.cno].opt[0], statime:Card[Spell.cno].opt[1]});
 		wait = 3000;
 		break;
 	case "GROUPSTATUS":
@@ -1068,7 +1068,7 @@ function SpellFire(i_flg){
 			}
 		}
 		//Status
-		GridStatusChg({target:gridgroup, status:Card[Spell.cno].opt1, statime:Card[Spell.cno].opt2});
+		GridStatusChg({target:gridgroup, status:Card[Spell.cno].opt[0], statime:Card[Spell.cno].opt[1]});
 		wait = 2000;
 		break;
 	case "LINKGATE":
@@ -1091,7 +1091,7 @@ function SpellFire(i_flg){
 			//Status
 			var tgtstr = "AMG"+["", "N", "F", "W", "E", "D"][Spell.target];
 			var tgtarr = GridTgtGrep({pno:Board.turn, tgt:tgtstr});
-			GridStatusChg({target:tgtarr, status:Card[Spell.cno].opt1, statime:Card[Spell.cno].opt2});
+			GridStatusChg({target:tgtarr, status:Card[Spell.cno].opt[0], statime:Card[Spell.cno].opt[1]});
 			wait = 3000;
 		}
 		break;
@@ -1101,7 +1101,7 @@ function SpellFire(i_flg){
 			var wkgold = 0;
 			if(Player[tgtpno].HandCount() >= 1){
 				for(var i2=1; i2<=Player[tgtpno].HandCount(); i2++){
-					if(Card[Player[tgtpno].HandCard(i2)].ctype == "I"){
+					if(Card[Player[tgtpno].HandCard(i2)].type == "I"){
 						wkgold += 30;
 					}
 				}
@@ -1168,7 +1168,7 @@ function SpellFire(i_flg){
 				hcnt = Player[tgtpno].HandCount();
 				for(var i2=hcnt; i2>=1; i2--){
 					tgtcno = Player[tgtpno].HandCard(i2);
-					if(Card[tgtcno].ctype == "I" && Card[tgtcno].item == "I"){
+					if(Card[tgtcno].type == "I" && Card[tgtcno].item == "I"){
 						//手札削除
 						Player[tgtpno].HandDel(i2);
 						Logprint({msg:"##" + tgtcno + "##を破棄", pno:tgtpno});
@@ -1312,7 +1312,7 @@ function SpellTgtSecond(arg){
 			if(Player[tgtpno].HandCount() > 0){
 				for(var i=1; i<=Player[tgtpno].HandCount(); i++){
 					cno = Player[tgtpno].HandCard(i);
-					if(Card[cno].ctype == "I" || Card[cno].ctype == "S"){
+					if(Card[cno].type == "I" || Card[cno].type == "S"){
 						imgarr.push([cno, "SpellTgtSecond({step:1, cno:'"+cno+"'})"]);
 					}
 				}
@@ -1346,7 +1346,7 @@ function SpellTgtSecond(arg){
 		case 0: //表示
 			var cards = [];
 			var imgarr = [];
-			var tgttop = Number(Card[Spell.cno].opt1);
+			var tgttop = Number(Card[Spell.cno].opt[0]);
 			if(Player[Spell.pno].DeckCount() < tgttop){
 				tgttop = Player[Spell.pno].DeckCount();
 			}
@@ -1382,7 +1382,7 @@ function SpellTgtSecond(arg){
 				var chkcnt = Player[tgtpno].HandCount();
 				var hands = [];
 				for(var ic=1; ic<=chkcnt; ic++){
-					if(Card[Player[tgtpno].HandCard(ic)].ctype == "S"){
+					if(Card[Player[tgtpno].HandCard(ic)].type == "S"){
 						var rnd = Math.floor(Math.random() * 50000) + 10000;
 						hands.push([rnd, Player[tgtpno].HandCard(ic), tgtpno]);
 					}
@@ -1472,7 +1472,7 @@ function SpellTgtSecond(arg){
 			var btnarr = [];
 			var imgname = ["", "mark_n", "mark_r", "mark_b", "mark_g", "mark_y"];
 			for(var i=1; i<=5; i++){
-				imgtag = "<IMG src='imgsrc/"+imgname[i]+".gif' height='26' width='26'>";
+				imgtag = "<IMG src='img/"+imgname[i]+".gif' height='26' width='26'>";
 				btnarr.push([imgtag, "SpellTgtSecond({step:1, colorno:"+i+"})"]);
 			}
 			//ダイアログ
@@ -1610,7 +1610,7 @@ function Enchant(arg){
 			case "_WARCRY_":
 				Logprint({msg:"##" + arg.cno + "##をドロー", pno:arg.pno});
 				EffectBox({pattern:"drawcard", cno:arg.cno});
-				if(Card[arg.cno].ctype.match(/[C]/)){
+				if(Card[arg.cno].type.match(/[C]/)){
 					var gold = Card[arg.cno].cost;
 					//Bonus
 					Player[arg.pno].gold += gold;

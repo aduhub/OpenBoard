@@ -9,40 +9,40 @@ var Infoblock = {
 		var colorimg = ["", "mark_n", "mark_r", "mark_b", "mark_g", "mark_y"];
 		var itemimg = {"W":"iconweapon", "I":"iconitem"};
 		for(var i=0; i<arg.length; i++){
-			switch(arg[i].ctype){
+			switch(arg[i].type){
 			case "width":
 				Infoblock._width = arg[i].px;
 				break;
 			case "gridhead": //[180px]
-				imgtag = "<imgsrc src='imgsrc/"+colorimg[arg[i].color]+".gif' height='26' width='26'>";
+				imgtag = "<img src='img/"+colorimg[arg[i].color]+".gif' height='26' width='26'>";
 				html += Infoblock.line({m:["基本", imgtag, "レベル"+arg[i].level], w:[56, 30, 94]});
 				break;
 			case "gridvalue": //[180px]
 				html += Infoblock.line({m:["価値", arg[i].gold+"G", ""], w:[56, 120, 4], ta:["","r",""]});
 				break;
 			case "clname":
-				imgtag = "<imgsrc src='imgsrc/"+colorimg[arg[i].color]+".gif' height='26' width='26'>";
+				imgtag = "<img src='img/"+colorimg[arg[i].color]+".gif' height='26' width='26'>";
 				html += Infoblock.line({m:[imgtag, arg[i].name], w:[28, Infoblock._width - 28]});
 				break;
 			case "itname":
-				imgtag = "<imgsrc src='imgsrc/"+itemimg[arg[i].item]+".gif' height='26' width='26'>";
+				imgtag = "<img src='img/"+itemimg[arg[i].item]+".gif' height='26' width='26'>";
 				html += Infoblock.line({m:[imgtag, arg[i].name], w:[28, Infoblock._width - 28]});
 				break;
 			case "spname":
-				imgtag = "<imgsrc src='imgsrc/iconspell.gif' height='26' width='26'>";
+				imgtag = "<img src='img/iconspell.gif' height='26' width='26'>";
 				html += Infoblock.line({m:[imgtag, arg[i].name], w:[28, Infoblock._width - 28]});
 				break;
 			case "cost":
-				imgtag = "<imgsrc src='imgsrc/infog.gif' height='20' width='11' style='margin-top:3px;'>";
+				imgtag = "<img src='img/infog.gif' height='20' width='11' style='margin-top:3px;'>";
 				imgtag2 = "";
 				for(var i2=0; i2<arg[i].plus.length; i2++){
-					imgtag2 += "<imgsrc src='imgsrc/"+colorimg[colorno[arg[i].plus.substr(i2, 1)]]+".gif' height='26' width='26'>";
+					imgtag2 += "<img src='img/"+colorimg[colorno[arg[i].plus.substr(i2, 1)]]+".gif' height='26' width='26'>";
 				}
 				html += Infoblock.line({m:[imgtag, arg[i].cost, imgtag2], w:[14, 42, Infoblock._width - 66],  ta:["","r",""]});
 				break;
 			case "clsthp":
-				imgtag = "<imgsrc src='imgsrc/infost.gif' height='20' width='11' style='margin-top:3px;'>";
-				imgtag2 = "<imgsrc src='imgsrc/infohp.gif' height='20' width='11' style='margin-top:3px;'>";
+				imgtag = "<img src='img/infost.gif' height='20' width='11' style='margin-top:3px;'>";
+				imgtag2 = "<img src='img/infohp.gif' height='20' width='11' style='margin-top:3px;'>";
 				if(arg[i].mhp){
 					html += Infoblock.line({m:[imgtag, arg[i].st, imgtag2, arg[i].hp+"/"+arg[i].mhp], w:[14, 42, 14, Infoblock._width - 70]});
 				}else{
@@ -53,12 +53,12 @@ var Infoblock = {
 				imgtag = "";
 				for(var i2=0; i2<=1; i2++){
 					if(arg[i].item.match(["W", "I"][i2])){
-						imgtag += "<imgsrc src='imgsrc/x_"+["weapon","item"][i2]+".gif' height='26' width='26' title='"+["武具","道具"][i2]+"使用不可'>";
+						imgtag += "<img src='img/x_"+["weapon","item"][i2]+".gif' height='26' width='26' title='"+["武具","道具"][i2]+"使用不可'>";
 					}
 				}
 				for(var i2=0; i2<=6; i2++){
 					if(arg[i].walk.match(["N", "F", "W", "E", "D", "T", "I"][i2])){
-						imgtag += "<imgsrc src='imgsrc/x_"+["newtral", "fire", "water", "earth", "wind", "walk", "invasion"][i2]+".gif' height='26' width='26' title='"+["無属性侵入", "火属性侵入", "水属性侵入", "地属性侵入", "風属性侵入", "領地移動", "侵略召喚"][i2]+"不可'>";
+						imgtag += "<img src='img/x_"+["newtral", "fire", "water", "earth", "wind", "walk", "invasion"][i2]+".gif' height='26' width='26' title='"+["無属性侵入", "火属性侵入", "水属性侵入", "地属性侵入", "風属性侵入", "領地移動", "侵略召喚"][i2]+"不可'>";
 					}
 				}
 				html += Infoblock.line({m:["不可", imgtag], w:[50, Infoblock._width - 50]});
