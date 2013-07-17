@@ -481,6 +481,10 @@ DIV.CLS_GRIDGUIDE{
 	color : red;
 	text-shadow:rgba(0,0,0,0.6) 1px 1px 0px;
 	background-repeat: no-repeat;
+    -webkit-filter:drop-shadow(rgba(255,0,0,0.8) 2px 0 0)
+                   drop-shadow(rgba(255,0,0,0.8) -2px 0 0)
+                   drop-shadow(rgba(255,0,0,0.8) 0 2px 0)
+                   drop-shadow(rgba(255,0,0,0.8) 0 -2px 0);
 }
 #DIV_PLAYER2{
 	font-family : "Arial Black";
@@ -489,6 +493,10 @@ DIV.CLS_GRIDGUIDE{
 	color : blue;
 	text-shadow:rgba(0,0,0,0.6) 1px 1px 0px;
 	background-repeat: no-repeat;
+    -webkit-filter:drop-shadow(rgba(0,0,255,0.8) 2px 0 0)
+                   drop-shadow(rgba(0,0,255,0.8) -2px 0 0)
+                   drop-shadow(rgba(0,0,255,0.8) 0 2px 0)
+                   drop-shadow(rgba(0,0,255,0.8) 0 -2px 0);
 }
 #DIV_PLAYER3{
 	font-family : "Arial Black";
@@ -497,6 +505,10 @@ DIV.CLS_GRIDGUIDE{
 	color : #00CC00;
 	text-shadow:rgba(0,0,0,0.6) 1px 1px 0px;
 	background-repeat: no-repeat;
+    -webkit-filter:drop-shadow(rgba(0,204,0,0.8) 2px 0 0)
+                   drop-shadow(rgba(0,204,0,0.8) -2px 0 0)
+                   drop-shadow(rgba(0,204,0,0.8) 0 2px 0)
+                   drop-shadow(rgba(0,204,0,0.8) 0 -2px 0);
 }
 #DIV_PLAYER4{
 	font-family : "Arial Black";
@@ -505,6 +517,10 @@ DIV.CLS_GRIDGUIDE{
 	color : #FFCC00;
 	text-shadow:rgba(0,0,0,0.6) 1px 1px 0px;
 	background-repeat: no-repeat;
+    -webkit-filter:drop-shadow(rgba(255,204,0,0.8) 2px 0 0)
+                   drop-shadow(rgba(255,204,0,0.8) -2px 0 0)
+                   drop-shadow(rgba(255,204,0,0.8) 0 2px 0)
+                   drop-shadow(rgba(255,204,0,0.8) 0 -2px 0);
 }
 
 /* ===================[ DECK ]=================== */

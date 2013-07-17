@@ -12,13 +12,15 @@ var Maker = {
 			jQ_Div = $("<div/>");
 		}
 		//id設定
-		jQ_Div.attr("id", id);
+		if(arg["id"]){
+			jQ_Div.attr("id", id);
+		}
 		//Style
 		if(arg["css"]){
 			jQ_Div.css(arg["css"]);
 		}
 		//Class
-		if(arg["class"]){
+		if(arg["class"] && arg["class"] != ""){
 			jQ_Div.addClass(arg["class"]);
 		}
 		//ドキュメントに追加

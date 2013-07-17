@@ -154,8 +154,8 @@ function createBoard(){
 			var pos = {x:Number(Board.grid[i].left), y:Number(Board.grid[i].top)};
 			Canvas.draw({id:"CVS_BACK", src:wkimgid, x:pos.x, y:pos.y, composite:wkcomposite});
 			//GRID
-			CreateLay("DIV_GICON"+i , 128, 90, pos.x, pos.y - 26, 10, "img", wkicon);
-			CreateLay("DIV_GCLICK"+i , 64, 64, pos.x + 32, pos.y, 150, "click", i);
+			CreateLay({id:"DIV_GICON"+i, w:128, h:90, l:pos.x, t:pos.y - 26, z:10, opt:"img", imgsrc:wkicon});
+			CreateLay({id:"DIV_GCLICK"+i, w:64, h:64, l:pos.x + 32, t:pos.y, z:150, opt:"click", gno:i});
 		}
 	}
 	//ソート
@@ -179,8 +179,8 @@ function PlayerSetup(){
 		Player[i].shadow = 1;
 		Player[i].gold = Board.bonus;
 		//ICON
-		CreateLay("DIV_PLAYER"+i, 128, 128, Number(Board.grid[1].left), Number(Board.grid[1].top) - 64, 11, "img", "");
-		$("#DIV_PLAYER"+i).html("<div id='DIV_PNO"+i+"'>"+i+"P</div>");
+		CreateLay({id:"DIV_PLAYER"+i, w:128, h:128, l:Number(Board.grid[1].left), t:Number(Board.grid[1].top) - 64, z:11});
+		//$("#DIV_PLAYER"+i).html("<div id='DIV_PNO"+i+"'>"+i+"P</div>");
 		PlayerImgSetup(i);
 	}
 	//##### Alliance #####
@@ -981,48 +981,34 @@ function DispDialog(param){
 }
 //################[ エレメント作成 ]#################
 //DIV レイヤー設置
-function CreateLay(){
-	var arg = arguments;
-	var jQ_Div;
-
+function CreateLay(arg){
+	var Attr = {id:arg.id}
+	var Class = "";
 	//Div生成
-	if(arg[6] == "click"){
-        jQ_Div = $("<div/>", {
-            "onmousedown":"GridClick("+arg[7]+")",
-            "onmouseover":"GridInfo("+arg[7]+")",
-            "onmouseout":"GridInfo(0)",
-            "oncontextmenu":"GridGuidePop("+arg[7]+");return false;"
-        });
-	}else{
-        jQ_Div = $("<div/>");
+	if(arg.opt && arg.opt == "click"){
+		Attr["onmousedown"] = "GridClick("+arg.gno+")";
+		Attr["onmouseover"] = "GridInfo("+arg.gno+")";
+		Attr["onmouseout"] = "GridInfo(0)";
+		Attr["oncontextmenu"] = "GridGuidePop("+arg.gno+");return false;";
+		//Class設定
+		Class = "CLS_CLICK";
 	}
-
-    //Attr設定
-    jQ_Div.attr("id", arg[0]);
-    //Class設定
-    if(arg[6] == "click"){
-        jQ_Div.addClass("CLS_CLICK");
+    //Style設定
+    var Css = {
+        position:"absolute",
+        width:arg.w+"px",
+        height:arg.h+"px",
+        left:arg.l+"px",
+        top:arg.t+"px",
+        zIndex:arg.z,
+	    textAlign:"center"
+    }
+    if(arg.opt && arg.opt == "img"){
+        Css["backgroundImage"] = "url(img/"+arg.imgsrc+".gif)";
+        Css["backgroundRepeat"] = "no-repeat";
     }
 	//ドキュメントに追加
-	$("#DIV_FRAME").append(jQ_Div);
-
-    //Style設定
-    var jQ_Css = {
-        position:(arg[6] == "fixed") ? "fixed" : "absolute",
-        width:arg[1]+"px",
-        height:arg[2]+"px",
-        left:arg[3]+"px",
-        top:arg[4]+"px",
-        zIndex:arg[5]
-    }
-    if(arg[6] == "img"){
-        jQ_Css["textAlign"] = "center";
-        if(arg[7] != ""){
-            jQ_Css["backgroundImage"] = "url(img/"+arg[7]+".gif)";
-            jQ_Css["backgroundRepeat"] = "no-repeat";
-        }
-    }
-    $("#"+arg[0]).css(jQ_Css);
+	Maker.addDiv({base:"#DIV_FRAME", attr:Attr, css:Css, class:Class})
 }
 //
 function SetPlayerIcon(pno, file){
