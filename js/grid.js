@@ -471,8 +471,7 @@ function GridTgtGrep(arg){
 			}else{
 				//領地検索
 				if(antiprotect == false){
-					opts = Card[tgtgrid.cno].opts();
-					if((opts.indexOf("@PROTECT@") >= 0 && tgtgrid.status != "_BIND_") || tgtgrid.status == "_PROTECT_"){
+					if((Card[tgtgrid.cno].opt.indexOf("@PROTECT@") >= 0 && tgtgrid.status != "_BIND_") || tgtgrid.status == "_PROTECT_"){
 						protect = true;
 					}
 				}
@@ -522,16 +521,14 @@ function GridTgtGrep(arg){
 					if(Board.grid[i].status == "_BIND_"){
 						optflg = true;
 					}else{
-						opts = Card[Board.grid[i].cno].opts();
-						optflg = (opts.indexOf("@FLYING@") == -1);
+						optflg = (Card[Board.grid[i].cno].opt.indexOf("@FLYING@") == -1);
 					}
 				}
 				break;
 			case "FLY":
 				if(Board.grid[i].cno != ""){
 					if(Board.grid[i].status != "_BIND_"){
-						opts = Card[Board.grid[i].cno].opts();
-						optflg = (opts.indexOf("@FLYING@") >= 0);
+						optflg = (Card[Board.grid[i].cno].opt.indexOf("@FLYING@") >= 0);
 					}
 				}
 				break;
@@ -719,16 +716,14 @@ function GridNeighborGrep(arg){
 					break;
 				case "live":
 					if(linkgrid.owner != 0){
-						opts = Card[linkgrid.cno].opts();
-						if((opts.indexOf("@PROTECT@") >= 0 && linkgrid.status != "_BIND_") || linkgrid.status == "_PROTECT_"){
+						if((Card[linkgrid.cno].opt.indexOf("@PROTECT@") >= 0 && linkgrid.status != "_BIND_") || linkgrid.status == "_PROTECT_"){
 							gnoarr.push(tgtgrid.linkarr[i]);
 						}
 					}
 					break;
 				case "invasion":
 					if(linkgrid.owner == 0 || Team(linkgrid.owner) != Team(Board.turn)){
-						opts = Card[linkgrid.cno].opts();
-						if((opts.indexOf("@PROTECT@") >= 0 && linkgrid.status != "_BIND_") || ["_PROTECT_", "_JAIL_"].indexOf(linkgrid.status) == -1){
+						if((Card[linkgrid.cno].opt.indexOf("@PROTECT@") >= 0 && linkgrid.status != "_BIND_") || ["_PROTECT_", "_JAIL_"].indexOf(linkgrid.status) == -1){
 							gnoarr.push(tgtgrid.linkarr[i]);
 						}
 					}
@@ -756,8 +751,10 @@ function GridInfo(i_no){
 					var cno = Board.grid[i_no].cno;
 					infoarg.push({type:"clname", color:Card[cno].color, name:Card[cno].name});
 					infoarg.push({type:"clsthp", st:Board.grid[i_no].st, hp:Board.grid[i_no].lf, mhp:Board.grid[i_no].maxlf});
-					if(Card[cno].item != "" || Card[cno].walk != ""){
-						infoarg.push({type:"clitem", item:Card[cno].item, walk:Card[cno].walk});
+					if(Card[cno].item || Card[cno].walk){
+						var item = Card[cno].item || "";
+						var walk = Card[cno].walk || "";
+						infoarg.push({type:"clitem", item:item, walk:walk});
 					}
 					if(Card[cno].comment != ""){
 						infoarg.push({type:"comment", comment:Card[cno].comment});

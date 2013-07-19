@@ -136,7 +136,7 @@ function BattleInit(){
 		//再表示
 		SortHand();
 		//PHASEENDBUTTON
-		$("#DIV_PHASEEND BUTTON").html("キャンセル");
+		$("#BTN_PhaseEnd").html("キャンセル");
 		//使用可能チェック
 		setTimeout(ItemCheck, 500);
 	}else{
@@ -159,19 +159,18 @@ function ItemCheck(){
 			chkflg = "CLOSE";
 		}else{
 			if(Card[handcno].type == "I"){
-				if(Card[fig.cno].item != "" && Card[fig.cno].item.match(Card[handcno].item)){
+				if(Card[fig.cno].item && Card[fig.cno].item.match(Card[handcno].item)){
 					chkflg = "LIMIT";
 				}else if(Player[Board.role].gold < Card[handcno].cost){
 					chkflg = "GOLD";
 				}
 			}else if(Card[handcno].type == "C"){
-				opts =  Card[handcno].opts();
 				if(fig.active.match(/@BAND@|@REFLECT@/)){
 					if(Player[Board.role].gold < Card[handcno].cost){
 						chkflg = "GOLD";
 					}
-				}else if($T.inarray("@AID@", opts)){
-					if(Card[fig.cno].item != "" && Card[fig.cno].item.match("W")){
+				}else if($T.inarray("@AID@", Card[handcno].opt)){
+					if(Card[fig.cno].item && Card[fig.cno].item.match("W")){
 						chkflg = "LIMIT";
 					}else if(Player[Board.role].gold < Card[handcno].cost){
 						chkflg = "GOLD";
@@ -209,7 +208,7 @@ function BattleItem(){
 				//結果待ち
 				StepSet(73);
 				//PHASEENDBUTTON
-				$("#DIV_PHASEEND BUTTON").html("");
+				$("#BTN_PhaseEnd").html("-");
 				//アイコン設定
 				if(arg[1] <= 10){
 					Canvas.draw({id:"CVS_HAND"+arg[1], src:"img/cmd_select.gif", alpha:0.6});
@@ -401,13 +400,12 @@ function BattleFightReady2(){
 					}
 				}
 			}else if(Card[wkcno].ctype == "C"){
-				var opts = Card[wkcno].opts();
 				if(Battle.p[i].active.match(/@BAND@/)){
 					//援護
 					Battle.p[i].st += Card[wkcno].st;
 					Battle.p[i].lf += Card[wkcno].lf;
 					BattleLog(i, Dic("@BAND@"));
-				}else if($T.inarray("@AID@", opts)){
+				}else if($T.inarray("@AID@", Card[wkcno].opt)){
 					//加勢
 					Battle.p[i].st += Card[wkcno].st;
 					Battle.p[i].lf += Card[wkcno].lf;
@@ -614,12 +612,12 @@ function BattleResult(){
 	//Result Item
 	for(var i=0; i<=1; i++){
 		if(Battle.p[i].lf >= 1 && Battle.p[i].item != "FIST"){
-			var opts = Card[Battle.p[i].item].opts();
+			var opts = Card[Battle.p[i].item].opt.concat();
 			for(var i2=0; i2<opts.length; i2++){
 				switch(opts[i2]){
 				case "BACKHAND":
 					//手札追加
-					if(Player[Battle.p[i].pno].HandCount() <= 5){
+					if(Player[Battle.p[i].pno].HandCount() < 10){
 						Player[Battle.p[i].pno].HandAdd(Battle.p[i].item);
 						if(Board.role == Battle.p[i].pno){
 							//手札ソート
@@ -717,7 +715,7 @@ function BattleResult(){
 			//召還侵略
 			if(Battle.from == "S"){
 				//手札追加
-				if(Player[Battle.p[0].pno].HandCount() <= 5){
+				if(Player[Battle.p[0].pno].HandCount() < 10){
 					Player[Battle.p[0].pno].HandAdd(Battle.p[0].cno);
 					//手札枚数再表示
 					if(Battle.p[0].pno == Board.role) SortHand();
@@ -1071,7 +1069,7 @@ function BattleAbiAction(arg){
 	case "ITEMCLASH":
 		if(atk.active.match(/@WEAPONCLASH@/)){
 			var defcno = def.item;
-			if(def.item != "FIST" && Card[defcno].item == "W"){
+			if(def.item != "FIST" && Card[defcno].item && Card[defcno].item == "W"){
 				def.item = "FIST";
 				EffectBox({pattern:"itemdestroy", bno:$r(arg.bno), cno:defcno});
 				$("#DIV_VSITEM"+$r(arg.bno)).css("display", "none");
@@ -1180,7 +1178,7 @@ function BattleAbiAction(arg){
 			}
 		}
 		if(atk.active.match("@DRUG@")){
-			if(atk.item != "FIST" && Card[atk.item].item == "I"){
+			if(atk.item != "FIST" && Card[atk.item].item && Card[atk.item].item == "I"){
 				var matchstr = atk.active.match(/@DRUG@:([A-Z0-9]+)/);
 				atk.lf += BtAbilityExNo(arg.bno, matchstr[1]);
 				BattleLog(arg.bno, Dic("@LFCHANGE@"));
@@ -1217,7 +1215,7 @@ function BattleAbiAction(arg){
 			BattleLog(arg.bno, Dic("@SMASH@"));
 		}
 		if(atk.active.match("@WEAPON@")){
-			if(atk.item != "FIST" && Card[atk.item].item == "W"){
+			if(atk.item != "FIST" && Card[atk.item].item && Card[atk.item].item == "W"){
 				atk.damage = (atk.damage > 0) ? Math.floor(atk.damage * 1.5) : 0;
 				BattleLog(arg.bno, Dic("@SMASH@"));
 			}
@@ -1255,7 +1253,7 @@ function BattleAbiAction(arg){
 			BattleLog($r(arg.bno), Dic("@PROTECTION@"));
 		}
 		if(def.active.match(/@AEGIS@/)){
-			if(atk.item != "FIST" && (Card[atk.item].ctype == "I" || (Card[atk.item].ctype == "C" && !def.active.match(/@BAND@/))) && Card[atk.item].item == "W"){
+			if(atk.item != "FIST" && (Card[atk.item].ctype == "I" || (Card[atk.item].ctype == "C" && !def.active.match(/@BAND@/))) && Card[atk.item].item && Card[atk.item].item == "W"){
 				atk.damage = 0;
 				BattleLog($r(arg.bno), Dic("@PROTECTION@"));
 			}
@@ -1350,7 +1348,7 @@ function BattleAbiAction(arg){
 				atk.lf = 0;
 				atk.status = "escape";
 				//手札追加
-				if(Player[atk.pno].HandCount() <= 5){
+				if(Player[atk.pno].HandCount() < 10){
 					Player[atk.pno].HandAdd(atk.cno);
 					if(Board.role == atk.pno){
 						//手札ソート
@@ -1376,7 +1374,7 @@ function BattleAbiAction(arg){
 		if(atk.active.match(/@STICKY@/)){
 			for(var i=1; i<=2; i++){
 				//手札追加
-				if(Player[atk.pno].HandCount() <= 5){
+				if(Player[atk.pno].HandCount() < 10){
 					Player[atk.pno].HandAdd(atk.cno);
 					Logprint({msg:"*##" + atk.cno + "##は手札に戻った", pno:atk.pno});
 					if(Board.role == atk.pno){
@@ -1450,7 +1448,7 @@ function BattleAbiAction(arg){
 				//破壊判定
 				atk.lf = 0;
 				//手札追加
-				if(Player[atk.pno].HandCount() <= 5){
+				if(Player[atk.pno].HandCount() < 10){
 					Player[atk.pno].HandAdd(atk.cno);
 					Logprint({msg:"*##" + atk.cno + "##は手札に戻った", pno:atk.pno});
 					if(Board.role == atk.pno){
@@ -1636,6 +1634,9 @@ function BtAbilityExNo(i_bno, i_str){
 			var terms = i_str.match(/HANDM([0-9]+)/);
 			var hand = Player[atk.pno].HandCount();
 			retno = Number(terms[1]) - (hand * 10);
+			if(retno < 0){
+				retno = 0;
+			}
 			break;
 		case /RDEC/.test(i_str): //Round Decrease
 			retno = (Board.round) * -1;

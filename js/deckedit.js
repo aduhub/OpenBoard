@@ -286,8 +286,10 @@ function CardInfoSet(arg){
 			infoarg.push({type:"clname", color:Card[arg.cno].color, name:Card[arg.cno].name});
 			infoarg.push({type:"cost", cost:Card[arg.cno].cost, plus:Card[arg.cno].plus});
 			infoarg.push({type:"clsthp", st:Card[arg.cno].st, hp:Card[arg.cno].lf});
-			if(Card[arg.cno].item != "" || Card[arg.cno].walk != ""){
-				infoarg.push({type:"clitem", item:Card[arg.cno].item, walk:Card[arg.cno].walk});
+			if(Card[arg.cno].item || Card[arg.cno].walk){
+				var item = Card[arg.cno].item || "";
+				var walk = Card[arg.cno].walk || "";
+				infoarg.push({type:"clitem", item:item, walk:walk});
 			}
 			if(Card[arg.cno].comment != ""){
 				infoarg.push({type:"comment", comment:Card[arg.cno].comment});
@@ -301,7 +303,6 @@ function CardInfoSet(arg){
 		case "S":
 			infoarg.push({type:"spname", name:Card[arg.cno].name});
 			infoarg.push({type:"cost", cost:Card[arg.cno].cost, plus:Card[arg.cno].plus});
-			//infoarg.push({type:"sptarget", target:Card[cno].target});
 			infoarg.push({type:"comment", comment:Card[arg.cno].comment});
 			break;
 		}

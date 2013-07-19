@@ -37,18 +37,18 @@ function SummonCost(i_gno, i_cno){
 	//所有者が自分以外、通常地形
 	if(wkcolor < 10){
 		var chk = {walk:true, invasion:true, levelcap:true, unique:true};
-		var opts = Card[i_cno].opts();
+		var opts = Card[i_cno].opt.concat();
 		var abinm;
 		//##### Walk Able #####
-		if(Card[i_cno].walk != ""){
+		if(Card[i_cno].walk){
 			if(Card[i_cno].walk.match(nocolor[wkcolor])){
 				chk.walk = false;
 			}
+			if(Card[i_cno].walk.match("I")){
+				chk.invasion = false;
+			}
 		}
 		//##### CardAbi #####
-		if(Card[i_cno].walk.match("I")){
-			chk.invasion = false;
-		}
 		for(var i=0; i<opts.length; i++){
 			switch(opts[i]){
 			case "@WALL@":
@@ -89,7 +89,7 @@ function SummonCost(i_gno, i_cno){
 			if(Card[i_cno].type == "C"){
 				if(chk.walk && chk.levelcap && chk.unique){
 					if(Player[Board.role].gold >= Card[i_cno].cost){
-						if(Card[i_cno].plus == ""){
+						if(Card[i_cno].plus){
 							ret = "OK";
 						}else{
 							var costcnt = [0, 0, 0, 0, 0, 0];
@@ -234,7 +234,7 @@ function SummonGrid(){
 		//手札・矢印表示
 		if(Board.role == Board.turn){
 			//PHASEENDBUTTON
-			$("#DIV_PHASEEND BUTTON").html("");
+			$("#BTN_PhaseEnd").html("-");
 		}else{
 			DivImg("DIV_GCLICK"+Summon.gno, "");
 		}

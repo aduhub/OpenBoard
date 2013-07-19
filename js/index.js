@@ -658,15 +658,17 @@ function BookListItem(arg){
 		html += "</span>";
 		html += "<img src='img/infost.gif' height='12' width='11'><span class='book_st'>"+Card[arg.cno].st+"</span> ";
 		html += "<img src='img/infohp.gif' height='12' width='11'><span class='book_hp'>"+Card[arg.cno].lf+"</span></div>";
-		if(Card[arg.cno].item != "" || Card[arg.cno].walk != ""){
+		if(Card[arg.cno].item || Card[arg.cno].walk){
+			var item = Card[arg.cno].item || "";
+			var walk = Card[arg.cno].walk || "";
 			html += "<div class='book_frame_r3'>不可";
 			for(var i2=0; i2<=1; i2++){
-				if(Card[arg.cno].item.match(["W", "I"][i2])){
+				if(item.match(["W", "I"][i2])){
 					html += "<img src='img/x_"+["weapon","item"][i2]+".gif' height='13' width='13'>";
 				}
 			}
 			for(var i2=0; i2<=6; i2++){
-				if(Card[arg.cno].walk.match(["N", "F", "W", "E", "D", "T", "I"][i2])){
+				if(walk.match(["N", "F", "W", "E", "D", "T", "I"][i2])){
 					html += "<img src='img/x_"+["newtral", "fire", "water", "earth", "wind", "walk", "invasion"][i2]+".gif' height='13' width='13' title='"+["無属性侵入", "火属性侵入", "水属性侵入", "地属性侵入", "風属性侵入", "領地移動", "侵略召喚"][i2]+"不可'>";
 				}
 			}

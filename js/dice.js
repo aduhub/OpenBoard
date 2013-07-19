@@ -11,7 +11,7 @@ function DiceRoll(){
 			StepSet(31);
 
 			//PHASEENDBUTTON
-			$("#DIV_PHASEEND BUTTON").html("");
+			$("#BTN_Phaseend").html("-");
 
 			//スクロール
 			BoardScroll(Player[Board.role].stand);
@@ -82,7 +82,7 @@ function NoDiceRoll(){
 		StepSet(31);
 		if(Board.turn == Board.role){
 			//PHASEENDBUTTON
-			$("#DIV_PHASEEND BUTTON").html("");
+			$("#BTN_PhaseEnd").html("-");
 		}
 		//スクロール
 		BoardScroll(Player[Board.turn].stand);
@@ -464,9 +464,6 @@ function DiceStepTeleport(arg){
 			//ライト
 			GridLight("set_nosave", arg.tgt);
 
-			//PHASEENDBUTTON
-			$("#DIV_PHASEEND BUTTON").html("");
-
 			//Dialog
 			DispDialog({msgs:["テレポート先を選択してください"], dtype:"ok"});
 		}
@@ -552,58 +549,49 @@ function DiceStepDraw(i_flg){
 }
 //########[ Step End ]########
 function MoveEnd(){
-	//handover chk
-	if(Player[Board.turn].HandCount() == 7){
-		//ステップ
-		StepSet(38);
-		//Discard Check
-		DiscardInit();
-	}else{
-		//ステップ（移動終了）
-		StepSet(40);
-		DisplaySet("DIV_DICE", 0);
-		//ZIndex
-		SortZIndex("player");
-		//スクロール
-		BoardScroll(Player[Board.turn].stand);
-		//ターンプレイヤー
-		if(Board.turn == Board.role){
-			//領地指示可能カウント
-			var wkarr = new Array();
-			if($T.inarray(Board.grid[Player[Board.role].stand].color, [10,11,12,13,14]) || Player[Board.role].status == "_TELEGNOSIS_"){
-				for(var i=1; i<Board.grid.length; i++){
-					if(Team(Board.grid[i].owner) == Team(Board.turn)){
-						wkarr.push(i);
-					}
-				}
-			}else{
-				for(var i=0; i<Dice.route.length; i++){
-					if(Team(Board.grid[Dice.route[i]].owner) == Team(Board.turn)){
-						wkarr.push(Dice.route[i]);
-					}
-				}
-				//TELEPATHY CHECK
-				for(var igno=1; igno<Board.grid.length; igno++){
-					if(Team(Board.grid[igno].owner) == Team(Board.turn) && Board.grid[igno].status == "_TELEPATHY_"){
-						wkarr.push(igno);
-					}
+	//ステップ（移動終了）
+	StepSet(40);
+	DisplaySet("DIV_DICE", 0);
+	//ZIndex
+	SortZIndex("player");
+	//スクロール
+	BoardScroll(Player[Board.turn].stand);
+	//ターンプレイヤー
+	if(Board.turn == Board.role){
+		//領地指示可能カウント
+		var wkarr = new Array();
+		if($T.inarray(Board.grid[Player[Board.role].stand].color, [10,11,12,13,14]) || Player[Board.role].status == "_TELEGNOSIS_"){
+			for(var i=1; i<Board.grid.length; i++){
+				if(Team(Board.grid[i].owner) == Team(Board.turn)){
+					wkarr.push(i);
 				}
 			}
-			//Territory Set
-			Territory.target = wkarr;
-			//通過点ライト
-			if(wkarr.length >= 1){
-				GridLight("set", wkarr);
-				GridLight("set_memory");
+		}else{
+			for(var i=0; i<Dice.route.length; i++){
+				if(Team(Board.grid[Dice.route[i]].owner) == Team(Board.turn)){
+					wkarr.push(Dice.route[i]);
+				}
 			}
-			//
-			SummonCheck(Player[Board.role].stand);
-
-			//PHASEENDBUTTON
-			$("#DIV_PHASEEND BUTTON").html("ターンエンド");
-
-			//timer
-			$("#DIV_HAND7").addClass(Chessclock.set(40));
+			//TELEPATHY CHECK
+			for(var igno=1; igno<Board.grid.length; igno++){
+				if(Team(Board.grid[igno].owner) == Team(Board.turn) && Board.grid[igno].status == "_TELEPATHY_"){
+					wkarr.push(igno);
+				}
+			}
 		}
+		//Territory Set
+		Territory.target = wkarr;
+		//通過点ライト
+		if(wkarr.length >= 1){
+			GridLight("set", wkarr);
+			GridLight("set_memory");
+		}
+		//
+		SummonCheck(Player[Board.role].stand);
+
+		//PHASEENDBUTTON
+		$("#BTN_PhaseEnd").html("ターンエンド");
+		//timer
+		$("#BTN_PhaseEnd").addClass(Chessclock.set(40));
 	}
 }

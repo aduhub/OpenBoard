@@ -453,7 +453,7 @@ function HandClick(i_no){
 		case 98: //Dicard(TurnEnd)
 			if(Board.discardstep == 1){
 				//DiscardConfirm({step:0, hno:i_no});
-				Discard({pno:Board.role, hno:arg.hno});
+				Discard({pno:Board.role, hno:i_no});
 			}
 			break;
 		}

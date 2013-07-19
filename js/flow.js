@@ -126,7 +126,7 @@ function PhaseEnd(){
 				DiceRoll();
 				break;
 			case 21: //Spell(Cancel)
-				if(Card[Spell.cno].target.match(/^T.G.*$/)){
+				if(Card[Spell.cno].tgt.match(/^T.G.*$/)){
 					SpellConfirm(2);
 				}
 				break;
@@ -232,7 +232,7 @@ function TurnEnd(){
 			DispPlayer();
 			SortHand();
 			//PHASEENDBUTTON
-			$("#DIV_PHASEEND BUTTON").html("");
+			$("#BTN_PhaseEnd").html("-");
 			//GridLightクリア
 			GridLight("clear");
 

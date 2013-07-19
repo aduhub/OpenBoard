@@ -44,7 +44,7 @@ var Canvas = {
 				var oImage = new Image();
 				oImage.src = src;
 				oImage.onload = function(){
-					arg.imgsrc = this;
+					arg.img = this;
 					Canvas._draw(arg);
 					Canvas.draw(arg);
 				}
@@ -57,7 +57,7 @@ var Canvas = {
 			var oImage = new Image();
 			oImage.src = Canvas.srcs[arg.src] || arg.src;
 			oImage.onload = function(){
-				arg.imgsrc = this;
+				arg.img = this;
 				Canvas._draw(arg);
 				if(arg.fnc){
 					arg.fnc();
@@ -75,8 +75,8 @@ var Canvas = {
 			sizex = Math.round(arg.cut.w * zoom);
 			sizey = Math.round(arg.cut.h * zoom);
 		}else{
-			sizex = Math.round(arg.imgsrc.width * zoom);
-			sizey = Math.round(arg.imgsrc.height * zoom);
+			sizex = Math.round(arg.img.width * zoom);
+			sizey = Math.round(arg.img.height * zoom);
 		}
 		ctx.save();
 		if(arg.r){
@@ -89,9 +89,9 @@ var Canvas = {
 		if(arg.alpha) ctx.globalAlpha = arg.alpha;
 		if(arg.composite) ctx.globalCompositeOperation = arg.composite;
 		if(arg.cut){
-			ctx.drawImage(arg.imgsrc, arg.cut.x, arg.cut.y,  arg.cut.w, arg.cut.h, posx, posy, sizex, sizey);
+			ctx.drawImage(arg.img, arg.cut.x, arg.cut.y,  arg.cut.w, arg.cut.h, posx, posy, sizex, sizey);
 		}else{
-			ctx.drawImage(arg.imgsrc, posx, posy, sizex, sizey);
+			ctx.drawImage(arg.img, posx, posy, sizex, sizey);
 		}
 		ctx.restore();
 	},

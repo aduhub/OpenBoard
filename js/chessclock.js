@@ -66,10 +66,10 @@ Chessclock = {
 								div = document.getElementsByClassName(clsnm)[0];
 								Chessclock._type = 0;
 							}else{
-								div = document.getElementById("DIV_HAND7");
+								div = document.getElementById("BTN_PhaseEnd");
 							}
 						}else{
-							div = document.getElementById("DIV_HAND7");
+							div = document.getElementById("BTN_PhaseEnd");
 							Chessclock._type = 0;
 						}
 						evt = document.createEvent("MouseEvents");

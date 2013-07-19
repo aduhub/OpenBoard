@@ -330,8 +330,9 @@ BUTTON.CLS_W160{
 	left  :90px;
 	height:100px;
 	width :620px;
-    text-alighn:center;
+    text-align:center;
 	z-index : 51;
+    overflow:hidden;
 }
 DIV.CLS_HAND{
 	display:inline-block;
@@ -349,28 +350,17 @@ DIV.CLS_HAND:hover{
     box-shadow: 0 0 10px #9ecaed;
 	opacity : 1.0;
 }
+
 #DIV_PHASEEND{
     position : fixed;
     top   :520px;
-    left  :720px;
+    left  :680px;
     z-index : 51;
 }
-#DIV_TIMEKEEP{
-	color:#444444;
-	text-align : center;
-	font-family: "Arial Black";
-	font-size  : 52px;
-	line-height: 60px;
-	position : fixed;
-	top    : 500px;
-	left   : 710px;
-	width  : 80px;
-	height : 66px;
-	z-index: 60;
-}
+
 #DIV_TIMEBAR_BACK{
 	position : fixed;
-	top    : 200px;
+	top    : 160px;
 	left   : 760px;
 	height : 228px;
 	width  : 26px;
@@ -391,6 +381,19 @@ DIV.CLS_HAND:hover{
 	background-color:#666666;
 	height : 50px;
 	width  : 16px;
+}
+#DIV_TIMEKEEP{
+    color:#444444;
+    text-align : center;
+    font-family: "Arial Black";
+    font-size  : 52px;
+    line-height: 60px;
+    position : fixed;
+    top    : 400px;
+    left   : 710px;
+    width  : 80px;
+    height : 66px;
+    z-index: 60;
 }
 
 #DIV_DICE{
@@ -821,11 +824,11 @@ DIV.CLS_GRIDGUIDE{
 	background-color : rgba(180, 180, 180, 0.8);
 	position:fixed; 
 	top:566px;
-	left:706px;
+	left:0px;
 	height:34px;
 	width:94px;
 	z-index:70;
-	border-top-left-radius:6px;
+	border-top-right-radius:6px;
 }
 #DIV_CONTROLBTN IMG{
 	margin-top:4px;
@@ -834,12 +837,13 @@ DIV.CLS_GRIDGUIDE{
 #DIV_RESULTBTN{
 	background-color : rgba(180, 180, 180, 0.8);
 	position:fixed; 
-	top:566px;
+	top:528px;
 	left:0px;
 	height:34px;
 	width:94px;
 	z-index:70;
 	border-top-right-radius:6px;
+    border-bottom-right-radius:6px;
 	display:none;
 }
 #DIV_RESULTBTN IMG{

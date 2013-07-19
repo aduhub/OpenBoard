@@ -130,7 +130,8 @@ function TerritoryDialog(i_mode){
 			if(tgtgrid.linkarr[i] >= 1){
 				linkgrid = Board.grid[tgtgrid.linkarr[i]];
 				if(linkgrid.color < 10 && Team(linkgrid.owner) != Team(tgtgrid.owner)){
-					if(!Card[tgtgrid.cno].walk.match(nocolor[linkgrid.color]) && !(Card[tgtgrid.cno].walk.match("I") && linkgrid.owner >= 1)){
+					var walk = Card[tgtgrid.cno].walk || "";
+					if(!walk.match(nocolor[linkgrid.color]) && !(walk.match("I") && linkgrid.owner >= 1)){
 						if(linkgrid.status != "_JAIL_"){
 							Territory.mvgno.push(tgtgrid.linkarr[i]);
 						}
@@ -153,9 +154,9 @@ function TerritoryDialog(i_mode){
 			//移動先入力
 			StepSet(52);
 			//PHASEENDBUTTON
-			$("#DIV_PHASEEND BUTTON").html("キャンセル");
+			$("#BTN_PhaseEnd").html("キャンセル");
 			//timer cancel set
-			$("#DIV_HAND7").addClass(Chessclock.set(52));
+			$("#BTN_PhaseEnd").addClass(Chessclock.set(52));
 			//ウィンドウクローズ
 			DisplaySet("DIV_INFOGRID", 0);
 		}
@@ -169,9 +170,9 @@ function TerritoryDialog(i_mode){
 		//交換カード選択
 		StepSet(53);
 		//PHASEENDBUTTON
-		$("#DIV_PHASEEND BUTTON").html("キャンセル");
-		//
-		$("#DIV_HAND7").addClass(Chessclock.set(53));
+		$("#BTN_PhaseEnd").html("キャンセル");
+		//timer cancel set
+		$("#BTN_PhaseEnd").addClass(Chessclock.set(53));
 		//ウィンドウクローズ
 		DisplaySet("DIV_INFOGRID", 0);
 		//カードチェック
@@ -187,7 +188,7 @@ function TerritoryDialog(i_mode){
 		//キャンセル
 		StepSet(40);
 		//PHASEENDBUTTON
-		$("#DIV_PHASEEND BUTTON").html("ターンエンド");
+		$("#BTN_PhaseEnd").html("ターンエンド");
 		DisplaySet("DIV_INFOGRID", 0);
 		break;
 	}
@@ -200,7 +201,7 @@ function TerritoryCheck(arg){
 	//MapAbilitySearch
 	for(var i=1; i<Board.grid.length; i++){
 		if(Board.grid[i].owner >= 1 && !(Board.grid[i].status.match(/_BIND_/))){
-			var opts = Card[Board.grid[i].cno].opts();
+			var opts = Card[Board.grid[i].cno].opt.concat();
 			for(var i2=0; i2<=2; i2++){
 				if(opts[i2].match(/^@MAP[A-Z0-9]+@/)){
 					mapactive += "," + opts[i2];
@@ -233,7 +234,7 @@ function TerritoryCheck(arg){
 	case 3: //Move
 		if(tgtgrid.status.match(/_SPIRITWALK_/)){
 		}else{
-			if(Card[tgtgrid.cno].walk.match("T")){
+			if(Card[tgtgrid.cno].walk && Card[tgtgrid.cno].walk.match("T")){
 				ret = false;
 			}
 			if(mapactive.match(/@MAPTERRITORYLOCK@/)){
@@ -979,7 +980,7 @@ function TerritoryAbiTarget(tgttype){
 		//ライト
 		GridLight("set_nosave", Territory.mvgno);
 		//PHASEENDBUTTON
-		$("#DIV_PHASEEND BUTTON").html("キャンセル");
+		$("#BTN_PhaseEnd").html("キャンセル");
 		break;
 	}
 }
@@ -1006,7 +1007,7 @@ function TerritoryAbiPaySend(opt){
 	}
 	//Pay Cost
 	var reg = new RegExp(Territory.ability+"=([0-9]+)");
-	var opts = Card[Board.grid[Territory.gno].cno].opts();
+	var opts = Card[Board.grid[Territory.gno].cno].opt.concat();
 	var cost = Number(opts.join(",").match(reg)[1]);
 	Player[Territory.pno].gold -= cost;
 	//Log
@@ -1014,39 +1015,32 @@ function TerritoryAbiPaySend(opt){
 }
 //===================================================
 function TerritoryEnd(){
-	if(Player[Board.turn].HandCount() == 7){
-		//ディスカードステップ
-		StepSet(58);
-		//ダイアログ
-		DiscardInit();
+	if(Board.wait > 0){
+		if(Territory.pno == Board.role){
+			//PHASEENDBUTTON
+			$("#BTN_PhaseEnd").html("-");
+		}
+		var msec = Board.wait * 1000;
+		Board.wait = 0;
+		//ウェイト
+		var id = setTimeout(function(){TerritoryEnd();}, msec);
 	}else{
-		if(Board.wait > 0){
-			if(Territory.pno == Board.role){
-				//PHASEENDBUTTON
-				$("#DIV_PHASEEND BUTTON").html("");
-			}
-			var msec = Board.wait * 1000;
-			Board.wait = 0;
-			//ウェイト
-			var id = setTimeout(function(){TerritoryEnd();}, msec);
-		}else{
-			//### GridAbility ###
-			GridAbility({gno:Territory.gno, time:"TERRITORY_CLOSE"});
-			//矢印表示
-			DivImg("DIV_GCLICK"+Territory.gno, "");
-			if(Territory.gno2 >= 1){
-				DivImg("DIV_GCLICK"+Territory.gno2, "");
-			}
-			//再表示
-			DispPlayer();
-			//Territory終了
-			StepSet(60);
-			if(Board.role == Board.turn){
-				//手札ソート
-				SortHand();
-				//TurnEnd
-				TurnEnd();
-			}
+		//### GridAbility ###
+		GridAbility({gno:Territory.gno, time:"TERRITORY_CLOSE"});
+		//矢印表示
+		DivImg("DIV_GCLICK"+Territory.gno, "");
+		if(Territory.gno2 >= 1){
+			DivImg("DIV_GCLICK"+Territory.gno2, "");
+		}
+		//再表示
+		DispPlayer();
+		//Territory終了
+		StepSet(60);
+		if(Board.role == Board.turn){
+			//手札ソート
+			SortHand();
+			//TurnEnd
+			TurnEnd();
 		}
 	}
 }

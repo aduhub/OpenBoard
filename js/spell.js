@@ -51,7 +51,7 @@ function SpellCost(i_no){
 function SpellTarget(i_no){
 	//Target文字 : [All,Target][Me,Each,Opponent,Space,Xothers][Player,Grid,Deck] AEGMOPT
 	var cno = Player[Board.role].HandCard(i_no);
-	var tgt = Card[cno].target.split(",")[0];
+	var tgt = Card[cno].tgt.split(",")[0];
 	//Spellセット
 	Spell.pno = Board.role;
 	Spell.cno = cno;
@@ -67,7 +67,7 @@ function SpellTarget(i_no){
 		//Player
 		if(tgt.match(/^T.P.?$/)){
 			//PHASEENDBUTTON
-			$("#DIV_PHASEEND BUTTON").html("");
+			$("#BTN_PhaseEnd").html("-");
 			//Target Player
 			SpellTgtPlayer(0);
 		}
@@ -79,9 +79,9 @@ function SpellTarget(i_no){
 			//ライト
 			GridLight("set_nosave", Spell.check);
 			//PHASEENDBUTTON
-			$("#DIV_PHASEEND BUTTON").html("キャンセル");
+			$("#BTN_PhaseEnd").html("キャンセル");
 			//timer cancel set
-			$("#DIV_HAND7").addClass(Chessclock.set(21));
+			$("#BTN_PhaseEnd").addClass(Chessclock.set(21));
 		}
 		//ターゲット設定
 		StepSet(21);
@@ -112,7 +112,7 @@ function SpellTgtPlayer(i_num){
 	switch(i_num){
 	case 0: //表示
 		var btnarr = [];
-		var target = Card[Spell.cno].target;
+		var target = Card[Spell.cno].tgt;
 		for(var i=1;i<=Board.playcnt;i++){
 			if((target.match("E") || (target.match("O") && Board.role != i)) && !(Player[i].status.match(/_BARRIER_/))){
 				btnarr.push([Player[i].name, "SpellTgtPlayer("+i+")"]);
@@ -136,10 +136,10 @@ function SpellTgtPlayer(i_num){
 }
 //
 function SpellTgtGirdCheck(i_gno){
-	if(Card[Spell.cno].target.match(/^T.G.*$/) && Spell.check.indexOf(i_gno) >= 0){
+	if(Card[Spell.cno].tgt.match(/^T.G.*$/) && Spell.check.indexOf(i_gno) >= 0){
 		//ターゲット追加
 		Spell.target.push(i_gno);
-		var tgtarr = Card[Spell.cno].target.split(",");
+		var tgtarr = Card[Spell.cno].tgt.split(",");
 		if(tgtarr.length == Spell.target.length){
 			//ターゲット確定
 			StepSet(22);
@@ -188,7 +188,7 @@ function SpellConfirm(i_num){
 		//アイコン再表示
 		SpellCheck();
 		//PHASEENDBUTTON
-		$("#DIV_PHASEEND BUTTON").html("ダイス");
+		$("#BTN_PhaseEnd").html("ダイス");
 		//巻き戻し
 		StepSet(20);
 		break;
@@ -824,7 +824,7 @@ function SpellFire(i_flg){
 			//クリア
 			GridClear({gno:tgtgno});
 			//手札追加
-			if(Player[tgtpno].HandCount() < 6){
+			if(Player[tgtpno].HandCount() < 10){
 				Player[tgtpno].HandAdd(tgtcno);
 				if(tgtpno == Board.role) SortHand();
 				Logprint({msg:"##"+tgtcno+"##は手札に戻った", pno:tgtpno});
@@ -1451,7 +1451,7 @@ function SpellTgtSecond(arg){
 			//ライト
 			GridLight("set_nosave", Spell.check);
 			//PHASEENDBUTTON
-			$("#DIV_PHASEEND BUTTON").html("");
+			$("#BTN_PhaseEnd").html("-");
 			break;
 		case 1: //OK
 			//ライト
@@ -1478,7 +1478,7 @@ function SpellTgtSecond(arg){
 			//ダイアログ
 			DispDialog({btns:btnarr});
 			//PHASEENDBUTTON
-			$("#DIV_PHASEEND BUTTON").html("");
+			$("#BTN_PhaseEnd").html("-");
 			break;
 		default:
 			//ターゲット追加
@@ -1497,7 +1497,7 @@ function SpellTgtSecond(arg){
 //=======================================================
 function SpellHandBack(){
 	//手札追加
-	if(Player[Spell.pno].HandCount() <= 6){
+	if(Player[Spell.pno].HandCount() < 10){
 		Player[Spell.pno].HandAdd(Spell.cno);
 		if(Board.role == Spell.pno){
 			//手札ソート
@@ -1533,43 +1533,35 @@ function SpellDeckBack(arg){
 }
 //=======================================================
 function SpellEnd(){
-	//手札上限チェック
-	if(Player[Spell.pno].HandCount() == 7){
-		//ディスカードステップ
-		StepSet(28);
-		//ダイアログ
-		DiscardInit();
-	}else{
-		if(Card[Spell.cno].target.match(/^..G.*$/)){
-			for(var i=0; i<Spell.target.length; i++){
-				DivImg("DIV_GCLICK"+Spell.target[i], "");
-			}
+	if(Card[Spell.cno].tgt.match(/^..G.*$/)){
+		for(var i=0; i<Spell.target.length; i++){
+			DivImg("DIV_GCLICK"+Spell.target[i], "");
 		}
-		if(Board.role == Board.turn){
-			//手札ソート
-			SortHand();
-			if(Player[Spell.pno].dicepass){
-				//PHASEENDBUTTON
-				$("#DIV_PHASEEND BUTTON").html("");
-			}else{
-				//PHASEENDBUTTON
-				$("#DIV_PHASEEND BUTTON").html("ダイス");
-			}
-		}
-		//再表示
-		DispPlayer();
-
-		//Stack Trash
-		Board.spelled.unshift(Spell.cno);
-		//Analytics
-		Analytics.spell[Spell.pno]++;
-		Analytics.costspell[Spell.pno] += Card[Spell.cno].cost;
-		//Spell終了
-		StepSet(30);
-		//パス
+	}
+	if(Board.role == Board.turn){
+		//手札ソート
+		SortHand();
 		if(Player[Spell.pno].dicepass){
-			setTimeout(NoDiceRoll, 100);
+			//PHASEENDBUTTON
+			$("#BTN_PhaseEnd").html("-");
+		}else{
+			//PHASEENDBUTTON
+			$("#BTN_PhaseEnd").html("ダイス");
 		}
+	}
+	//再表示
+	DispPlayer();
+
+	//Stack Trash
+	Board.spelled.unshift(Spell.cno);
+	//Analytics
+	Analytics.spell[Spell.pno]++;
+	Analytics.costspell[Spell.pno] += Card[Spell.cno].cost;
+	//Spell終了
+	StepSet(30);
+	//パス
+	if(Player[Spell.pno].dicepass){
+		setTimeout(NoDiceRoll, 100);
 	}
 }
 //#############################################

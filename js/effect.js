@@ -85,7 +85,7 @@ function EffectBox(arg){
 	case "fortpuff": //CastleFort Icon puff
 		var divy = Number(Board.grid[Player[arg.pno].stand].top) - 22;
 		var divx = Number(Board.grid[Player[arg.pno].stand].left);
-		var effdiv = $("<div><img src='img/"+arg.imgsrc+".gif' height='90' width='128'></div>");
+		var effdiv = $("<div><img src='img/"+arg.img+".gif' height='90' width='128'></div>");
 		effdiv.addClass("animePuff");
 		effdiv.css({position:"absolute", top:divy, left:divx});
 		effdiv.one('webkitAnimationEnd', function(){

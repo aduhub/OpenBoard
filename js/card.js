@@ -1,17 +1,16 @@
-//
+//Option Check
 function CardOptCheck(arg){
 	var ret = false;
 	if(arg.cno){
-		var opts = Card[arg.cno].opts();
-		for(var i=0; i<opts.length; i++){
-			if(opts[i].match(arg.tgt)){
+		for(var i=0; i<Card[arg.cno].opt.length; i++){
+			if(Card[arg.cno].opt[i].match(arg.tgt)){
 				ret = true;
 				break;
 			}
 		}
 	}else if(arg.gno){
 		if(Board.grid[arg.gno].status != "_BIND_"){
-			var opts = Card[Board.grid[arg.gno].cno].opts();
+			var opts = Card[Board.grid[arg.gno].cno].opt.concat();
 			opts.push(Board.grid[arg.gno].status);
 			for(var i=0; i<opts.length; i++){
 				if(opts[i].match(arg.tgt)){
@@ -76,23 +75,15 @@ function Draw2Hand(){
 }
 //ドロー終了
 function DrawStepEnd(){
-	//手札上限チェック
-	if(Player[Board.turn].HandCount() == 7){
-		//ディスカードステップ
-		StepSet(18);
-		//ダイアログ
-		DiscardInit();
-	}else{
-		//ドロー終了
-		StepSet(20);
-		if(Board.role == Board.turn){
-			//スペルチェック
-			SpellCheck();
-			//PHASEENDBUTTON
-			$("#DIV_PHASEEND BUTTON").html("ダイス");
-			//timer
-			$("#DIV_HAND7").addClass(Chessclock.set(20));
-		}
+	//ドロー終了
+	StepSet(20);
+	if(Board.role == Board.turn){
+		//スペルチェック
+		SpellCheck();
+		//PHASEENDBUTTON
+		$("#BTN_PhaseEnd").html("ダイス");
+		//timer
+		$("#BTN_PhaseEnd").addClass(Chessclock.set(20));
 	}
 }
 //###############################################################
@@ -139,19 +130,30 @@ function SortHand(){
 
 	//Hand Image
 	if(handcnt >= 1){
+		var marginpix = "2px";
 		//Sort
 		var sortwork = Player[Board.role].hand.split(":");
 		sortwork.sort();
 		Player[Board.role].hand = sortwork.join(":");
 		//Margin
-		if(handcnt <= 6){
-			$(".CLS_HAND").css({margin:"4px"});
-		}else if(handcnt <= 8){
-			$(".CLS_HAND").css({margin:"-7px"});
+		switch(handcnt){
+		case 6:
+			marginpix = "-2px";
+			break;
+		case 7:
+			marginpix = "-8px";
+			break;
+		case 8:
+			marginpix = "-13px";
+			break;
+		case 9:
+			marginpix = "-17px";
+			break;
+		case 10:
+			marginpix = "-20px";
+			break;
 		}
-		else if(handcnt <= 10){
-			$(".CLS_HAND").css({margin:"-20px"});
-		}
+		$(".CLS_HAND").css({marginLeft:marginpix, marginRight:marginpix});
 		//再表示
 		for(var i=1; i<=handcnt; i++){
 			HandImgSet(i);
@@ -405,8 +407,10 @@ function CardInfoSet(arg){
 			infoarg.push({type:"clname", color:Card[arg.cno].color, name:Card[arg.cno].name});
 			infoarg.push({type:"cost", cost:Card[arg.cno].cost, plus:Card[arg.cno].plus});
 			infoarg.push({type:"clsthp", st:Card[arg.cno].st, hp:Card[arg.cno].lf});
-			if(Card[arg.cno].item != "" || Card[arg.cno].walk != ""){
-				infoarg.push({type:"clitem", item:Card[arg.cno].item, walk:Card[arg.cno].walk});
+			if(Card[arg.cno].item || Card[arg.cno].walk){
+				var item = Card[arg.cno].item || "";
+				var walk = Card[arg.cno].walk || "";
+				infoarg.push({type:"clitem", item:item, walk:walk});
 			}
 			if(Card[arg.cno].comment != ""){
 				infoarg.push({type:"comment", comment:Card[arg.cno].comment});
@@ -420,7 +424,6 @@ function CardInfoSet(arg){
 		case "S":
 			infoarg.push({type:"spname", name:Card[arg.cno].name});
 			infoarg.push({type:"cost", cost:Card[arg.cno].cost, plus:Card[arg.cno].plus});
-			//infoarg.push({type:"sptarget", target:Card[cno].target});
 			infoarg.push({type:"comment", comment:Card[arg.cno].comment});
 			break;
 		}
