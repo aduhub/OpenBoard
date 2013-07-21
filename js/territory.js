@@ -202,7 +202,7 @@ function TerritoryCheck(arg){
 	for(var i=1; i<Board.grid.length; i++){
 		if(Board.grid[i].owner >= 1 && !(Board.grid[i].status.match(/_BIND_/))){
 			var opts = Card[Board.grid[i].cno].opt.concat();
-			for(var i2=0; i2<=2; i2++){
+			for(var i2 in opts){
 				if(opts[i2].match(/^@MAP[A-Z0-9]+@/)){
 					mapactive += "," + opts[i2];
 				}
@@ -778,7 +778,7 @@ function TerritoryAbility(i_flg){
 			//スクロール
 			BoardScroll(tgtgno);
 			//変数設定
-			Summon.ctype = "territory";
+			Summon.from = "territory";
 			Summon.pno = Territory.pno;
 			Summon.cno = "C106";
 			Summon.gno = tgtgno;
@@ -827,7 +827,7 @@ function TerritoryAbility(i_flg){
 					var id = setTimeout(wkcmd, 1500);
 				}else{
 					//変数設定
-					Summon.ctype = "territory";
+					Summon.from = "territory";
 					Summon.pno = Territory.pno;
 					Summon.cno = cno;
 					Summon.gno = i_flg;
@@ -923,7 +923,7 @@ function TerritoryAbility(i_flg){
 				if(Board.role != i){
 					for(var i2=1; i2<=Player[i].HandCount(); i2++){
 						cno = Player[i].HandCard(i2);
-						if(Card[cno].type == "I" && Card[cno].item == "W"){
+						if(Card[cno].type == "I" && Card[cno].item && Card[cno].item == "W"){
 							tgthand.push(cno);
 						}
 					}

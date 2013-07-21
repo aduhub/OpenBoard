@@ -35,8 +35,10 @@ var Infoblock = {
 			case "cost":
 				imgtag = "<img src='img/infog.gif' height='20' width='11' style='margin-top:3px;'>";
 				imgtag2 = "";
-				for(var i2=0; i2<arg[i].plus.length; i2++){
-					imgtag2 += "<img src='img/"+colorimg[colorno[arg[i].plus.substr(i2, 1)]]+".gif' height='26' width='26'>";
+				if(arg[i].plus){
+					for(var i2=0; i2<arg[i].plus.length; i2++){
+						imgtag2 += "<img src='img/"+colorimg[colorno[arg[i].plus.substr(i2, 1)]]+".gif' height='26' width='26'>";
+					}
 				}
 				html += Infoblock.line({m:[imgtag, arg[i].cost, imgtag2], w:[14, 42, Infoblock._width - 66],  ta:["","r",""]});
 				break;

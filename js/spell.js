@@ -1168,7 +1168,7 @@ function SpellFire(i_flg){
 				hcnt = Player[tgtpno].HandCount();
 				for(var i2=hcnt; i2>=1; i2--){
 					tgtcno = Player[tgtpno].HandCard(i2);
-					if(Card[tgtcno].type == "I" && Card[tgtcno].item == "I"){
+					if(Card[tgtcno].type == "I" && Card[tgtcno].item && Card[tgtcno].item == "I"){
 						//手札削除
 						Player[tgtpno].HandDel(i2);
 						Logprint({msg:"##" + tgtcno + "##を破棄", pno:tgtpno});

@@ -231,7 +231,7 @@ var Frame = {
 					}
 					break;
 				case "discard":
-					if($T.inarray(Board.step, [18, 28, 38, 58])){
+					if(Board.step == 98){
 						runflg = 1;
 						//破棄
 						Discard({pno:logpno, cno:logpara});

@@ -652,8 +652,10 @@ function BookListItem(arg){
 		html += "<div class='book_frame_r0'>"+img+"</div><div class='book_frame_r1'>"+Card[arg.cno].name+"</div>";
 		html += "<div class='book_frame_r2'>";
 		html += "<img src='img/infog.gif' height='12' width='11'><span class='book_g'>"+Card[arg.cno].cost;
-		for(var i=0; i<Card[arg.cno].plus.length; i++){
-			html += " <img src='img/"+imgname[colorno[Card[arg.cno].plus.substr(i, 1)]]+".gif' height='13' width='13'>";
+		if(Card[arg.cno].plus){
+			for(var i=0; i<Card[arg.cno].plus.length; i++){
+				html += " <img src='img/"+imgname[colorno[Card[arg.cno].plus.substr(i, 1)]]+".gif' height='13' width='13'>";
+			}
 		}
 		html += "</span>";
 		html += "<img src='img/infost.gif' height='12' width='11'><span class='book_st'>"+Card[arg.cno].st+"</span> ";

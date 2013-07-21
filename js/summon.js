@@ -10,8 +10,6 @@ function SummonCheck(i_gno){
 	//手札再表示
 	SortHand();
 	//アイコンセット
-	var wkowner = Board.grid[i_gno].owner;
-	var wkcolor = Board.grid[i_gno].color;
 	for(var i=1; i<=Player[Board.role].HandCount(); i++){
 		var cno = Player[Board.role].HandCard(i);
 		switch(SummonCost(i_gno, cno)){
@@ -34,7 +32,11 @@ function SummonCost(i_gno, i_cno){
 	var nocolor = ["","N","F","W","E","D"];
 	var wkowner = Board.grid[i_gno].owner;
 	var wkcolor = Board.grid[i_gno].color;
-	//所有者が自分以外、通常地形
+	//クリーチャーカード
+	if(Card[i_cno].type != "C"){
+		return ret;
+	}
+	//通常地形
 	if(wkcolor < 10){
 		var chk = {walk:true, invasion:true, levelcap:true, unique:true};
 		var opts = Card[i_cno].opt.concat();
@@ -90,8 +92,6 @@ function SummonCost(i_gno, i_cno){
 				if(chk.walk && chk.levelcap && chk.unique){
 					if(Player[Board.role].gold >= Card[i_cno].cost){
 						if(Card[i_cno].plus){
-							ret = "OK";
-						}else{
 							var costcnt = [0, 0, 0, 0, 0, 0];
 							for(var i=0; i<Card[i_cno].plus.length; i++){
 								costcnt[colorno[Card[i_cno].plus.substr(i, 1)]]++;
@@ -104,6 +104,8 @@ function SummonCost(i_gno, i_cno){
 							if(ret != "PLUS"){
 								ret = "OK";
 							}
+						}else{
+							ret = "OK";
 						}
 					}else{
 						ret = "GOLD";
@@ -118,7 +120,7 @@ function SummonCost(i_gno, i_cno){
 function SummonConfirm(arg){
 	//確認なし
 	StepSet(41);
-	Summon.ctype = arg.type;
+	Summon.from = arg.type;
 	Summon.pno = Board.role;
 	Summon.cno = Player[Board.role].HandCard(arg.hno);
 	Summon.hand = arg.hno;
@@ -173,7 +175,7 @@ function SummonRecv(){
 	var arg = arguments;
 	var wkarr = arg[2].split(":");
 	//変数設定
-	Summon.ctype = arg[1];
+	Summon.from = arg[1];
 	Summon.pno = arg[0];
 	Summon.cno = wkarr[0];
 	Summon.hand = 0;
@@ -197,7 +199,7 @@ function SummonReady(){
 	//カード消費
 	Player[Summon.pno].HandDel(Summon.cno);
 	//交換時手札追加
-	if(Summon.ctype == "change"){
+	if(Summon.from == "change"){
 		Player[Summon.pno].HandAdd(Board.grid[Summon.gno].cno);
 	}
 	//Analytics
@@ -205,14 +207,14 @@ function SummonReady(){
 	
 	if(Board.turn == Board.role){
 		//コマンド送信
-		Net.send(Summon.ctype+":"+Summon.cno+":"+Summon.gno);
+		Net.send(Summon.from+":"+Summon.cno+":"+Summon.gno);
 		//手札再表示
 		SortHand();
 	}
 	//手札再表示
 	DispPlayer();
 
-	if(Summon.ctype == "summon" && Board.grid[Summon.gno].owner != 0){
+	if(Summon.from == "summon" && Board.grid[Summon.gno].owner != 0){
 		//Log
 		Logprint({msg:"(侵略召喚)##"+Summon.cno+"##", pno:Summon.pno});
 		//戦闘
@@ -220,7 +222,7 @@ function SummonReady(){
 		BattleInit("S", Summon.gno, Board.turn, Summon.cno);
 	}else{
 		//Log
-		var summoncomment = (Summon.ctype == "summon") ? "支配" : "交換";
+		var summoncomment = (Summon.from == "summon") ? "支配" : "交換";
 		Logprint({msg:"("+summoncomment+"召喚)##"+Summon.cno+"##", pno:Summon.pno});
 		//ステップ
 		StepSet(42);
@@ -230,7 +232,7 @@ function SummonReady(){
 }
 //
 function SummonGrid(){
-	if(["summon", "change", "territory"].indexOf(Summon.ctype) >= 0){
+	if(["summon", "change", "territory"].indexOf(Summon.from) >= 0){
 		//手札・矢印表示
 		if(Board.role == Board.turn){
 			//PHASEENDBUTTON
@@ -243,7 +245,7 @@ function SummonGrid(){
 	var sgrid = Board.grid[Summon.gno];
 	sgrid.owner = Summon.pno;
 	sgrid.cno = Summon.cno;
-	switch(Summon.ctype){
+	switch(Summon.from){
 	case "summon":
 	case "change":
 		sgrid.st = Card[Summon.cno].st;
@@ -284,15 +286,15 @@ function SummonGrid(){
 	EffectBox({pattern:"summon", gno:Summon.gno, pno:Summon.pno, cno:Summon.cno});
 	EffectBox({pattern:"msgpop", gno:Summon.gno, msg:"Summon"});
 	//LogPrint
-	if(Summon.ctype != "change"){
+	if(Summon.from != "change"){
 		CustomLog({type:"colorcnt", pno:Summon.pno, color:sgrid.color});
 		EffectBox({pattern:"lvlpop", level:sgrid.level, chain:GridCount(Summon.pno, sgrid.color)});
 	}
 	//back
-	if(["summon", "change", "battle"].indexOf(Summon.ctype) >= 0){
+	if(["summon", "change", "battle"].indexOf(Summon.from) >= 0){
 		setTimeout(SummonEnd, 1000);
 	}
-	if(Summon.ctype == "territory"){
+	if(Summon.from == "territory"){
 		setTimeout(TerritoryEnd, 1000);
 	}
 }

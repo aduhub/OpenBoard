@@ -273,7 +273,7 @@ function BattleFightReady1(){
 	for(var i=0; i<=1; i++){
 		var cno = [Battle.p[i].item, Battle.p[$r(i)].item];
 		//No FIST
-		if(cno[0] != "FIST" && Card[cno[0]].ctype == "I"){
+		if(cno[0] != "FIST" && Card[cno[0]].type == "I"){
 			var opts = Card[cno[0]].opt.concat();
 			for(var i2=0; i2<Card[cno[0]].opt.length; i2++){
 				if(AbilityActive({type:"item", bno:i, opt:opts[i2]})){
@@ -301,7 +301,7 @@ function BattleFightReady1(){
 	for(var i=0; i<=1; i++){
 		var cno = Battle.p[i].item;
 		//No FIST
-		if(cno != "FIST" && Card[cno].ctype == "I"){
+		if(cno != "FIST" && Card[cno].type == "I"){
 			var opts = Card[cno].opt.concat();
 			for(var i2=0; i2<opts.length; i2++){
 				if(AbilityActive({type:"item", bno:i, opt:opts[i2]})){
@@ -331,7 +331,7 @@ function BattleFightReady2(){
 		//No FIST
 		if(wkcno != "FIST"){
 			//効果
-			if(Card[wkcno].ctype == "I"){
+			if(Card[wkcno].type == "I"){
 				var opts = Card[wkcno].opt.concat();
 				for(var i2=0; i2<opts.length; i2++){
 					if(AbilityActive({type:"item", bno:i, opt:opts[i2]})){
@@ -399,7 +399,7 @@ function BattleFightReady2(){
 						}
 					}
 				}
-			}else if(Card[wkcno].ctype == "C"){
+			}else if(Card[wkcno].type == "C"){
 				if(Battle.p[i].active.match(/@BAND@/)){
 					//援護
 					Battle.p[i].st += Card[wkcno].st;
@@ -835,7 +835,7 @@ function BattleMapAbiAction(){
 	for(var i=1; i<Board.grid.length; i++){
 		if(Board.grid[i].owner >= 1 && !(Board.grid[i].status.match(/_BIND_/))){
 			var opts = Card[Board.grid[i].cno].opt.concat();
-			for(var i2=0; i2<=2; i2++){
+			for(var i2 in opts){
 				if(opts[i2].match(/^@MAP[A-Z0-9]+@/)){
 					mapactive += "," + opts[i2];
 				}
@@ -883,7 +883,7 @@ function AbilityActive(arg){
 	var o_bno = $r(arg.bno);
 	var act, abi;
 	
-	switch(arg.ctype){
+	switch(arg.type){
 	case "abillity":
 		opts = fig.opt.concat();
 		opts.push(fig.status);
@@ -989,7 +989,7 @@ function AbilityActive(arg){
 			}
 			//Active!!
 			if(act){
-				if(arg.ctype == "abillity"){
+				if(arg.type == "abillity"){
 					//後方優先(opts < status)
 					switch(abi[0]){
 					case "@SMASH@":
@@ -1013,7 +1013,7 @@ function AbilityActive(arg){
 			}
 		}
 	}
-	if(arg.ctype == "item"){
+	if(arg.type == "item"){
 		//retun
 		return ret;
 	}
@@ -1038,7 +1038,7 @@ function BattleAbiAction(arg){
 			var itemcnt = 0;
 			if(Player[def.pno].HandCount() >= 1){
 				for(var i=1; i<=Player[def.pno].HandCount(); i++){
-					if(Card[Player[def.pno].HandCard(i)].ctype == "I"){
+					if(Card[Player[def.pno].HandCard(i)].type == "I"){
 						itemcnt++;
 					}
 				}
@@ -1253,7 +1253,7 @@ function BattleAbiAction(arg){
 			BattleLog($r(arg.bno), Dic("@PROTECTION@"));
 		}
 		if(def.active.match(/@AEGIS@/)){
-			if(atk.item != "FIST" && (Card[atk.item].ctype == "I" || (Card[atk.item].ctype == "C" && !def.active.match(/@BAND@/))) && Card[atk.item].item && Card[atk.item].item == "W"){
+			if(atk.item != "FIST" && (Card[atk.item].type == "I" || (Card[atk.item].type == "C" && !def.active.match(/@BAND@/))) && Card[atk.item].item && Card[atk.item].item == "W"){
 				atk.damage = 0;
 				BattleLog($r(arg.bno), Dic("@PROTECTION@"));
 			}
@@ -1268,7 +1268,7 @@ function BattleAbiAction(arg){
 			}
 		}
 		if(def.active.match(/@REFLECT@/)){
-			if(def.item != "FIST" && Card[def.item].ctype == "C" && Card[atk.cno].color == Card[def.item].color){
+			if(def.item != "FIST" && Card[def.item].type == "C" && Card[atk.cno].color == Card[def.item].color){
 				ret.push({act:"nodamage"});
 				ret.push({act:"reflect"});
 				BattleLog($r(arg.bno), Dic("@REFLECT@"));
@@ -1474,7 +1474,7 @@ function BattleAbiAction(arg){
 		}
 		if(atk.active.match(/@HUNTER@/)){
 			if(atk.lf >= 1 && def.lf <= 0){
-				if(atk.item != "FIST" && Card[atk.item].item == "W"){
+				if(atk.item != "FIST" && Card[atk.item].item && Card[atk.item].item == "W"){
 					var wkgold = Math.min(Player[def.pno].gold, Card[def.cno].cost);
 					//Status Set
 					Player[atk.pno].gold += wkgold;

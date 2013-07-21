@@ -217,9 +217,9 @@ function clsPlayer() {
 }
 //Card クラス
 //function clsCard(){
-//	this.cardid = "X001";
+//	this.id = "X001";
 //	this.name   = "";
-//	this.ctype  = "C";
+//	this.type  = "C";
 //	this.cost   = 0;
 //	this.plus   = "";
 //	this.limit  ="";
