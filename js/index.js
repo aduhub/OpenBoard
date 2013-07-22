@@ -701,7 +701,7 @@ function BookListItem(arg){
 }
 //
 function WordReplace(msg){
-	var retmsg = msg;
+	var retmsg = msg || "";
 	for(i in Word){
 		retmsg = retmsg.replace(Word[i][0], "<a href='javascript:WordDisp(\""+Word[i][0]+"\")'>"+Word[i][0]+"</a>", 'g');
 	}

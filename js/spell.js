@@ -27,7 +27,7 @@ function SpellCardImgSet(i_id, i_cno, i_flg){
 	var termfnc = function(){
 		switch(i_flg){
 		case 0:
-			Canvas.rect(i_id, {rgb:[0,0,0], alpha:0.6, x:0, y:0, w:100, h:130});
+			$("#"+i_id).addClass("CLS_HAND_GLAY");
 			break;
 		case 2:
 			Canvas.draw({id:i_id, src:"img/icon_nogold.gif"});

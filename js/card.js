@@ -1,26 +1,36 @@
 //Option Check
 function CardOptCheck(arg){
-	var ret = false;
+	var opts = [];
+	//Card No
 	if(arg.cno){
-		for(var i=0; i<Card[arg.cno].opt.length; i++){
-			if(Card[arg.cno].opt[i].match(arg.tgt)){
-				ret = true;
-				break;
-			}
+		if(Card[arg.cno].opt){
+			opts = Card[arg.cno].opt.concat();
 		}
-	}else if(arg.gno){
+	}
+	//Grid No
+	if(arg.gno){
 		if(Board.grid[arg.gno].status != "_BIND_"){
-			var opts = Card[Board.grid[arg.gno].cno].opt.concat();
-			opts.push(Board.grid[arg.gno].status);
-			for(var i=0; i<opts.length; i++){
-				if(opts[i].match(arg.tgt)){
-					ret = true;
-					break;
-				}
+			if(Card[Board.grid[arg.gno].cno].opt){
+				opts = Card[Board.grid[arg.gno].cno].opt.concat();
+				opts.push(Board.grid[arg.gno].status);
 			}
 		}
 	}
-	return ret;
+	//Check
+	for(var i in opts){
+		if($T.typer(arg.tgt) == "Array"){
+			for(var ii in arg.tgt){
+				if(opts[i].match(arg.tgt[ii])){
+					return true;
+				}
+			}
+		}else{
+			if(opts[i].match(arg.tgt)){
+				return true;
+			}
+		}
+	}
+	return false;
 }
 //###################################################################
 //カードドロー

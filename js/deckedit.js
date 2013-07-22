@@ -291,7 +291,7 @@ function CardInfoSet(arg){
 				var walk = Card[arg.cno].walk || "";
 				infoarg.push({type:"clitem", item:item, walk:walk});
 			}
-			if(Card[arg.cno].comment != ""){
+			if(Card[arg.cno].comment){
 				infoarg.push({type:"comment", comment:Card[arg.cno].comment});
 			}
 			break;

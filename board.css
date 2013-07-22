@@ -326,9 +326,9 @@ BUTTON.CLS_W160{
 
 #DIV_HANDFRAME{
 	position : fixed;
-	top   :500px;
+	top   :490px;
 	left  :90px;
-	height:100px;
+	height:110px;
 	width :620px;
     text-align:center;
 	z-index : 51;
@@ -337,7 +337,8 @@ BUTTON.CLS_W160{
 DIV.CLS_HAND{
 	display:inline-block;
 	width : 100px;
-	height : 100px;
+	height: 100px;
+    margin-top:10px;
 	opacity : 0.8;
 	cursor : pointer;
 	overflow:hidden;
@@ -346,9 +347,13 @@ DIV.CLS_HAND{
 }
 DIV.CLS_HAND:hover{
     outline: none;
-    border-color: #9ecaed;
-    box-shadow: 0 0 10px #9ecaed;
+    border-color: 2px solid #56b4ef;
+    box-shadow: 0 0 10px #56b4ef;
 	opacity : 1.0;
+    z-index : 20;
+}
+DIV.CLS_HAND_GLAY{
+    -webkit-filter:grayscale(100%);
 }
 
 #DIV_PHASEEND{

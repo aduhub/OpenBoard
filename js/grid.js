@@ -471,7 +471,7 @@ function GridTgtGrep(arg){
 			}else{
 				//領地検索
 				if(antiprotect == false){
-					if((Card[tgtgrid.cno].opt.indexOf("@PROTECT@") >= 0 && tgtgrid.status != "_BIND_") || tgtgrid.status == "_PROTECT_"){
+					if(CardOptCheck({cno:tgtgrid.cno, tgt:"@PROTECT@"}) || tgtgrid.status == "_PROTECT_"){
 						protect = true;
 					}
 				}
