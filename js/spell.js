@@ -1,40 +1,16 @@
 //スペルカードチェック
 function SpellCheck(){
 	//Image再設定
-	for(var i=1; i<=Player[Board.role].HandCount(); i++){
-		var cno =  Player[Board.role].HandCard(i);
-		if(cno == ""){
-			Canvas.clear({id:"CVS_HAND"+i});
-		}else{
+	if(Player[Board.role].HandCount() >= 1){
+		for(var i=1; i<=Player[Board.role].HandCount(); i++){
+			var cno =  Player[Board.role].HandCard(i);
 			if(Card[cno].type != "S"){
-				SpellCardImgSet("CVS_HAND"+i, cno, 0);
-			}else{
-				if(Player[Board.role].gold < Card[cno].cost){
-					SpellCardImgSet("CVS_HAND"+i, cno, 2);
-				}else{
-					SpellCardImgSet("CVS_HAND"+i, cno, 1);
-				}
+				$("#DIV_HAND"+i).addClass("CLS_HAND_GLAY");
+			}else if(Player[Board.role].gold < Card[cno].cost){
+				Canvas.draw({id:"CVS_HAND"+i, src:"img/icon_nogold.gif"});
 			}
 		}
 	}
-}
-function SpellCardImgSet(i_id, i_cno, i_flg){
-	//Card CardImgSet function Custom
-	var frameid = "CARDFRAME"+Card[i_cno].type;
-	frameid += (Card[i_cno].type == "C") ? Card[i_cno].color : "";
-	var imgtype = (Card[i_cno].imgsrc.match(/.png$/)) ? "" : ".gif";
-	var imgsrc = "img/card/"+Card[i_cno].imgsrc+imgtype;
-	var termfnc = function(){
-		switch(i_flg){
-		case 0:
-			$("#"+i_id).addClass("CLS_HAND_GLAY");
-			break;
-		case 2:
-			Canvas.draw({id:i_id, src:"img/icon_nogold.gif"});
-			break;
-		}
-	};
-	Canvas.draw({id:i_id, src:[imgsrc, frameid], zoom:0.5, fnc:termfnc});
 }
 //コストチェック
 function SpellCost(i_no){

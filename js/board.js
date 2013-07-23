@@ -513,7 +513,6 @@ function DragmouseDown(e){
 		$("#DIV_FRAME").scrollLeft(400);
 	}
 	dragObject = this;
-	//dragOffset = MousePosition(e);
 	dragOffset = {x:e.clientX, y:e.clientY};
 	return false;
 }
@@ -522,7 +521,6 @@ function DragMouseUp(e){
 }
 function DragMouseMove(e){
 	if(!dragObject) return;
-	//var mousePos = MousePosition(e);
 	var mousePos = {x:e.clientX, y:e.clientY};
 	if(mousePos.x < 0 || mousePos.x > 800 || mousePos.y < 0 || mousePos.y > 600){
 		dragObject = null;
@@ -533,12 +531,6 @@ function DragMouseMove(e){
 	$("#DIV_FRAME").scrollTop(y);
 	$("#DIV_FRAME").scrollLeft(x);
 	dragOffset = mousePos;
-}
-function MousePosition(e){
-	var ex = e.clientX;
-	var ey = e.clientY;
-	var ret = {x:ex, y:ey};
-	return ret;
 }
 function DragTouchStart(){
 	event.preventDefault();

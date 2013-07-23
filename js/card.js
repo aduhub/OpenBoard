@@ -166,8 +166,10 @@ function SortHand(){
 		$(".CLS_HAND").css({marginLeft:marginpix, marginRight:marginpix});
 		//再表示
 		for(var i=1; i<=handcnt; i++){
-			HandImgSet(i);
+			CardImgSet({hno:i});
 		}
+		//グレイ戻し
+		$(".CLS_HAND").removeClass("CLS_HAND_GLAY");
 	}
 }
 //###################################################################
@@ -256,19 +258,23 @@ function Discard(arg){
 	TurnEndFlow(1);
 }
 //#######################################################################
-//手札表示
-function HandImgSet(hno){
-	if(Player[Board.role].HandCount() >= hno){
-		CardImgSet({cvs:"CVS_HAND"+hno, cno:Player[Board.role].HandCard(hno), zoom:0.5});
-	}
-}
-//
+//Card表示
 function CardImgSet(arg){
-	var frameid = "CARDFRAME"+Card[arg.cno].type;
-	frameid += (Card[arg.cno].type == "C") ? Card[arg.cno].color : "";
-	var imgtype = (Card[arg.cno].imgsrc.match(/.png$/)) ? "" : ".gif";
-	var imgsrc = "img/card/"+Card[arg.cno].imgsrc+imgtype;
-	var para = {id:arg.cvs, src:[imgsrc, frameid]}
+	var cno, cvs;
+	var card_src, frame_src, imgtype;
+	if(arg.hno){
+		cno = Player[Board.role].HandCard(arg.hno);
+		cvs = "CVS_HAND" + arg.hno;
+		arg.zoom = 0.5;
+	}else{
+		cno = arg.cno;
+		cvs = arg.cvs || arg.id;
+	}
+	imgtype = (Card[cno].imgsrc.match(/.png$/)) ? "" : ".gif";
+	card_src = "img/card/"+Card[cno].imgsrc+imgtype;
+	frame_src = "CARDFRAME"+Card[cno].type;
+	frame_src += (Card[cno].type == "C") ? Card[cno].color : "";
+	var para = {id:cvs, src:[card_src, frame_src]}
 	if(arg.zoom){
 		para.zoom = arg.zoom;
 	}
