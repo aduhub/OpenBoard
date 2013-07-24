@@ -10,18 +10,24 @@ function SummonCheck(i_gno){
 	//手札再表示
 	SortHand();
 	//アイコンセット
-	for(var i=1; i<=Player[Board.role].HandCount(); i++){
-		var cno = Player[Board.role].HandCard(i);
-		switch(SummonCost(i_gno, cno)){
-		case "NG":
-			Canvas.draw({id:"CVS_HAND"+i, src:"img/icon_nouse.gif"});
-			break;
-		case "GOLD":
-			Canvas.draw({id:"CVS_HAND"+i, src:"img/icon_nogold.gif"});
-			break;
-		case "PLUS":
-			Canvas.draw({id:"CVS_HAND"+i, src:"img/icon_noplus.gif"});
-			break;
+	if(Player[Board.role].HandCount() >= 1){
+		for(var i=1; i<=Player[Board.role].HandCount(); i++){
+			var cno = Player[Board.role].HandCard(i);
+			if(Card[cno].type != "C"){
+				$("#DIV_HAND"+i).addClass("CLS_HAND_GLAY");
+			}else{
+				switch(SummonCost(i_gno, cno)){
+				case "NG":
+					Canvas.draw({id:"CVS_HAND"+i, src:"img/icon_nouse.gif"});
+					break;
+				case "GOLD":
+					Canvas.draw({id:"CVS_HAND"+i, src:"img/icon_nogold.gif"});
+					break;
+				case "PLUS":
+					Canvas.draw({id:"CVS_HAND"+i, src:"img/icon_noplus.gif"});
+					break;
+				}
+			}
 		}
 	}
 }
