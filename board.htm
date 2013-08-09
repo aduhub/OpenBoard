@@ -8,6 +8,7 @@
 	<link href='http://fonts.googleapis.com/css?family=Uncial+Antiqua' rel='stylesheet' type='text/css'>
 	<script type="text/javascript" src="lib/jquery.js"></script>
     <script type="text/javascript" src="lib/jquery.requestAnimationFrame.min.js"></script>
+    <script type="text/javascript" src="lib/easeljs.js"></script>
     <script type="text/javascript" src="lib/pubnub.js"></script>
     <script type="text/javascript" src="lib/sha1.js"></script>
 	<script type="text/javascript" src="js/scriptload.js"></script>
@@ -16,7 +17,7 @@
 <body onload="initBoard()">
 	<!-- MAIN -->
 	<div id="DIV_FRAME">
-		<div id="DIV_BACK"><canvas id="CVS_BACK" width="2400" height="1800"></canvas></div>
+		<div id="DIV_BACK"><canvas id="CVS_BACK" width="1600" height="1200"></canvas></div>
 	</div>
 	<div id="DIV_INFO" onmouseover="InfoMouseover(1)" onmouseout="InfoMouseover(0)"></div>
 	<div id="DIV_INFOPLUS"></div>
@@ -82,10 +83,6 @@
 	</table>
 	</form>
 	</div>
-	<div id="DIV_DEBUGHAND1"><CANVAS id="CVS_DH11" width="50" height="65" onclick="DebugHandClick(1, 1)"></CANVAS><CANVAS id="CVS_DH12" width="50" height="65" onclick="DebugHandClick(1, 2)"></CANVAS><CANVAS id="CVS_DH13" width="50" height="65" onclick="DebugHandClick(1, 3)"></CANVAS><CANVAS id="CVS_DH14" width="50" height="65" onclick="DebugHandClick(1, 4)"></CANVAS><CANVAS id="CVS_DH15" width="50" height="65" onclick="DebugHandClick(1, 5)"></CANVAS><CANVAS id="CVS_DH16" width="50" height="65" onclick="DebugHandClick(1, 6)"></CANVAS><CANVAS id="CVS_DH17" width="50" height="65" onclick="DebugHandClick(1, 7)"></CANVAS></div>
-	<div id="DIV_DEBUGHAND2"><CANVAS id="CVS_DH21" width="50" height="65" onclick="DebugHandClick(2, 1)"></CANVAS><CANVAS id="CVS_DH22" width="50" height="65" onclick="DebugHandClick(2, 2)"></CANVAS><CANVAS id="CVS_DH23" width="50" height="65" onclick="DebugHandClick(2, 3)"></CANVAS><CANVAS id="CVS_DH24" width="50" height="65" onclick="DebugHandClick(2, 4)"></CANVAS><CANVAS id="CVS_DH25" width="50" height="65" onclick="DebugHandClick(2, 5)"></CANVAS><CANVAS id="CVS_DH26" width="50" height="65" onclick="DebugHandClick(2, 6)"></CANVAS><CANVAS id="CVS_DH27" width="50" height="65" onclick="DebugHandClick(2, 7)"></CANVAS></div>
-	<div id="DIV_DEBUGHAND3"><CANVAS id="CVS_DH31" width="50" height="65" onclick="DebugHandClick(3, 1)"></CANVAS><CANVAS id="CVS_DH32" width="50" height="65" onclick="DebugHandClick(3, 2)"></CANVAS><CANVAS id="CVS_DH33" width="50" height="65" onclick="DebugHandClick(3, 3)"></CANVAS><CANVAS id="CVS_DH34" width="50" height="65" onclick="DebugHandClick(3, 4)"></CANVAS><CANVAS id="CVS_DH35" width="50" height="65" onclick="DebugHandClick(3, 5)"></CANVAS><CANVAS id="CVS_DH36" width="50" height="65" onclick="DebugHandClick(3, 6)"></CANVAS><CANVAS id="CVS_DH37" width="50" height="65" onclick="DebugHandClick(3, 7)"></CANVAS></div>
-	<div id="DIV_DEBUGHAND4"><CANVAS id="CVS_DH41" width="50" height="65" onclick="DebugHandClick(4, 1)"></CANVAS><CANVAS id="CVS_DH42" width="50" height="65" onclick="DebugHandClick(4, 2)"></CANVAS><CANVAS id="CVS_DH43" width="50" height="65" onclick="DebugHandClick(4, 3)"></CANVAS><CANVAS id="CVS_DH44" width="50" height="65" onclick="DebugHandClick(4, 4)"></CANVAS><CANVAS id="CVS_DH45" width="50" height="65" onclick="DebugHandClick(4, 5)"></CANVAS><CANVAS id="CVS_DH46" width="50" height="65" onclick="DebugHandClick(4, 6)"></CANVAS><CANVAS id="CVS_DH47" width="50" height="65" onclick="DebugHandClick(4, 7)"></CANVAS></div>
 	<!-- DECK -->
 	<div id="DIV_DECK"><table>
 		<tr><td>デッキリスト</td><td>デッキカード</td></tr>

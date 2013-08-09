@@ -13,23 +13,10 @@ function initBoard(){
 	var divwait = $("<div id='waitdiv'>wait...</div>");
 	divwait.css({position:"absolute", top:0, left:0, width:800, height:600, opacity:0.8, zIndex:40, backgroundColor:"black", color:"white", fontSize:"20px"});
 	$("body").append(divwait);
-	
-	//iPhone Top
-	if(navigator.platform == "iPhone"){
-		sessionStorage.USERID    = localStorage.Ob_Temp_USERID;
-		sessionStorage.USERNAME  = localStorage.Ob_Temp_USERNAME;
-		sessionStorage.USERTYPE  = localStorage.Ob_Temp_USERTYPE;
-		sessionStorage.USERRATE  = localStorage.Ob_Temp_USERRATE;
-		sessionStorage.USERRATE2 = localStorage.Ob_Temp_USERRATE2;
-		sessionStorage.RoomID    = localStorage.Ob_Temp_RoomID;
-		sessionStorage.iPhone    = localStorage.Ob_Temp_iPhone;
-		sessionStorage.Mode      = localStorage.Ob_Temp_Mode;
-		sessionStorage.Online    = localStorage.Ob_Temp_Online;
-		setTimeout(function(){window.scrollTo(0, 1)}, 100);
-	}
 
 	//Canvas取り込み
 	LoadImage();
+
 	//Volume設定
 	if(localStorage.ob_volume_bgm){
 		$("#bgmvolume").val(Number(localStorage.ob_volume_bgm));
@@ -51,26 +38,6 @@ function initBoard(){
 	}else{
 		$("#DIV_REPLAYCONTROL").remove();
 	}
-
-	//############### デバッグウィンドウ #################
-	if(sessionStorage.Mode == "debug" && sessionStorage.iPhone == "N"){
-		$("#DIV_DEBUGHAND1").css("display", "block");
-		$("#DIV_DEBUGHAND2").css("display", "block");
-		$("#DIV_DEBUGHAND3").css("display", "block");
-		$("#DIV_DEBUGHAND4").css("display", "block");
-	}else{
-		$("#DIV_DEBUGHAND1").remove();
-		$("#DIV_DEBUGHAND2").remove();
-		$("#DIV_DEBUGHAND3").remove();
-		$("#DIV_DEBUGHAND4").remove();
-	}
-	if(sessionStorage.USERTYPE == "1" && sessionStorage.Mode == "replay" && sessionStorage.iPhone != "Y"){
-		//wait Info
-		var divwait = $("<div id='debugfront'></div>");
-		divwait.css({position:"fixed", top:0, left:0, width:800, height:600, opacity:0.6, zIndex:50, backgroundColor:"black", color:"white", fontSize:"12px"});
-		$("body").append(divwait);
-	}
-	//####################################################
 
 	//通信開始
 	Net.init();
@@ -120,6 +87,10 @@ function createBoard(){
 	//MAP背景
 	$("#DIV_BACK").css("backgroundImage", "url(img/mapdefault.gif)");
 
+	//easeljs
+	//var stage = new createjs.Stage("CVS_BACK");
+	//var imgname = {GRID0:"img/grid0.gif",GRID1:"img/grid1.gif",GRID2:"img/grid2.gif",GRID3:"img/grid3.gif",GRID4:"img/grid4.gif",GRID5:"img/grid5.gif",GRIDT:"img/gicon_tele.gif",GRIDF:"img/gicon_drop.gif"}
+
 	//グリッド生成
 	for(var i in Board.grid){
 		if(Board.grid[i].color != 0){
@@ -153,13 +124,24 @@ function createBoard(){
 			//CANVAS
 			var pos = {x:Number(Board.grid[i].left), y:Number(Board.grid[i].top)};
 			Canvas.draw({id:"CVS_BACK", src:wkimgid, x:pos.x, y:pos.y, composite:wkcomposite});
+
+			//easeljs
+			//var bitmap = new createjs.Bitmap(imgname[wkimgid]);
+			//bitmap.x = pos.x;
+			//bitmap.y = pos.y;
+			//stage.addChild(bitmap);
+
 			//GRID
 			CreateLay({id:"DIV_GICON"+i, w:128, h:90, l:pos.x, t:pos.y - 26, z:10, opt:"img", imgsrc:wkicon});
 			CreateLay({id:"DIV_GCLICK"+i, w:64, h:64, l:pos.x + 32, t:pos.y, z:150, opt:"click", gno:i});
 		}
 	}
+	//easeljs
+	//stage.update();
+
 	//ソート
 	SortZIndex("map");
+
 	//スクロール
 	BoardScroll(1);
 	//役(観戦)

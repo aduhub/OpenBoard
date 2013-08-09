@@ -21,6 +21,7 @@ document.write('<script type="text/javascript" src="js/summon.js?'+d+'"></script
 document.write('<script type="text/javascript" src="js/effect.js?'+d+'"></script>');
 document.write('<script type="text/javascript" src="js/audio.js?'+d+'"></script>');
 document.write('<script type="text/javascript" src="js/battle.js?'+d+'"></script>');
+document.write('<script type="text/javascript" src="js/battle_ability.js?'+d+'"></script>');
 document.write('<script type="text/javascript" src="js/graph.js?'+d+'"></script>');
 document.write('<script type="text/javascript" src="js/chessclock.js?'+d+'"></script>');
 document.write('<script type="text/javascript" src="js/debug.js?'+d+'"></script>');
