@@ -1246,7 +1246,7 @@ function SpellFire(i_flg){
 					Logprint({msg:"デッキをシャッフル", pno:tgtpno});
 					if(Board.role == tgtpno){
 						//次を用意
-						DeckShuffle(tgtpno, 1);
+						DeckShuffle({pno:tgtpno, tgt:"next"});
 					}
 				}
 				//msgpop

@@ -98,25 +98,23 @@ function DrawStepEnd(){
 }
 //###############################################################
 //デッキシャッフル
-function DeckShuffle(i_pno, i_flg){
-	if(i_pno == Board.role){
-		var wkdata = Player[i_pno].deckdata.split(":");
-		var wknext = "";
-		var wkcnt = wkdata.length;
-		while(wkcnt >= 1){
-			var wkrnd = Math.floor(Math.random() * wkcnt);
-			wknext += (wknext == "") ? wkdata[wkrnd] : ":" + wkdata[wkrnd];
-			wkdata.splice(wkrnd, 1);
-			wkcnt--;
+function DeckShuffle(arg){
+	if(arg.pno == Board.role){
+		var deckarr = Player[arg.pno].deckdata.split(":");
+		var sortarr = $T.rndsort(deckarr);
+		if(arg.puttop){
+			$T.arrconflict(sortarr, arg.puttop);
+			sortarr = arg.puttop.concat(sortarr);
 		}
-		switch(i_flg){
-		case 0: //初回(ready)
-			Player[i_pno].deck = wknext;
+		var deckstr = sortarr.join(":");
+		switch(arg.tgt){
+		case "deck": //初回(ready)
+			Player[arg.pno].deck = deckstr;
 			break;
-		case 1: //準備のみ
-			Player[i_pno].decknext.push(wknext);
+		case "next": //準備のみ
+			Player[arg.pno].decknext.push(deckstr);
 			//送信
-			Net.send("shuffle:"+wknext);
+			Net.send("shuffle:"+deckstr);
 			break;
 		}
 	}
@@ -210,7 +208,7 @@ function Drawcard(arg){
 		Logprint({msg:"デッキをシャッフル", pno:arg.pno});
 		if(Board.role == arg.pno){
 			//次を用意
-			DeckShuffle(arg.pno, 1);
+			DeckShuffle({pno:arg.pno, tgt:"next"});
 		}
 	}
 	return cno;

@@ -15,6 +15,7 @@ var $T = {
 			return "";
 		}
 	},
+	//平均取得
 	average:function(arr){
 		var total = 0;
 		if(arr.length > 0){
@@ -26,6 +27,15 @@ var $T = {
 			return 0;
 		}
 	},
+	//範囲チェック
+	inrange:function(val, min, max){
+		var ret = false;
+		if(val >= min && val <= max){
+			ret = true;
+		}
+		return ret;
+	},
+	//配列内チェック
 	inarray:function(tgt, arr){
 		try{
 			switch($T.typer(tgt)){
@@ -50,6 +60,7 @@ var $T = {
 			return false;
 		}
 	},
+	//配列内カウント
 	countarray:function(tgt, arr){
 		var ret = 0;
 		try{
@@ -75,13 +86,24 @@ var $T = {
 			return 0;
 		}
 	},
-	inrange:function(val, min, max){
-		var ret = false;
-		if(val >= min && val <= max){
-			ret = true;
+	//配列減算javascript 衝突
+	arrconflict:function(arr1, arr2){
+		try{
+			var tgt, idx;
+			var arr2c = [];
+			arr2c = arr2c.concat(arr2);
+			while(tgt = arr2c.shift()){
+				idx = arr1.indexOf(tgt)
+				if(idx >= 0){
+					arr1.splice(idx, 1)
+				}
+			}
+			return arr1;
+		}catch(e){
+			return [];
 		}
-		return ret;
 	},
+	//配列検索
 	search:function(arr, pnm, tgt){
 		try{
 			for(var i=0; i<arr.length; i++){
@@ -106,10 +128,12 @@ var $T = {
 			return false;
 		}
 	},
+	//範囲縮小
 	shrink:function(val, min, max){
 		var ret = Math.min(max, Math.max(min, val));
 		return ret;
 	},
+	//ランダム文字(重複なし)
 	rndstr:function(len){
 		var rnd, retstr = "";
 		var seedstr = "123456789ABCDEFGHJKLPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz";
@@ -123,12 +147,13 @@ var $T = {
 		this._rndlog.push(retstr);
 		return retstr;
 	},
+	//ランダムソート
 	rndsort:function(arr){
 		try{
 			var rnd, ret = [], seed = [];
 			seed = seed.concat(arr);
-			for(var i = (arr.length - 1); i >= 0; i--){
-				rnd = Math.floor(Math.random() * i); 
+			while(seed.length > 0){
+				rnd = Math.floor(Math.random() * seed.length);
 				ret.push(seed[rnd]);
 				seed.splice(rnd, 1);
 			}

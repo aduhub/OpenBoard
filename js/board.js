@@ -201,23 +201,30 @@ function PlayerImgSetup(pno){
 	$("#DIV_PLAYER"+pno).css("backgroundPosition", "0px 0px, 128px 0px, 128px 0px");
 }
 function PlayerHandSetup(i_flg){
+	//ハンドセット
+	StepSet(1);
+	if(i_flg == 0){
+		//マリガンクリア
+		Temp.mariganHno = [];
+		Temp.mariganCno = [];
+	}
 	if(i_flg == 0 || i_flg == 1){
-		//デッキシャッフル
-		DeckShuffle(Board.role, 0);
-		//初期手札(4draw)
+		//デッキシャッフル(残し)
+		DeckShuffle({pno:Board.role, tgt:"deck", puttop:Temp.marigan});
+		//初期手札(5draw)
 		Player[Board.role].hand = "";
-		for(var i=1; i<=4; i++){
+		for(var i=1; i<=5; i++){
 			Drawcard({pno:Board.role, from:"deck", nlog:true});
 		}
 		//手札ソート
 		SortHand();
-		if(i_flg == 0){
-			//ダイアログ
-			var msgarr = ["手札を引き直しますか？"];
-			var btnarr;
-			btnarr = ["PlayerHandSetup(1)", "PlayerHandSetup(2)"];
-			DispDialog({dtype:"yesno", msgs:msgarr, btns:btnarr});
-		}
+	}
+	if(i_flg == 0){
+		//ダイアログ
+		var msgarr = ["手札を引き直しますか？"];
+		var btnarr;
+		btnarr = ["PlayerHandSetup(1)", "PlayerHandSetup(2)"];
+		DispDialog({dtype:"yesno", msgs:msgarr, btns:btnarr});
 	}
 	if(i_flg == 1 || i_flg == 2){
 		//ダイアログ
@@ -226,7 +233,17 @@ function PlayerHandSetup(i_flg){
 		var deck = Player[Board.role].hand + ":" + Player[Board.role].deck;
 		Net.send("ready:" + deck);
 		//次を用意
-		DeckShuffle(Board.role, 1);
+		DeckShuffle({pno:Board.role, tgt:"next"});
+	}
+}
+//マリガン
+function HandMarigan(hno){
+	var idx = Temp.mariganHno.indexOf(hno.toString());
+	if(idx >= 0){
+		$T.arrconflict(Temp.mariganHno, [hno.toString()]);
+	}else{
+		Temp.mariganHno.push(hno.toString());
+		Temp.mariganCno.push(Player[Board.role].)
 	}
 }
 //======================================================================
@@ -408,6 +425,9 @@ function GridClick(i_no){
 function HandClick(i_no){
 	if(Board.turn == Board.role){
 		switch(Board.step){
+		case 1:
+			HandMarigan(i_no);
+			break;
 		case 20:
 			if(i_no <= Player[Board.role].HandCount()){
 				//コストチェック
