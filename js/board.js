@@ -201,32 +201,37 @@ function PlayerImgSetup(pno){
 	$("#DIV_PLAYER"+pno).css("backgroundPosition", "0px 0px, 128px 0px, 128px 0px");
 }
 function PlayerHandSetup(i_flg){
+	var puttop = [];
 	//ハンドセット
 	StepSet(1);
 	if(i_flg == 0){
 		//マリガンクリア
-		Temp.mariganHno = [];
-		Temp.mariganCno = [];
-	}
-	if(i_flg == 0 || i_flg == 1){
-		//デッキシャッフル(残し)
-		DeckShuffle({pno:Board.role, tgt:"deck", puttop:Temp.marigan});
-		//初期手札(5draw)
-		Player[Board.role].hand = "";
+		Temp.mulligan = "11111";
+	}else{
 		for(var i=1; i<=5; i++){
-			Drawcard({pno:Board.role, from:"deck", nlog:true});
+			if(Temp.mulligan[i - 1] == "1"){
+				puttop.push(Player[Board.role].HandCard(i));
+			}
 		}
-		//手札ソート
-		SortHand();
 	}
+	//デッキシャッフル(残し)
+	DeckShuffle({pno:Board.role, tgt:"deck", puttop:puttop});
+	//初期手札(5draw)
+	Player[Board.role].hand = "";
+	for(var i=1; i<=5; i++){
+		Drawcard({pno:Board.role, from:"deck", nlog:true});
+	}
+	//手札ソート
+	SortHand();
+	//引きなおしダイアログ
 	if(i_flg == 0){
 		//ダイアログ
-		var msgarr = ["手札を引き直しますか？"];
-		var btnarr;
-		btnarr = ["PlayerHandSetup(1)", "PlayerHandSetup(2)"];
-		DispDialog({dtype:"yesno", msgs:msgarr, btns:btnarr});
-	}
-	if(i_flg == 1 || i_flg == 2){
+		var msgarr = ["引きなおす手札を選択してください"];
+		var btnarr = [["選択終了", "PlayerHandSetup(1)"]];
+		DispDialog({msgs:msgarr, btns:btnarr});
+	}else{
+		//ハンドセット
+		StepSet(2);
 		//ダイアログ
 		DispDialog({msgs:["準備完了", "他のプレイヤーを待っています・・・"]});
 		//送信
@@ -237,13 +242,14 @@ function PlayerHandSetup(i_flg){
 	}
 }
 //マリガン
-function HandMarigan(hno){
-	var idx = Temp.mariganHno.indexOf(hno.toString());
-	if(idx >= 0){
-		$T.arrconflict(Temp.mariganHno, [hno.toString()]);
+function HandMulligan(hno){
+	var idx = hno - 1;
+	if(Temp.mulligan[idx] == "1"){
+		Temp.mulligan = $T.chgstr(Temp.mulligan, idx, 1, "0");
+		$("#DIV_HAND"+hno).addClass("CLS_HAND_GLAY");
 	}else{
-		Temp.mariganHno.push(hno.toString());
-		Temp.mariganCno.push(Player[Board.role].)
+		Temp.mulligan = $T.chgstr(Temp.mulligan, idx, 1, "1");
+		$("#DIV_HAND"+hno).removeClass("CLS_HAND_GLAY");
 	}
 }
 //======================================================================
@@ -423,11 +429,14 @@ function GridClick(i_no){
 }
 //ハンドクリック判定
 function HandClick(i_no){
+	if(Board.step == 1){
+		if(Board.role >= 1){
+			HandMulligan(i_no);
+			return;
+		}
+	}
 	if(Board.turn == Board.role){
 		switch(Board.step){
-		case 1:
-			HandMarigan(i_no);
-			break;
 		case 20:
 			if(i_no <= Player[Board.role].HandCount()){
 				//コストチェック
@@ -928,7 +937,7 @@ function DispDialog(param){
 			}
 		}
 		if(param.btns){
-			if(param.dtype == "yesno"){
+			if(param.dtype && param.dtype == "yesno"){
 				if(html != "") html += "<br>";
 				for(var i=0; i<=1; i++){
 					cls = (i == 1 && param.timer) ? " class='"+Chessclock.set()+"'" : "";

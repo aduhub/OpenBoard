@@ -189,29 +189,13 @@ var Frame = {
 						if(logpno != Board.role){
 							Player[logpno].deck = logpara;
 							//初期手札
-							for(var i=1; i<=4; i++){
+							for(var i=1; i<=5; i++){
 								Drawcard({pno:logpno, from:"deck", nlog:true});
 							}
 						}
 						//準備完了カウント
 						Board.readycnt++;
 						if (Board.readycnt == Board.playcnt){
-							FlowSet("BOARD_START");
-						}
-
-						//##### Debug #####
-						if(sessionStorage.Mode == "debug"){
-							//自分以外の初期手札セット
-							for(var ipno=1; ipno<=Board.playcnt; ipno++){
-								if(ipno != Board.role){
-									Player[ipno].deck = Player[Board.role].deck;
-									//初期手札
-									for(var i=1; i<=4; i++){
-										Drawcard({pno:ipno, from:"deck", nlog:true});
-									}
-								}
-							}
-							//準備完了カウント
 							FlowSet("BOARD_START");
 						}
 					}

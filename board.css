@@ -18,7 +18,6 @@ BUTTON{
 		color-stop(0.02, #E0E0E0),
 		color-stop(0.97, #D0D0D0),
 		to(#606060));
-	background: -moz-linear-gradient(top, #F0F0F0, #E0E0E0 2%, #D0D0D0 97%, #606060);
 	border-radius: 6px;
 	margin-right:2px;
 	margin-bottom:2px;
@@ -29,7 +28,6 @@ button img{
 button:active{
 	background: -webkit-gradient(linear, left top, left bottom,
 		from(#606060), color-stop(0.02, #B0B0B0));
-	background: -moz-linear-gradient(top, #606060, #B0B0B0 2%);
 }
 button:disabled{
 	background:none;
@@ -49,8 +47,6 @@ button:disabled{
 .CLS_AREAMAP{
 	-webkit-transform-origin:0 0;
 	-webkit-transform:scale(0.5);
-	-moz-transform-origin:0 0;
-	-moz-transform:scale(0.5);
 }
 #DIV_BACK{
 	background-color : #eeeeee;
@@ -135,7 +131,6 @@ button:disabled{
 		z-index : 50;
 		border: 5px solid;
 		-webkit-box-sizing:border-box;
-		-moz-box-sizing:border-box;
 	}
 	.class_Point:hover{
 		opacity : 1.0;
@@ -143,7 +138,6 @@ button:disabled{
 		.class_Point_Line{
 			/*box layout*/
 			display:-webkit-box;
-			display:-moz-box;
 			font-size : 20px;
 			font-family : "Verdana",'ヒラギノ角ゴ Pro W3','Hiragino Kaku Gothic Pro','メイリオ','Meiryo','ＭＳ Ｐゴシック',sans-serif;
 			line-height:25px;
@@ -152,23 +146,19 @@ button:disabled{
 		}
 			.class_Point_Line div{
 				-webkit-box-sizing:border-box;
-				-moz-box-sizing:border-box;
 			}
 		div.class_Point_Line2{
 			/*box layout*/
 			display:-webkit-box;
-			display:-moz-box;
 			height:20px;
 			width:100%;
 		}
 			.class_Point_Line2 div{
 				-webkit-box-sizing:border-box;
-				-moz-box-sizing:border-box;
 			}
 		.class_Info_Line{
 			/*box layout*/
 			display:-webkit-box;
-			display:-moz-box;
 			font-size : 20px;
 			font-family : "Verdana",'ヒラギノ角ゴ Pro W3','Hiragino Kaku Gothic Pro','メイリオ','Meiryo','ＭＳ Ｐゴシック',sans-serif;
 			line-height:26px;
@@ -193,7 +183,6 @@ button:disabled{
 			padding-bottom:4px;
 			line-height:22px;
 			-webkit-box-sizing:border-box;
-			-moz-box-sizing:border-box;
 		}
 	.CLS_INFOGNO{
 		color:#e0e0e0;
@@ -479,7 +468,6 @@ DIV.CLS_GRIDGUIDE{
 	z-index:151;
 	opacity:0.9;
 	-webkit-transform:scale(1.0, 0.8);
-	-moz-transform:scale(1.0, 0.8);
 }
 
 #DIV_PLAYER1{
@@ -654,13 +642,11 @@ DIV.CLS_GRIDGUIDE{
 	font-size: 16px;
 	overflow: auto;
 	-webkit-user-select:auto;
-	-moz-user-select:auto;
 }
 .CLS_LOG div{
 	margin:0px;
 	padding:0px 0px 0px 2px;
 	-webkit-user-select:auto;
-	-moz-user-select:auto;
 }
 .CLS_LOG::-webkit-scrollbar {
   width: 4px;
@@ -775,54 +761,6 @@ DIV.CLS_GRIDGUIDE{
 	height:22px;
 	width:189px;
 	padding:0px;
-}
-#DIV_DEBUGHAND1{
-	display:none;
-	background-color:#ff0000;
-	position: fixed;
-	top		: 600px;
-	left	: 0px;
-	width	: 350px;
-	height	: 65px;
-	padding-top:5px;
-	z-index	: 60;
-	opacity : 0.8;
-}
-#DIV_DEBUGHAND2{
-	display:none;
-	background-color:#0000cc;
-	position: fixed;
-	top		: 670px;
-	left	: 0px;
-	width	: 350px;
-	height	: 65px;
-	padding-top:5px;
-	z-index	: 60;
-	opacity : 0.8;
-}
-#DIV_DEBUGHAND3{
-	display:none;
-	background-color:#00cc00;
-	position: fixed;
-	top		: 600px;
-	left	: 350px;
-	width	: 350px;
-	height	: 65px;
-	padding-top:5px;
-	z-index	: 60;
-	opacity : 0.8;
-}
-#DIV_DEBUGHAND4{
-	display:none;
-	background-color:#ff9900;
-	position: fixed;
-	top		: 670px;
-	left	: 350px;
-	width	: 350px;
-	height	: 65px;
-	padding-top:5px;
-	z-index	: 60;
-	opacity : 0.8;
 }
 /* ===================[ CONTROL PANEL ]=================== */
 #DIV_CONTROLBTN{
@@ -949,7 +887,6 @@ DIV.CLS_GRIDGUIDE{
 #DIV_VSITEM0{
 	background-repeat : no-repeat;
 	-webkit-background-size:100px 130px;
-	-moz-background-size:100px 130px;
 	position : absolute;
 	top  : 130px;
 	left : 30px;
@@ -960,7 +897,6 @@ DIV.CLS_GRIDGUIDE{
 #DIV_VSITEM1{
 	background-repeat : no-repeat;
 	-webkit-background-size:100px 130px;
-	-moz-background-size:100px 130px;
 	position : absolute;
 	top  : 130px;
 	left : 660px;
@@ -1094,8 +1030,6 @@ DIV.CLS_VSLABEL2{
 .CLS_VSBAR{
 	-webkit-transition-property: width;
 	-webkit-transition-duration: 1s;
-	-moz-transition-property: width;
-	-moz-transition-duration: 1s;
 }
 #DIV_VSLOG{
 	color:#fefefe;
@@ -1104,8 +1038,6 @@ DIV.CLS_VSLABEL2{
 		color-stop(0.4, rgba(0,0,0,0.4)),
 		color-stop(0.6, rgba(0,0,0,0.4)),
 		to(rgba(0,0,0,0.2)));
-	background: -moz-linear-gradient(top, 
-		rgba(0,0,0,0.2), rgba(0,0,0,0.4) 40%, rgba(0,0,0,0.4) 60%, rgba(0,0,0,0.2));
 	font-family : "Verdana";
 	font-weight:bold;
 	font-size : 18px;
@@ -1135,14 +1067,12 @@ div.CLS_VSLOG0{
 	margin-right:auto;
 	background: -webkit-gradient(linear, left top, right top, 
 		from(rgba(255,60,0,0.6)), to(rgba(255,60,0,0.0)));
-	background: -moz-linear-gradient(top, rgba(255,60,0,0.6), rgba(255,60,0,0.0));
 }
 div.CLS_VSLOG1{
 	margin-left:auto;
 	margin-right:0px;
 	background: -webkit-gradient(linear, left top, right top,
 		from(rgba(0,60,255,0.0)), to(rgba(0,60,255,0.6)));
-	background: -moz-linear-gradient(top, rgba(0,60,255,0.0), rgba(0,60,255,0.6));
 }
 div.CLS_VSLOG9{
 	margin-left:auto;

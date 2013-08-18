@@ -27,6 +27,13 @@ var $T = {
 			return 0;
 		}
 	},
+	//文字列変更
+	chgstr:function(str, idx, len, rstr){
+		var retstr = str.substring(0, idx);
+		retstr += rstr;
+		retstr += str.substring(idx + len);
+		return  retstr;
+	},
 	//範囲チェック
 	inrange:function(val, min, max){
 		var ret = false;

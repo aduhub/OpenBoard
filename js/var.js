@@ -31,6 +31,5 @@ var dragObject = null;
 var dragOffset = null;
 
 var Temp = {
-	mariganHno:[],
-	mariganCno:[]
+	mulligan:"00000"
 }
