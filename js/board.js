@@ -210,14 +210,14 @@ function PlayerHandSetup(i_flg){
 	}else{
 		for(var i=1; i<=5; i++){
 			if(Temp.mulligan[i - 1] == "1"){
-				puttop.push(Player[Board.role].HandCard(i));
+				puttop.push(Player[Board.role].hand[i - 1]);
 			}
 		}
 	}
 	//デッキシャッフル(残し)
 	DeckShuffle({pno:Board.role, tgt:"deck", puttop:puttop});
 	//初期手札(5draw)
-	Player[Board.role].hand = "";
+	Player[Board.role].hand = [];
 	for(var i=1; i<=5; i++){
 		Drawcard({pno:Board.role, from:"deck", nlog:true});
 	}
@@ -243,12 +243,11 @@ function PlayerHandSetup(i_flg){
 }
 //マリガン
 function HandMulligan(hno){
-	var idx = hno - 1;
-	if(Temp.mulligan[idx] == "1"){
-		Temp.mulligan = $T.chgstr(Temp.mulligan, idx, 1, "0");
+	if(Temp.mulligan[hno] == "1"){
+		Temp.mulligan = $T.chgstr(Temp.mulligan, hno, 1, "0");
 		$("#DIV_HAND"+hno).addClass("CLS_HAND_GLAY");
 	}else{
-		Temp.mulligan = $T.chgstr(Temp.mulligan, idx, 1, "1");
+		Temp.mulligan = $T.chgstr(Temp.mulligan, hno, 1, "1");
 		$("#DIV_HAND"+hno).removeClass("CLS_HAND_GLAY");
 	}
 }
@@ -428,55 +427,50 @@ function GridClick(i_no){
 	}
 }
 //ハンドクリック判定
-function HandClick(i_no){
+function HandClick(i_hno){
 	if(Board.step == 1){
 		if(Board.role >= 1){
-			HandMulligan(i_no);
+			HandMulligan(i_hno);
 			return;
 		}
 	}
 	if(Board.turn == Board.role){
-		switch(Board.step){
-		case 20:
-			if(i_no <= Player[Board.role].HandCount()){
+		if(i_hno < Player[Board.role].hand.length){
+			switch(Board.step){
+			case 20:
 				//コストチェック
-				if(SpellCost(i_no)){
-					SpellTarget(i_no);
+				if(SpellCost(i_hno)){
+					SpellTarget(i_hno);
 				}
-			}
-			break;
-		case 40: //Summon
-			if(i_no <= Player[Board.role].HandCount()){
+				break;
+			case 40: //Summon
 				//コストチェック
-				if(SummonCost(Player[Board.role].stand, Player[Board.role].HandCard(i_no)) == "OK"){
-					SummonConfirm({type:"summon", step:0, hno:i_no});
+				if(SummonCost(Player[Board.role].stand, Player[Board.role].hand[i_hno]) == "OK"){
+					SummonConfirm({type:"summon", step:0, hno:i_hno});
 				}
-			}
-			break;
-		case 53: //Trritory(Summon)
-			if(i_no <= Player[Board.role].HandCount()){
+				break;
+			case 53: //Trritory(Summon)
 				//コストチェック
-				if(SummonCost(Territory.gno, Player[Board.role].HandCard(i_no)) == "OK"){
-					SummonConfirm({type:"change", step:0, hno:i_no});
+				if(SummonCost(Territory.gno, Player[Board.role].hand[i_hno]) == "OK"){
+					SummonConfirm({type:"change", step:0, hno:i_hno});
 				}
+				break;
+			case 98: //Dicard(TurnEnd)
+				if(Board.discardstep == 1){
+					Discard({pno:Board.role, hno:i_hno});
+				}
+				break;
 			}
-			break;
-		case 98: //Dicard(TurnEnd)
-			if(Board.discardstep == 1){
-				//DiscardConfirm({step:0, hno:i_no});
-				Discard({pno:Board.role, hno:i_no});
-			}
-			break;
 		}
 	}
 	if(Battle.p[0].pno == Board.role || Battle.p[1].pno == Board.role){
 		switch(Board.step){
 		case 72:
-			if(i_no <= Player[Board.role].HandCount()){
-				var cno = Player[Board.role].HandCard(i_no);
+			if(i_hno < Player[Board.role].hand.length){
+				var cno = Player[Board.role].hand[i_hno];
 				//コストチェック
 				if(Battle.check.indexOf(cno) >= 0){
-					BattleItem(Board.role, i_no);
+					BattleItem({pno:Board.role, hno:i_hno});
 				}
 			}
 			break;
@@ -723,12 +717,8 @@ function DispPlayer(i_pno){
 			msgstr += "<IMG src='"+imgsrc+".gif' height='20' width='"+wkwidth[i2]+"'>";
 		}
 		//Hand
-		for(var i2=1; i2<=Player[i].HandCount(); i2++){
-			if(sessionStorage.iPhone == "Y"){
-				msgstr += "<IMG src='img/icon_card_i.gif' height='20' width='12'>";
-			}else{
-				msgstr += "<IMG src='img/icon_card.gif' height='20' width='14'>";
-			}
+		for(var i2 in Player[i].hand){
+			msgstr += "<IMG src='img/icon_card.gif' height='20' width='14'>";
 		}
 		dispstr += Infoblock.line({cls:"point2", m:[msgstr], w:[170 + iplus], pd:[4], bg:"#FEFEFE"});
 		

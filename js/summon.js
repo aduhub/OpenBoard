@@ -4,29 +4,26 @@ function SummonCheck(i_gno){
 	Summon.from = "summon";
 	Summon.pno = 0;
 	Summon.cno = "";
-	Summon.hand = 0;
 	Summon.gno = 0;
 	Summon.status = "";
 	//手札再表示
 	SortHand();
 	//アイコンセット
-	if(Player[Board.role].HandCount() >= 1){
-		for(var i=1; i<=Player[Board.role].HandCount(); i++){
-			var cno = Player[Board.role].HandCard(i);
-			if(Card[cno].type != "C"){
-				$("#DIV_HAND"+i).addClass("CLS_HAND_GLAY");
-			}else{
-				switch(SummonCost(i_gno, cno)){
-				case "NG":
-					Canvas.draw({id:"CVS_HAND"+i, src:"img/icon_nouse.gif"});
-					break;
-				case "GOLD":
-					Canvas.draw({id:"CVS_HAND"+i, src:"img/icon_nogold.gif"});
-					break;
-				case "PLUS":
-					Canvas.draw({id:"CVS_HAND"+i, src:"img/icon_noplus.gif"});
-					break;
-				}
+	for(var i in Player[Board.role].hand){
+		var cno = Player[Board.role].hand[i];
+		if(Card[cno].type != "C"){
+			$("#DIV_HAND"+i).addClass("CLS_HAND_GLAY");
+		}else{
+			switch(SummonCost(i_gno, cno)){
+			case "NG":
+				Canvas.draw({id:"CVS_HAND"+i, src:"img/icon_nouse.gif"});
+				break;
+			case "GOLD":
+				Canvas.draw({id:"CVS_HAND"+i, src:"img/icon_nogold.gif"});
+				break;
+			case "PLUS":
+				Canvas.draw({id:"CVS_HAND"+i, src:"img/icon_noplus.gif"});
+				break;
 			}
 		}
 	}
@@ -128,8 +125,7 @@ function SummonConfirm(arg){
 	StepSet(41);
 	Summon.from = arg.type;
 	Summon.pno = Board.role;
-	Summon.cno = Player[Board.role].HandCard(arg.hno);
-	Summon.hand = arg.hno;
+	Summon.cno = Player[Board.role].hand[arg.hno];
 	Summon.gno = (arg.type == "summon") ? Player[Board.role].stand : Territory.gno;
 	Summon.status = "";
 	//ステップ
@@ -144,7 +140,6 @@ function SummonRecv(){
 	Summon.from = arg[1];
 	Summon.pno = arg[0];
 	Summon.cno = wkarr[0];
-	Summon.hand = 0;
 	Summon.gno = Number(wkarr[1]);
 	Summon.status = "";
 	//スクロール
@@ -166,7 +161,7 @@ function SummonReady(){
 	Player[Summon.pno].HandDel(Summon.cno);
 	//交換時手札追加
 	if(Summon.from == "change"){
-		Player[Summon.pno].HandAdd(Board.grid[Summon.gno].cno);
+		Player[Summon.pno].hand.push(Board.grid[Summon.gno].cno);
 	}
 	//Analytics
 	Analytics.costsummon[Summon.pno] += Card[Summon.cno].cost;
@@ -184,7 +179,6 @@ function SummonReady(){
 		//Log
 		Logprint({msg:"(侵略召喚)##"+Summon.cno+"##", pno:Summon.pno});
 		//戦闘
-		Battle.hand = Summon.hand;
 		BattleInit("S", Summon.gno, Board.turn, Summon.cno);
 	}else{
 		//Log

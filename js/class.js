@@ -119,54 +119,25 @@ function clsPlayer() {
 	this.stand   = 0;
 	this.shadow  = 0;
 	this.lap     = 0;
+	this.medal   = 0;
 	this.foot    = 0;
 	this.draw    = "";
-	this.hand    = "";
+	this.hand    = [];
 	this.deckid  = "";
 	this.deck    = "";
 	this.deckname= "";
 	this.deckdata= "";
 	this.decknext= [];
+	this.HandDel =function(i_no){
+		if(String(i_no).match(/^[A-Z]+[0-9]+$/)){
+			var tgtarr = [].push(i_no);
+			$T.arrconflict(this.hand, tgtarr);
+		}else{
+			this.hand.splice(i_no - 1, 1);
+		}
+	}
 	this.DeckAdd =function(i_cno){
 		this.deck += (this.deck == "") ? i_cno : ":" + i_cno;
-	}
-	this.HandAdd =function(i_cno){
-		this.hand += (this.hand == "") ? i_cno : ":" + i_cno;
-	}
-	this.HandDel =function(i_no){
-		var wkarr = this.hand.split(":");
-		if(String(i_no).match(/^[A-Z]+[0-9]+$/)){
-			if(wkarr.length >= 1){
-				for(var i=0; i<=wkarr.length - 1; i++){
-					if(wkarr[i] == i_no){
-						wkarr.splice(i, 1);
-						break;
-					}
-				}
-			}
-		}else{
-			wkarr.splice(i_no - 1, 1);
-		}
-		this.hand = wkarr.join(":");
-	}
-	this.HandSort=function(){
-		if(this.hand != ""){
-			var sortwork = [];
-			var cno, wkstr, wkarr, newhand = [];
-			var handarr = this.hand.split(":");
-			var handcnt = handarr.length;
-			for(var i=1; i<=handcnt; i++){
-				cno = handarr.shift();
-				sortwork.push(Card[cno].type + ":" + Card[cno].color + ":" + cno);
-			}
-			sortwork.sort();
-			for(var i=1; i<=handcnt; i++){
-				wkstr = sortwork.shift();
-				wkarr = wkstr.split(":");
-				newhand.push(wkarr[2]);
-			}
-			this.hand = newhand.join(":");
-		}
 	}
 	this.DeckDel =function(i_no){
 		var wkarr = this.deck.split(":");
@@ -182,10 +153,6 @@ function clsPlayer() {
 		var wkarr = this.deckdata.split(":");
 		return (this.deckdata == "") ? 0 : wkarr.length;
 	}
-	this.HandCount=function(){
-		var wkarr = this.hand.split(":");
-		return (this.hand == "") ? 0 : wkarr.length;
-	}
 	this.DeckShift=function(){
 		var wkarr = this.deck.split(":");
 		var cno = wkarr.shift();
@@ -197,14 +164,6 @@ function clsPlayer() {
 		wkarr.splice(dno - 1, 0, cno);
 		this.deck = wkarr.join(":");
 	}
-	this.HandCard=function(i_no){
-		var wkarr = this.hand.split(":");
-		if(wkarr.length >= i_no){
-			return wkarr[i_no - 1];
-		}else{
-			return "";
-		}
-	}
 	this.DeckCard=function(i_no){
 		var wkarr = this.deck.split(":");
 		if(wkarr.lenth < i_no){
@@ -215,32 +174,6 @@ function clsPlayer() {
 		}
 	}
 }
-//Card クラス
-//function clsCard(){
-//	this.id = "X001";
-//	this.name   = "";
-//	this.type  = "C";
-//	this.cost   = 0;
-//	this.plus   = "";
-//	this.limit  ="";
-//	this.color  = "N";
-//	this.st     = 0;
-//	this.lf     = 0;
-//	this.item   = "";
-//	this.walk   = "";
-//	this.spell  = "";
-//	this.opt1   = 0;
-//	this.opt2   = 0;
-//	this.opt3   = 0;
-//	this.target = "";
-//	this.imgsrc = "";
-//	this.atkani = "";
-//	this.artist = "";
-//	this.comment= "";
-//	this.opts = function(){
-//		return [this.opt1, this.opt2, this.opt3];
-//	}
-//}
 //Dice クラス
 function clsDice(){
 	this.pno   = 0;
@@ -258,7 +191,6 @@ function clsSpell(){
 	this.tgttype= "";
 	this.check  = [];
 	this.target = [];
-	this.hand   = 0;
 }
 //Summon
 function clsSummon(){

@@ -37,25 +37,7 @@ function DebugFront(){
 		$("#debugfront").html(html);
 	}
 }
-//ハンドクリック判定
-function DebugHandClick(i_pno, i_hno){
-	if(i_pno != Board.role && (Battle.p[0].pno == i_pno || Battle.p[1].pno == i_pno)){
-		switch(Board.step){
-		case 73:
-			if(i_hno <= Player[i_pno].HandCount()){
-				var cno = Player[i_pno].HandCard(i_hno);
-				//コストチェック
-				BattleItem(i_pno, cno);
-			}
-			if(i_hno == 7){
-				BattleItem(i_pno, "FIST");
-			}
-			break;
-		}
-		//Sound Effect
-		Audie.seplay("click");
-	}
-}
+
 //Grid Setting
 function DebugGridInfo(i_gno){
 	var panels = "";

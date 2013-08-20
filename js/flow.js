@@ -146,7 +146,7 @@ function PhaseEnd(){
 	if(Battle.p[0].pno == Board.role || Battle.p[1].pno == Board.role){
 		switch(Board.step){
 		case 72: //Battle(NoItem)
-			BattleItem(Board.role, 99);
+			BattleItem({pno:Board.role, hno:99});
 			break;
 		}
 	}
@@ -246,7 +246,7 @@ function TurnEndFlow(step){
 	switch(step){
 	case 0: //Discard
 		//ハンドチェック
-		if(Player[Board.turn].HandCount() >= 7){
+		if(Player[Board.turn].hand.length >= 7){
 			//ディスカードステップ
 			StepSet(98);
 			//ダイアログ

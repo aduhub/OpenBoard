@@ -1,20 +1,18 @@
 //スペルカードチェック
 function SpellCheck(){
 	//Image再設定
-	if(Player[Board.role].HandCount() >= 1){
-		for(var i=1; i<=Player[Board.role].HandCount(); i++){
-			var cno =  Player[Board.role].HandCard(i);
-			if(Card[cno].type != "S"){
-				$("#DIV_HAND"+i).addClass("CLS_HAND_GLAY");
-			}else if(Player[Board.role].gold < Card[cno].cost){
-				Canvas.draw({id:"CVS_HAND"+i, src:"img/icon_nogold.gif"});
-			}
+	for(var i in Player[Board.role].hand){
+		var cno =  Player[Board.role].hand[i];
+		if(Card[cno].type != "S"){
+			$("#DIV_HAND"+i).addClass("CLS_HAND_GLAY");
+		}else if(Player[Board.role].gold < Card[cno].cost){
+			Canvas.draw({id:"CVS_HAND"+i, src:"img/icon_nogold.gif"});
 		}
 	}
 }
 //コストチェック
-function SpellCost(i_no){
-	var cno = Player[Board.role].HandCard(i_no);
+function SpellCost(i_hno){
+	var cno = Player[Board.role].hand[i_hno];
 	//タイプチェック
 	if(Card[cno].type == "S"){
 		//コストチェック
@@ -24,18 +22,17 @@ function SpellCost(i_no){
 	}
 }
 //ターゲットチェック
-function SpellTarget(i_no){
+function SpellTarget(i_hno){
 	//Target文字 : [All,Target][Me,Each,Opponent,Space,Xothers][Player,Grid,Deck] AEGMOPT
-	var cno = Player[Board.role].HandCard(i_no);
+	var cno = Player[Board.role].hand[i_hno];
 	var tgt = Card[cno].tgt.split(",")[0];
 	//Spellセット
 	Spell.pno = Board.role;
 	Spell.cno = cno;
-	Spell.hand = i_no;
 	Spell.check = [];
 	Spell.target = [];
 	//アイコン表示
-	Canvas.draw({id:"CVS_HAND"+Spell.hand, src:"img/cmd_select.gif", alpha:0.6});
+	Canvas.draw({id:"CVS_HAND"+i_hno, src:"img/cmd_select.gif", alpha:0.6});
 	//ターゲット・対象の～
 	if(tgt.match(/^T.*$/)){
 		//タイプ
@@ -181,14 +178,6 @@ function SpellRecv(i_flg, i_pno, i_cmd){
 		Spell.cno = wkarr[0];
 		Spell.tgttype = wkarr[1];
 		Spell.target = wkarr[2].split("_");
-		if(Board.turn != Board.role){
-			var wkarr = Player[Spell.pno].hand.split(":");
-			var wknum = wkarr.indexOf(Spell.cno);
-			if(wknum >= 0){
-				//手札破棄NO
-				Spell.hand = wknum + 1;
-			}
-		}
 		//Spell aculo
 		StepSet(23);
 		//エフェクト
@@ -216,7 +205,7 @@ function SpellFire(i_flg){
 		//コスト消費
 		Player[Spell.pno].gold -= Card[Spell.cno].cost;
 		//カード消費
-		Player[Spell.pno].HandDel(Spell.hand);
+		Player[Spell.pno].HandDel(Spell.cno);
 	}
 	//Spell大分岐
 	switch(Card[Spell.cno].spell){
@@ -233,10 +222,10 @@ function SpellFire(i_flg){
 	case "FESTIVAL":
 		var wkgold = 0;
 		var tgtcno;
-		for(var i=Player[Spell.pno].HandCount(); i>=1; i--){
-			tgtcno = Player[Spell.pno].HandCard(i);
+		for(var i in Player[Spell.pno].hand.length){
+			tgtcno = Player[Spell.pno].hand[i];
 			if(Card[tgtcno].type == "C"){
-				Player[Spell.pno].HandDel(i);
+				Player[Spell.pno].HandDel(tgtcno);
 				Logprint({msg:"##" + tgtcno + "##を破棄", pno:Spell.pno});
 				wkgold += Number(Card[Spell.cno].opt[0]);
 			}
@@ -434,8 +423,8 @@ function SpellFire(i_flg){
 		break;
 	case "REINCARNE":
 		//Hand Clear
-		var handcnt = Player[Spell.pno].HandCount();
-		Player[Spell.pno].hand = "";
+		var handcnt = Player[Spell.pno].hand.length;
+		Player[Spell.pno].hand = [];
 		//Draw
 		var drawcnt = handcnt + 1;
 		for(var i=1; i<=drawcnt; i++){
@@ -458,7 +447,7 @@ function SpellFire(i_flg){
 			Spell.target = [];
 			if(Board.turn == Board.role){
 				for(var ipno=1; ipno<=Board.playcnt; ipno++){
-					if(Player[ipno].HandCount() > 4){
+					if(Player[ipno].hand.length > 4){
 						hand = Player[ipno].hand.split(":");
 						while(hand.length > 4){
 							var rnd = Math.floor(Math.random() * hand.length);
@@ -480,16 +469,16 @@ function SpellFire(i_flg){
 		}else{
 			var orders = Spell.target;
 			for(var ipno=1; ipno<=Board.playcnt; ipno++){
-				if(Player[ipno].HandCount() < 4){
+				if(Player[ipno].hand.length < 4){
 					//{Draw}
-					while(Player[ipno].HandCount() < 4){
+					while(Player[ipno].hand.length < 4){
 						var cno = Drawcard({pno:ipno, from:"deck"});
 					}
 					//msgpop
 					EffectBox({pattern:"msgpop", gno:Player[ipno].stand, msg:"Draw", player:true});
-				}else if(Player[ipno].HandCount() > 4){
+				}else if(Player[ipno].hand.length > 4){
 					//{Dicard}
-					while(Player[ipno].HandCount() > 4){
+					while(Player[ipno].hand.length > 4){
 						var cno = orders.shift();
 						Player[ipno].HandDel(cno);
 						Logprint({msg:"##" + cno + "##を破棄", pno:ipno});
@@ -690,10 +679,10 @@ function SpellFire(i_flg){
 		break;
 	case "EARTHQUAKE":
 		var intensity = 1;
-		var handcnt = Player[Spell.pno].HandCount();
+		var handcnt = Player[Spell.pno].hand.length;
 		//Level
 		for(var i=1; i<=handcnt; i++){
-			if(Player[Spell.pno].HandCard(i) == Spell.cno){
+			if(Player[Spell.pno].hand[i - 1] == Spell.cno){
 				if(intensity <= 2){
 					intensity += 1;
 				}
@@ -800,8 +789,8 @@ function SpellFire(i_flg){
 			//クリア
 			GridClear({gno:tgtgno});
 			//手札追加
-			if(Player[tgtpno].HandCount() < 10){
-				Player[tgtpno].HandAdd(tgtcno);
+			if(Player[tgtpno].hand.length < 10){
+				Player[tgtpno].hand.push(tgtcno);
 				if(tgtpno == Board.role) SortHand();
 				Logprint({msg:"##"+tgtcno+"##は手札に戻った", pno:tgtpno});
 			}else{
@@ -1075,11 +1064,9 @@ function SpellFire(i_flg){
 		for(var i=0; i<Spell.target.length; i++){
 			var tgtpno = Spell.target[i];
 			var wkgold = 0;
-			if(Player[tgtpno].HandCount() >= 1){
-				for(var i2=1; i2<=Player[tgtpno].HandCount(); i2++){
-					if(Card[Player[tgtpno].HandCard(i2)].type == "I"){
-						wkgold += 30;
-					}
+			for(var i2 in Player[tgtpno].hand){
+				if(Card[Player[tgtpno].hand[i2]].type == "I"){
+					wkgold += 30;
 				}
 			}
 			//Asset over check
@@ -1136,20 +1123,17 @@ function SpellFire(i_flg){
 		}
 		break;
 	case "RUIN":
-		var tgtpno, tgtcno, hcnt, delflg;
+		var tgtpno, tgtcno, delflg;
 		for(var i=0; i<Spell.target.length; i++){
 			tgtpno = Spell.target[i];
 			delflg = false;
-			if(Player[tgtpno].HandCount() >= 1){
-				hcnt = Player[tgtpno].HandCount();
-				for(var i2=hcnt; i2>=1; i2--){
-					tgtcno = Player[tgtpno].HandCard(i2);
-					if(Card[tgtcno].type == "I" && Card[tgtcno].item && Card[tgtcno].item == "I"){
-						//手札削除
-						Player[tgtpno].HandDel(i2);
-						Logprint({msg:"##" + tgtcno + "##を破棄", pno:tgtpno});
-						delflg = true;
-					}
+			for(var i2 in Player[tgtpno].hand){
+				tgtcno = Player[tgtpno].hand[i2];
+				if(Card[tgtcno].type == "I" && Card[tgtcno].item && Card[tgtcno].item == "I"){
+					//手札削除
+					Player[tgtpno].HandDel(tgtcno);
+					Logprint({msg:"##" + tgtcno + "##を破棄", pno:tgtpno});
+					delflg = true;
 				}
 			}
 			if(delflg){
@@ -1191,7 +1175,7 @@ function SpellFire(i_flg){
 					Player[tgtpno].HandDel(tgtcno);
 					Player[tgtpno].gold += cardprice;
 					//手札追加
-					Player[Spell.pno].HandAdd(tgtcno);
+					Player[Spell.pno].hand.push(tgtcno);
 					Player[Spell.pno].gold -= cardprice;
 					//msgpop
 					EffectBox({pattern:"msgpop",gno:Player[tgtpno].stand, msg:"+"+cardprice+"G", color:"#ffcc00", player:true});
@@ -1285,12 +1269,10 @@ function SpellTgtSecond(arg){
 			var cno;
 			var imgarr = [];
 			var tgtpno = Number(Spell.target[0]);
-			if(Player[tgtpno].HandCount() > 0){
-				for(var i=1; i<=Player[tgtpno].HandCount(); i++){
-					cno = Player[tgtpno].HandCard(i);
-					if(Card[cno].type == "I" || Card[cno].type == "S"){
-						imgarr.push([cno, "SpellTgtSecond({step:1, cno:'"+cno+"'})"]);
-					}
+			for(var i in Player[tgtpno].hand){
+				cno = Player[tgtpno].hand[i];
+				if(Card[cno].type == "I" || Card[cno].type == "S"){
+					imgarr.push([cno, "SpellTgtSecond({step:1, cno:'"+cno+"'})"]);
 				}
 			}
 			if(imgarr.length >= 1){
@@ -1355,12 +1337,12 @@ function SpellTgtSecond(arg){
 			var cards = [];
 			for(var ip=0; ip<Spell.target.length; ip++){
 				var tgtpno = Number(Spell.target[ip]);
-				var chkcnt = Player[tgtpno].HandCount();
+				var chkcnt = Player[tgtpno].hand.length;
 				var hands = [];
 				for(var ic=1; ic<=chkcnt; ic++){
-					if(Card[Player[tgtpno].HandCard(ic)].type == "S"){
+					if(Card[Player[tgtpno].hand[ic - 1]].type == "S"){
 						var rnd = Math.floor(Math.random() * 50000) + 10000;
-						hands.push([rnd, Player[tgtpno].HandCard(ic), tgtpno]);
+						hands.push([rnd, Player[tgtpno].hand[ic - 1], tgtpno]);
 					}
 				}
 				hands.sort();
@@ -1473,8 +1455,8 @@ function SpellTgtSecond(arg){
 //=======================================================
 function SpellHandBack(){
 	//手札追加
-	if(Player[Spell.pno].HandCount() < 10){
-		Player[Spell.pno].HandAdd(Spell.cno);
+	if(Player[Spell.pno].hand.length < 10){
+		Player[Spell.pno].hand.push(Spell.cno);
 		if(Board.role == Spell.pno){
 			//手札ソート
 			SortHand();

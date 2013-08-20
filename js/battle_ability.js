@@ -159,11 +159,9 @@ function BattleAbiAction(arg){
 	case "SELECT2":
 		if(atk.active.match("@SPY@")){
 			var itemcnt = 0;
-			if(Player[def.pno].HandCount() >= 1){
-				for(var i=1; i<=Player[def.pno].HandCount(); i++){
-					if(Card[Player[def.pno].HandCard(i)].type == "I"){
-						itemcnt++;
-					}
+			for(var i in Player[def.pno].hand){
+				if(Card[Player[def.pno].hand[i]].type == "I"){
+					itemcnt++;
 				}
 			}
 			if(Board.role == atk.pno){
@@ -407,20 +405,17 @@ function BattleAbiAction(arg){
 		break;
 	case "HIT":
 		if(atk.active.match("@DISCARD@")){
-			if(Player[def.pno].HandCount() >= 1){
-				Player[def.pno].HandSort();
-				for(var i = 0; i < atk.rnd.length; i++){
-					var hno = Number(atk.rnd.substr(i, 1));
-					var cno = Player[def.pno].HandCard(hno);
-					if(cno != ""){
-						Player[def.pno].HandDel(cno);
-						BattleLog($r(arg.bno), Dic("@DISCARD@"));
-						Logprint({msg:"##" + cno + "##を破棄", pno:def.pno});
-						if(Board.role == def.pno){
-							SortHand();
-						}
-						break;
+			Player[def.pno].hand.sort();
+			for(var i=0; i<atk.rnd.length; i++){
+				var cno = Player[def.pno].hand[Number(atk.rnd[i])];
+				if(cno != ""){
+					Player[def.pno].HandDel(cno);
+					BattleLog($r(arg.bno), Dic("@DISCARD@"));
+					Logprint({msg:"##" + cno + "##を破棄", pno:def.pno});
+					if(Board.role == def.pno){
+						SortHand();
 					}
+					break;
 				}
 			}
 		}
@@ -471,8 +466,8 @@ function BattleAbiAction(arg){
 				atk.lf = 0;
 				atk.status = "escape";
 				//手札追加
-				if(Player[atk.pno].HandCount() < 10){
-					Player[atk.pno].HandAdd(atk.cno);
+				if(Player[atk.pno].hand.length < 10){
+					Player[atk.pno].hand.push(atk.cno);
 					if(Board.role == atk.pno){
 						//手札ソート
 						SortHand();
@@ -497,8 +492,8 @@ function BattleAbiAction(arg){
 		if(atk.active.match(/@STICKY@/)){
 			for(var i=1; i<=2; i++){
 				//手札追加
-				if(Player[atk.pno].HandCount() < 10){
-					Player[atk.pno].HandAdd(atk.cno);
+				if(Player[atk.pno].hand.length < 10){
+					Player[atk.pno].hand.push(atk.cno);
 					Logprint({msg:"*##" + atk.cno + "##は手札に戻った", pno:atk.pno});
 					if(Board.role == atk.pno){
 						//手札ソート
@@ -571,8 +566,8 @@ function BattleAbiAction(arg){
 				//破壊判定
 				atk.lf = 0;
 				//手札追加
-				if(Player[atk.pno].HandCount() < 10){
-					Player[atk.pno].HandAdd(atk.cno);
+				if(Player[atk.pno].hand.length < 10){
+					Player[atk.pno].hand.push(atk.cno);
 					Logprint({msg:"*##" + atk.cno + "##は手札に戻った", pno:atk.pno});
 					if(Board.role == atk.pno){
 						//手札ソート
@@ -755,7 +750,7 @@ function BtAbilityExNo(i_bno, i_str){
 			break;
 		case /HANDM[0-9]+/.test(i_str): //HAND MINUS
 			var terms = i_str.match(/HANDM([0-9]+)/);
-			var hand = Player[atk.pno].HandCount();
+			var hand = Player[atk.pno].hand.length;
 			retno = Number(terms[1]) - (hand * 10);
 			if(retno < 0){
 				retno = 0;

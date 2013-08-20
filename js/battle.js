@@ -151,9 +151,9 @@ function ItemCheck(){
 	//Item選択
 	StepSet(72);
 	//CardCheck
-	for(var i=1; i<=Player[Board.role].HandCount(); i++){
+	for(var i in Player[Board.role].hand){
 		chkflg = "";
-		handcno = Player[Board.role].HandCard(i);
+		handcno = Player[Board.role].hand[i];
 		//判定
 		if(fig.status.match(/_BIND_/)){
 			chkflg = "CLOSE";
@@ -200,32 +200,31 @@ function ItemCheck(){
 	}
 }
 //Itemセット
-function BattleItem(){
-	var arg = arguments;
+function BattleItem(arg){
 	for(var i=0; i<=1; i++){
-		if(Battle.p[i].pno == arg[0] && Battle.p[i].item == ""){
-			if(arg[0] == Board.role && Board.step == 72){
+		if(Battle.p[i].pno == arg.pno && Battle.p[i].item == ""){
+			if(arg.pno == Board.role && Board.step == 72){
 				//結果待ち
 				StepSet(73);
 				//PHASEENDBUTTON
 				$("#BTN_PhaseEnd").html("-");
 				//アイコン設定
-				if(arg[1] <= 10){
-					Canvas.draw({id:"CVS_HAND"+arg[1], src:"img/cmd_select.gif", alpha:0.6});
+				if(arg.hno < 10){
+					Canvas.draw({id:"CVS_HAND"+arg.hno, src:"img/cmd_select.gif", alpha:0.6});
 				}
 				//コマンド送信
-				var wkcno = (arg[1] == 99) ? "FIST" : Player[Board.role].HandCard(arg[1]);
-				var rndarr = $T.rndsort([1,2,3,4,5,6,7]);
-				var wkcmd = "item:"+wkcno+":"+rndarr.join("");
+				var cno = (arg.hno == 99) ? "FIST" : Player[Board.role].hand[arg.hno];
+				var rnd = $T.rndsort([0,1,2,3,4,5,6,7,8,9]).join("");
+				var wkcmd = "item:"+cno+":"+rnd;
 				//送信
 				Net.send(wkcmd);
 				//Itemセット
-				Battle.p[i].item = wkcno;
-				Battle.p[i].rnd = rndarr.join("");
+				Battle.p[i].item = cno;
+				Battle.p[i].rnd = rnd;
 			}else{
 				//Itemセット
-				Battle.p[i].item = arg[1];
-				Battle.p[i].rnd = arg[2];
+				Battle.p[i].item = arg.cno;
+				Battle.p[i].rnd = arg.rnd;
 			}
 		}
 	}
@@ -617,8 +616,8 @@ function BattleResult(){
 				switch(opts[i2]){
 				case "BACKHAND":
 					//手札追加
-					if(Player[Battle.p[i].pno].HandCount() < 10){
-						Player[Battle.p[i].pno].HandAdd(Battle.p[i].item);
+					if(Player[Battle.p[i].pno].hand.length < 10){
+						Player[Battle.p[i].pno].hand.push(Battle.p[i].item);
 						if(Board.role == Battle.p[i].pno){
 							//手札ソート
 							SortHand();
@@ -715,8 +714,8 @@ function BattleResult(){
 			//召還侵略
 			if(Battle.from == "S"){
 				//手札追加
-				if(Player[Battle.p[0].pno].HandCount() < 10){
-					Player[Battle.p[0].pno].HandAdd(Battle.p[0].cno);
+				if(Player[Battle.p[0].pno].hand.length < 10){
+					Player[Battle.p[0].pno].hand.push(Battle.p[0].cno);
 					//手札枚数再表示
 					if(Battle.p[0].pno == Board.role) SortHand();
 					DispPlayer();
@@ -801,7 +800,7 @@ function BattleRecv(i_cmd, i_pno, i_para){
 	var wkarr = i_para.split(":");
 	switch(i_cmd){
 	case "item": //アイテムセット
-		BattleItem(i_pno, wkarr[0], wkarr[1]);
+		BattleItem({pno:i_pno, cno:wkarr[0], rnd:wkarr[1]});
 		break;
 	}
 }

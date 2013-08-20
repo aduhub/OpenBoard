@@ -847,7 +847,7 @@ function TerritoryAbility(i_flg){
 		//効果
 		if(Board.spelled.length >= 1){
 			var cno = Board.spelled[0];
-			Player[Territory.pno].HandAdd(cno);
+			Player[Territory.pno].hand.push(cno);
 			Logprint({msg:"##"+cno+"##を錬成した", pno:Territory.pno});
 		}else{
 			Logprint({msg:"対象がなかった", pno:Territory.pno});
@@ -867,11 +867,9 @@ function TerritoryAbility(i_flg){
 			var cno;
 			var imgarr = [];
 			var btnarr = [];
-			if(Player[Territory.pno].HandCount() > 0){
-				for(var i=1; i<=Player[Territory.pno].HandCount(); i++){
-					cno = Player[Territory.pno].HandCard(i);
-					imgarr.push([cno, "TerritoryAbility('"+cno+"')"]);
-				}
+			for(var i in Player[Territory.pno].hand){
+				cno = Player[Territory.pno].hand[i];
+				imgarr.push([cno, "TerritoryAbility('"+cno+"')"]);
 			}
 			btnarr.push(["キャンセル", "TerritoryAbility('N')"]);
 			//表示
@@ -898,7 +896,7 @@ function TerritoryAbility(i_flg){
 				//効果
 				if(Board.spelled.length >= 1){
 					var cno = Board.spelled[0];
-					Player[Territory.pno].HandAdd(cno);
+					Player[Territory.pno].hand.push(cno);
 					Logprint({msg:"##"+cno+"##を錬成した", pno:Territory.pno});
 				}else{
 					Logprint({msg:"対象がなかった", pno:Territory.pno});
@@ -921,8 +919,8 @@ function TerritoryAbility(i_flg){
 			for(var i=1; i<=Board.playcnt; i++){
 				tgthand = [];
 				if(Board.role != i){
-					for(var i2=1; i2<=Player[i].HandCount(); i2++){
-						cno = Player[i].HandCard(i2);
+					for(var i2 in Player[i].hand){
+						cno = Player[i].hand[i2];
 						if(Card[cno].type == "I" && Card[cno].item && Card[cno].item == "W"){
 							tgthand.push(cno);
 						}

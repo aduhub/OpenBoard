@@ -122,7 +122,7 @@ function DeckShuffle(arg){
 //手札並び替え
 function SortHand(){
 	var framecnt = $(".CLS_HAND").length;
-	var handcnt = Player[Board.role].HandCount();
+	var handcnt = Player[Board.role].hand.length;
 
 	// Hand Frame Check
 	if(framecnt - handcnt < 0){
@@ -140,9 +140,7 @@ function SortHand(){
 	if(handcnt >= 1){
 		var marginpix = "2px";
 		//Sort
-		var sortwork = Player[Board.role].hand.split(":");
-		sortwork.sort();
-		Player[Board.role].hand = sortwork.join(":");
+		Player[Board.role].hand.sort();
 		//Margin
 		switch(handcnt){
 		case 6:
@@ -184,8 +182,8 @@ function Drawcard(arg){
 		break;
 	}
 	//手札追加(10枚まで)
-	if(Player[arg.pno].HandCount() < 10){
-		Player[arg.pno].HandAdd(cno);
+	if(Player[arg.pno].hand.length < 10){
+		Player[arg.pno].hand.push(cno);
 		if(Board.role == arg.pno){
 			if(!(arg.nlog)){
 				Logprint({msg:"##" + cno + "##をドロー", pno:arg.pno});
@@ -234,7 +232,7 @@ function Discard(arg){
 	DispDialog("none");
 	//ターンプレイヤー
 	if(Board.role == arg.pno){
-		tgtcno = Player[Board.role].HandCard(arg.hno);
+		tgtcno = Player[Board.role].hand[arg.hno];
 		//送信
 		Net.send("discard:" + tgtcno);
 	}else{
@@ -261,7 +259,7 @@ function CardImgSet(arg){
 	var cno, cvs;
 	var card_src, frame_src, imgtype;
 	if(arg.hno){
-		cno = Player[Board.role].HandCard(arg.hno);
+		cno = Player[Board.role].hand[arg.hno - 1];
 		cvs = "CVS_HAND" + arg.hno;
 		arg.zoom = 0.5;
 	}else{
@@ -398,7 +396,7 @@ function CardInfo(i_no){
 		if(i_no == 0){
 			DisplaySet('DIV_INFOCARD', 0);
 		}else{
-			var cno = (String(i_no).match(/^[CIS][0-9]+$/)) ? i_no : Player[Board.role].HandCard(i_no);
+			var cno = (String(i_no).match(/^[CIS][0-9]+$/)) ? i_no : Player[Board.role].hand[i_no - 1];
 			if(cno != ""){
 				//image set
 				CardImgSet({cvs:"CVS_INFOCARD", cno:cno});
