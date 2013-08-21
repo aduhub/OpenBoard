@@ -11,8 +11,8 @@ function SpellCheck(){
 	}
 }
 //コストチェック
-function SpellCost(i_hno){
-	var cno = Player[Board.role].hand[i_hno];
+function SpellCost(hno){
+	var cno = Player[Board.role].hand[hno];
 	//タイプチェック
 	if(Card[cno].type == "S"){
 		//コストチェック
@@ -1335,14 +1335,13 @@ function SpellTgtSecond(arg){
 		switch(arg.step){
 		case 0: //表示
 			var cards = [];
-			for(var ip=0; ip<Spell.target.length; ip++){
+			for(var ip in Spell.target){
 				var tgtpno = Number(Spell.target[ip]);
-				var chkcnt = Player[tgtpno].hand.length;
 				var hands = [];
-				for(var ic=1; ic<=chkcnt; ic++){
-					if(Card[Player[tgtpno].hand[ic - 1]].type == "S"){
+				for(var ic in Player[tgtpno].hand){
+					if(Card[Player[tgtpno].hand[ic]].type == "S"){
 						var rnd = Math.floor(Math.random() * 50000) + 10000;
-						hands.push([rnd, Player[tgtpno].hand[ic - 1], tgtpno]);
+						hands.push([rnd, Player[tgtpno].hand[ic], tgtpno]);
 					}
 				}
 				hands.sort();
@@ -1353,10 +1352,8 @@ function SpellTgtSecond(arg){
 			cards.sort();
 
 			var imgarr = [];
-			if(cards.length >= 1){
-				for(var i=0; i<cards.length; i++){
-					imgarr.push([cards[i][1], "SpellTgtSecond({step:1, cdat:["+cards[i][2]+",'"+cards[i][1]+"']})"]);
-				}
+			for(var i in cards){
+				imgarr.push([cards[i][1], "SpellTgtSecond({step:1, cdat:["+cards[i][2]+",'"+cards[i][1]+"']})"]);
 			}
 			var btnarr = [["キャンセル", "SpellTgtSecond({step:1, cdat:[9, '']})"]];
 			//ダイアログ

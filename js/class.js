@@ -130,10 +130,10 @@ function clsPlayer() {
 	this.decknext= [];
 	this.HandDel =function(i_no){
 		if(String(i_no).match(/^[A-Z]+[0-9]+$/)){
-			var tgtarr = [].push(i_no);
+			var tgtarr = [i_no];
 			$T.arrconflict(this.hand, tgtarr);
 		}else{
-			this.hand.splice(i_no - 1, 1);
+			this.hand.splice(i_no, 1);
 		}
 	}
 	this.DeckAdd =function(i_cno){

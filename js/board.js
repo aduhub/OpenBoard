@@ -208,9 +208,9 @@ function PlayerHandSetup(i_flg){
 		//マリガンクリア
 		Temp.mulligan = "11111";
 	}else{
-		for(var i=1; i<=5; i++){
-			if(Temp.mulligan[i - 1] == "1"){
-				puttop.push(Player[Board.role].hand[i - 1]);
+		for(var i=0; i<=4; i++){
+			if(Temp.mulligan[i] == "1"){
+				puttop.push(Player[Board.role].hand[i]);
 			}
 		}
 	}
@@ -244,10 +244,10 @@ function PlayerHandSetup(i_flg){
 //マリガン
 function HandMulligan(hno){
 	if(Temp.mulligan[hno] == "1"){
-		Temp.mulligan = $T.chgstr(Temp.mulligan, hno, 1, "0");
+		Temp.mulligan = $T.chgstr(Temp.mulligan, hno, "0");
 		$("#DIV_HAND"+hno).addClass("CLS_HAND_GLAY");
 	}else{
-		Temp.mulligan = $T.chgstr(Temp.mulligan, hno, 1, "1");
+		Temp.mulligan = $T.chgstr(Temp.mulligan, hno, "1");
 		$("#DIV_HAND"+hno).removeClass("CLS_HAND_GLAY");
 	}
 }
@@ -262,7 +262,7 @@ function SortZIndex(flg){
 		}
 	}
 	yarr.sort();
-	for(var i=0; i<yarr.length; i++){
+	for(var i in yarr){
 		yzarr[yarr[i]] = 22 + (i * 3);
 	}
 	if(flg == "map"){
@@ -427,37 +427,37 @@ function GridClick(i_no){
 	}
 }
 //ハンドクリック判定
-function HandClick(i_hno){
+function HandClick(hno){
 	if(Board.step == 1){
 		if(Board.role >= 1){
-			HandMulligan(i_hno);
+			HandMulligan(hno);
 			return;
 		}
 	}
 	if(Board.turn == Board.role){
-		if(i_hno < Player[Board.role].hand.length){
+		if(hno < Player[Board.role].hand.length){
 			switch(Board.step){
 			case 20:
 				//コストチェック
-				if(SpellCost(i_hno)){
-					SpellTarget(i_hno);
+				if(SpellCost(hno)){
+					SpellTarget(hno);
 				}
 				break;
 			case 40: //Summon
 				//コストチェック
-				if(SummonCost(Player[Board.role].stand, Player[Board.role].hand[i_hno]) == "OK"){
-					SummonConfirm({type:"summon", step:0, hno:i_hno});
+				if(SummonCost(Player[Board.role].stand, Player[Board.role].hand[hno]) == "OK"){
+					SummonConfirm({type:"summon", step:0, hno:hno});
 				}
 				break;
 			case 53: //Trritory(Summon)
 				//コストチェック
-				if(SummonCost(Territory.gno, Player[Board.role].hand[i_hno]) == "OK"){
-					SummonConfirm({type:"change", step:0, hno:i_hno});
+				if(SummonCost(Territory.gno, Player[Board.role].hand[hno]) == "OK"){
+					SummonConfirm({type:"change", step:0, hno:hno});
 				}
 				break;
 			case 98: //Dicard(TurnEnd)
 				if(Board.discardstep == 1){
-					Discard({pno:Board.role, hno:i_hno});
+					Discard({pno:Board.role, hno:hno});
 				}
 				break;
 			}
@@ -466,11 +466,11 @@ function HandClick(i_hno){
 	if(Battle.p[0].pno == Board.role || Battle.p[1].pno == Board.role){
 		switch(Board.step){
 		case 72:
-			if(i_hno < Player[Board.role].hand.length){
-				var cno = Player[Board.role].hand[i_hno];
+			if(hno < Player[Board.role].hand.length){
+				var cno = Player[Board.role].hand[hno];
 				//コストチェック
 				if(Battle.check.indexOf(cno) >= 0){
-					BattleItem({pno:Board.role, hno:i_hno});
+					BattleItem({pno:Board.role, hno:hno});
 				}
 			}
 			break;
@@ -683,8 +683,6 @@ function DispPlayer(i_pno){
 	var msgstr = "";
 	var wknswe = new Array("n", "s", "w", "e");
 	var wkwidth = new Array("15", "15", "20", "14");
-	var iplus = (sessionStorage.iPhone == "Y") ? -10 : 0;
-	var iplus2 = (sessionStorage.iPhone == "Y") ? -5 : 0;
 	for(var i=1; i<=Board.playcnt; i++){
 		//目標到達
 		if(TotalGold(i) >= Board.target && i_pno != 9){
@@ -699,8 +697,8 @@ function DispPlayer(i_pno){
 		}
 		dispstr = "";
 		//NAME,G
-		dispstr += Infoblock.line({cls:"point", m:[PlayerRank(i, 0),Player[i].name], w:[26, 144 + iplus], pd:[0,4], ta:["c",""], sp:["bw","w"]});
-		dispstr += Infoblock.line({cls:"point", m:[Player[i].gold,TotalGold(i)], w:[85 + iplus2, 85 + iplus2], pd:[4,4], ta:["r","r"], bg:"#FEFEFE"});
+		dispstr += Infoblock.line({cls:"point", m:[PlayerRank(i, 0),Player[i].name], w:[26, 144], pd:[0,4], ta:["c",""], sp:["bw","w"]});
+		dispstr += Infoblock.line({cls:"point", m:[Player[i].gold,TotalGold(i)], w:[85, 85], pd:[4,4], ta:["r","r"], bg:"#FEFEFE"});
 		//NSWE
 		msgstr = "";
 		for(var i2=0; i2<=3; i2++){
@@ -720,7 +718,7 @@ function DispPlayer(i_pno){
 		for(var i2 in Player[i].hand){
 			msgstr += "<IMG src='img/icon_card.gif' height='20' width='14'>";
 		}
-		dispstr += Infoblock.line({cls:"point2", m:[msgstr], w:[170 + iplus], pd:[4], bg:"#FEFEFE"});
+		dispstr += Infoblock.line({cls:"point2", m:[msgstr], w:[170], pd:[4], bg:"#FEFEFE"});
 		
 		//##### Option表示 #####
 		if(i_pno == i || i_pno == 9){
@@ -738,13 +736,13 @@ function DispPlayer(i_pno){
 						}
 					}
 					msgstr = "<IMG src='img/"+imgname[i2]+".gif' height='26' width='26'>";
-					dispstr += Infoblock.line({m:[msgstr, "x"+GridCount(wkpno,i2), wkgold], w:[34, 56, 80 + iplus], pd:[4,4,4], ta:["","r","r"], bd:true, bg:"FEFEFE"});
+					dispstr += Infoblock.line({m:[msgstr, "x"+GridCount(wkpno,i2), wkgold], w:[34, 56, 80], pd:[4,4,4], ta:["","r","r"], bd:true, bg:"FEFEFE"});
 				}
 				//Book
 				msgstr = Player[wkpno].DeckCount() + "/" + Player[wkpno].DeckAllCount();
-				dispstr += Infoblock.line({m:["デッキ", msgstr], w:[100, 70 + iplus], pd:[4, 4], ta:["", "r"], bd:true, bg:"FEFEFE"});
+				dispstr += Infoblock.line({m:["デッキ", msgstr], w:[100, 70], pd:[4, 4], ta:["", "r"], bd:true, bg:"FEFEFE"});
 				//lap
-				dispstr += Infoblock.line({m:["周回", Player[wkpno].lap], w:[100, 70 + iplus], pd:[4, 4], ta:["", "r"], bg:"FEFEFE"});
+				dispstr += Infoblock.line({m:["周回", Player[wkpno].lap], w:[100, 70], pd:[4, 4], ta:["", "r"], bg:"FEFEFE"});
 				if(i_pno != 9){
 					//status
 					if(Player[wkpno].status != ""){
@@ -753,32 +751,32 @@ function DispPlayer(i_pno){
 						if(Player[wkpno].statime <= 9){
 							namestr += " " + Player[wkpno].statime + "R";
 						}
-						dispstr += Infoblock.line({m:["<img src='img/"+iconsrc+"'>", namestr], w:[40, 130 + iplus], h:26, pd:[4,4], bg:"FEFEFE"});
+						dispstr += Infoblock.line({m:["<img src='img/"+iconsrc+"'>", namestr], w:[40, 130], h:26, pd:[4,4], bg:"FEFEFE"});
 					}
 				}else{
 					//spell
-					dispstr += Infoblock.line({m:["スペル", Analytics.spell[wkpno]], w:[100, 70 + iplus], pd:[4, 4], ta:["", "r"], bg:"FEFEFE"});
+					dispstr += Infoblock.line({m:["スペル", Analytics.spell[wkpno]], w:[100, 70], pd:[4, 4], ta:["", "r"], bg:"FEFEFE"});
 					//battle
 					msgstr = Analytics.invasion[wkpno] +"(" + Analytics.invasionwin[wkpno] + ")";
-					dispstr += Infoblock.line({m:["侵略", msgstr], w:[100, 70 + iplus], pd:[4, 4], ta:["", "r"], bg:"FEFEFE", bd:true});
+					dispstr += Infoblock.line({m:["侵略", msgstr], w:[100, 70], pd:[4, 4], ta:["", "r"], bg:"FEFEFE", bd:true});
 					msgstr = Analytics.guard[wkpno] +"(" + Analytics.guardwin[wkpno] + ")";
-					dispstr += Infoblock.line({m:["防衛", msgstr], w:[100, 70 + iplus], pd:[4, 4], ta:["", "r"], bg:"FEFEFE"});
+					dispstr += Infoblock.line({m:["防衛", msgstr], w:[100, 70], pd:[4, 4], ta:["", "r"], bg:"FEFEFE"});
 					//take
-					dispstr += Infoblock.line({m:["収入回数", Analytics.takecnt[wkpno]], w:[100, 70 + iplus], pd:[4, 4], ta:["", "r"], bg:"FEFEFE", bd:true});
-					dispstr += Infoblock.line({m:["収入魔力", Analytics.takegold[wkpno]], w:[100, 70 + iplus], pd:[4, 4], ta:["", "r"], bg:"FEFEFE"});
+					dispstr += Infoblock.line({m:["収入回数", Analytics.takecnt[wkpno]], w:[100, 70], pd:[4, 4], ta:["", "r"], bg:"FEFEFE", bd:true});
+					dispstr += Infoblock.line({m:["収入魔力", Analytics.takegold[wkpno]], w:[100, 70], pd:[4, 4], ta:["", "r"], bg:"FEFEFE"});
 					//pay
-					dispstr += Infoblock.line({m:["支払回数", Analytics.paycnt[wkpno]], w:[100, 70 + iplus], pd:[4, 4], ta:["", "r"], bg:"FEFEFE"});
-					dispstr += Infoblock.line({m:["支払魔力", Analytics.paygold[wkpno]], w:[100, 70 + iplus], pd:[4, 4], ta:["", "r"], bg:"FEFEFE"});
+					dispstr += Infoblock.line({m:["支払回数", Analytics.paycnt[wkpno]], w:[100, 70], pd:[4, 4], ta:["", "r"], bg:"FEFEFE"});
+					dispstr += Infoblock.line({m:["支払魔力", Analytics.paygold[wkpno]], w:[100, 70], pd:[4, 4], ta:["", "r"], bg:"FEFEFE"});
 					//take
-					dispstr += Infoblock.line({m:["スペルＧ", Analytics.costspell[wkpno]], w:[100, 70 + iplus], pd:[4, 4], ta:["", "r"], bg:"FEFEFE", bd:true});
-					dispstr += Infoblock.line({m:["召還Ｇ", Analytics.costsummon[wkpno]], w:[100, 70 + iplus], pd:[4, 4], ta:["", "r"], bg:"FEFEFE"});
+					dispstr += Infoblock.line({m:["スペルＧ", Analytics.costspell[wkpno]], w:[100, 70], pd:[4, 4], ta:["", "r"], bg:"FEFEFE", bd:true});
+					dispstr += Infoblock.line({m:["召還Ｇ", Analytics.costsummon[wkpno]], w:[100, 70], pd:[4, 4], ta:["", "r"], bg:"FEFEFE"});
 					//deck
 					if(Board.role != wkpno){
 						msgstr = "<a href='javascript:DeckImport(\"" + Player[wkpno].deckid + "\");'>" + Player[wkpno].deckname + "</a>";
 					}else{
 						msgstr = Player[wkpno].deckname;
 					}
-					dispstr += Infoblock.line({m:[msgstr], w:[170 + iplus], pd:[4], bg:"FEFEFE", bd:true});
+					dispstr += Infoblock.line({m:[msgstr], w:[170], pd:[4], bg:"FEFEFE", bd:true});
 				}
 				//Size
 				$("#DIV_POINT"+i).addClass("windowopened");
@@ -922,7 +920,7 @@ function DispDialog(param){
 				size = "640px";
 			}
 			for(var i=0; i<param.imgbtns.length; i++){
-				html += "<a href=\"javascript:"+param.imgbtns[i][1]+"\" oncontextmenu=\"CardInfo('"+param.imgbtns[i][0]+"');return false;\">";
+				html += "<a href=\"javascript:"+param.imgbtns[i][1]+"\" oncontextmenu=\"CardInfo({cno:'"+param.imgbtns[i][0]+"'});return false;\">";
 				html += "<canvas id='CVS_DIALOG"+i+"' width='100' height='130'></canvas></a>";
 			}
 		}

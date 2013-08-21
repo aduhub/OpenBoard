@@ -118,17 +118,8 @@ var Infoblock = {
 				size += arg.w[i];
 			}
 			if(arg.cls){
-				switch(arg.cls){
-				case "point":
-					dispstr = "<div class='class_Point_Line'>";
-					break;
-				case "point2":
-					dispstr = "<div class='class_Point_Line2'>";
-					break;
-				case "comment":
-					dispstr = "<div class='class_Info_Comment'>";
-					break;
-				}
+				var classnm = {point:"class_Point_Line", point2:"class_Point_Line2", comment:"class_Info_Comment"}
+				dispstr = "<div class='" + classnm[arg.cls] + "'>";
 			}else{
 				dispstr = "<div class='class_Info_Line'>";
 			}

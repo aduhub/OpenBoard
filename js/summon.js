@@ -42,7 +42,6 @@ function SummonCost(i_gno, i_cno){
 	//通常地形
 	if(wkcolor < 10){
 		var chk = {walk:true, invasion:true, levelcap:true, unique:true};
-		var opts = Card[i_cno].opt.concat();
 		var abinm;
 		//##### Walk Able #####
 		if(Card[i_cno].walk){
@@ -54,8 +53,8 @@ function SummonCost(i_gno, i_cno){
 			}
 		}
 		//##### CardAbi #####
-		for(var i=0; i<opts.length; i++){
-			switch(opts[i]){
+		for(var i in Card[i_cno].opt){
+			switch(Card[i_cno].opt[i]){
 			case "@WALL@":
 				chk.invasion = false;
 				break;
@@ -68,22 +67,18 @@ function SummonCost(i_gno, i_cno){
 		}
 		//##### GridAbi #####
 		var retitem = GridAbility({gno:i_gno, time:"SUMMON_CHECK"});
-		if(retitem.length >= 1){
-			for(var i=0; i<retitem.length; i++){
-				if(retitem[i].act == "jail"){
-					chk.invasion = false;
-				}
+		for(var i in retitem){
+			if(retitem[i].act == "jail"){
+				chk.invasion = false;
 			}
 		}
 		var retitem = GridAreaAbility({gno:i_gno, time:"SUMMON_CHECK"});
-		if(retitem.length >= 1){
-			for(var i=0; i<retitem.length; i++){
-				if(retitem[i].act == "unique"){
-					for(var i2=1; i2<Board.grid.length; i2++){
-						if(i_cno == Board.grid[i2].cno){
-							chk.unique = false;
-							break;
-						}
+		for(var i in retitem){
+			if(retitem[i].act == "unique"){
+				for(var i2=1; i2<Board.grid.length; i2++){
+					if(i_cno == Board.grid[i2].cno){
+						chk.unique = false;
+						break;
 					}
 				}
 			}

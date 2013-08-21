@@ -161,7 +161,7 @@ function SortHand(){
 		}
 		$(".CLS_HAND").css({marginLeft:marginpix, marginRight:marginpix});
 		//再表示
-		for(var i=1; i<=handcnt; i++){
+		for(var i=0; i<handcnt; i++){
 			CardImgSet({hno:i});
 		}
 		//グレイ戻し
@@ -258,13 +258,13 @@ function Discard(arg){
 function CardImgSet(arg){
 	var cno, cvs;
 	var card_src, frame_src, imgtype;
-	if(arg.hno){
-		cno = Player[Board.role].hand[arg.hno - 1];
-		cvs = "CVS_HAND" + arg.hno;
-		arg.zoom = 0.5;
-	}else{
+	if(arg.cno){
 		cno = arg.cno;
 		cvs = arg.cvs || arg.id;
+	}else{
+		cno = Player[Board.role].hand[arg.hno];
+		cvs = "CVS_HAND" + arg.hno;
+		arg.zoom = 0.5;
 	}
 	imgtype = (Card[cno].imgsrc.match(/.png$/)) ? "" : ".gif";
 	card_src = "img/card/"+Card[cno].imgsrc+imgtype;
@@ -335,7 +335,7 @@ function DeckSelect(deckstr){
 			for(var i=0; i<deckdat.length; i++){
 				var clrno = Card[deckdat[i]].type;
 				if(clrno == "C") clrno += Card[deckdat[i]].color;
-				var button = "<button oncontextmenu='CardInfo(\""+deckdat[i]+"\");return false;' style='background-color:#"+palet[clrno]+";'>" + Card[deckdat[i]].name + "</button>";
+				var button = "<button oncontextmenu='CardInfo({cno:\""+deckdat[i]+"\"});return false;' style='background-color:#"+palet[clrno]+";'>" + Card[deckdat[i]].name + "</button>";
 				$("#SEL_DECKSET").append(button);
 			}
 		}
@@ -391,12 +391,12 @@ function onDeckImport(recvstr){
 }
 //#########################################################
 //
-function CardInfo(i_no){
+function CardInfo(arg){
 	if(Board.step >= 1){
-		if(i_no == 0){
+		if(!arg){
 			DisplaySet('DIV_INFOCARD', 0);
 		}else{
-			var cno = (String(i_no).match(/^[CIS][0-9]+$/)) ? i_no : Player[Board.role].hand[i_no - 1];
+			var cno = arg.cno || Player[Board.role].hand[arg.hno];
 			if(cno != ""){
 				//image set
 				CardImgSet({cvs:"CVS_INFOCARD", cno:cno});

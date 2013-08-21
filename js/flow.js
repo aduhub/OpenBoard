@@ -480,7 +480,7 @@ function LogChkCard(msg){
 	if(String(msg).match(/##[CIS][0-9]{3}##/)){
 		cno = String(msg).match(/##[CIS][0-9]{3}##/);
 		cno = String(cno).replace(/##/g, "");
-		fnc = "<span class='c' onmousedown='CardInfo(\""+cno+"\");' onmouseout='CardInfo(\"0\");'>";
+		fnc = "<span class='c' onmousedown='CardInfo({cno:\""+cno+"\"});' onmouseout='CardInfo();'>";
 		fnc += Card[cno].name;
 		fnc += "</span>";
 		ret = String(msg).replace(/##[CIS][0-9]{3}##/, fnc);

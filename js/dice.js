@@ -270,25 +270,37 @@ function ForceGateCheck(waitsec){
 //通過チェック(color)
 function CastleCheck(){
 	var retcode = false;
+	var flg = {spellflg:false}
 	var color = Board.grid[Player[Dice.pno].stand].color;
 	if(color >= 10 && color <= 14){
 		var imgsrc = "";
 		var nswe = {11:'n',12:'s',13:'w',14:'e'};
-		//######## Enchant ########
+
+		//Enchant
 		var encflg = Enchant({pno:Dice.pno, time:"DICE_CASTLECHECK"});
+		for(var i in encflg){
+			if(encflg[i] == "forgery"){
+				flg.spellflg = true;
+			}
+		}
+
 		if(color == 10){
 			//###### castle ######
 			//砦規定数通過
-			if(encflg[0] == "forgery" || Player[Dice.pno].flag.length == Board.flag.length){
+			if(flg.spellflg || Player[Dice.pno].flag.length == Board.flag.length){
+				var msgarr = [];
 				//周回回復
 				for(var i=1; i<Board.grid.length; i++){
 					if(Board.grid[i].owner == Dice.pno){
 						//20% plus
 						Board.grid[i].lf += Board.grid[i].maxlf * 0.2;
-						if(Board.grid[i].lf >= Board.grid[i].maxlf){
-							Board.grid[i].lf = Board.grid[i].maxlf;
-						}
+						Board.grid[i].lf = Math.min(Board.grid[i].maxlf, Board.grid[i].lf)
 					}
+				}
+				//メダル
+				if(!flg.spellflg && Player[Dice.pno].medal <= 2){
+					Player[Dice.pno].medal += 1;
+					msgarr.push("メダルを獲得");
 				}
 				//周回BONUS
 				var abiret;
@@ -297,7 +309,7 @@ function CastleCheck(){
 				for(var i=1; i<Board.grid.length; i++){
 					//##### GridAbi #####
 					abiret = GridAbility({time:"CASTLE_BONUS", gno:i, pno:Dice.pno, nightmare:nightmare});
-					for(var i2=0; i2<abiret.length; i2++){
+					for(var i2 in abiret){
 						switch(abiret[i2].act){
 						case "bonus":
 							bonus1p += abiret[i2].val;
@@ -309,23 +321,16 @@ function CastleCheck(){
 					}
 				}
 				var bonus1 = GridCount(Dice.pno) * 20 + bonus1p;
-				//var bonus2 = Board.bonus + ((Board.bonus / 10) * (Player[Dice.pno].lap - 1));
-				var bonus2 = Board.bonus;
-				if(encflg[0] == "forgery"){
-					bonus2 = Math.floor(bonus2 * encflg[1] / 100);
-				}
-				var bonus3 = Player[Dice.pno].foot;
-				var bonus9 = bonus1 + bonus2 + bonus3;
+				var bonus2 = Board.bonus + (Player[Dice.pno].medal * 100);
+				var bonus9 = bonus1 + bonus2;
 				Player[Dice.pno].gold += bonus9;
 				Player[Dice.pno].lap ++;
 				Player[Dice.pno].flag = "";
 				//Icon
 				$("#DIV_PLAYER"+Dice.pno).css("backgroundPosition", "0px 0px, 128px 0px, 128px 0px");
 				//Log
-				var msgarr = [];
 				msgarr.push("【 " + Player[Dice.pno].lap + " 周目ボーナス】");
-				msgarr.push("帰城ボーナス <span class='g'>" + bonus2 + "G</span>");
-				msgarr.push("歩数ボーナス <span class='g'>" + bonus3 + "G</span>");
+				msgarr.push("周回ボーナス <span class='g'>" + bonus2 + "G</span>");
 				msgarr.push("領地ボーナス <span class='g'>" + bonus1 + "G</span>");
 				msgarr.push("ボーナス合計 <span class='g'>" + bonus9 + "G</span>");
 				msgarr.push("クリーチャー20%回復");
@@ -364,7 +369,7 @@ function CastleCheck(){
 		}else{
 			//###### fort ######
 			//今回通過
-			if(encflg[0] != "forgery" && Player[Dice.pno].flag.indexOf(nswe[color]) < 0){
+			if(!flg.spellflg && Player[Dice.pno].flag.indexOf(nswe[color]) < 0){
 				//Log
 				Logprint({msg:["砦　ボーナス <span class='g'>" + Board.bonus_f + "G</span>"], pno:Dice.pno, ltype:"block"});
 				Player[Dice.pno].gold += Board.bonus_f;

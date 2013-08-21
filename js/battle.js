@@ -273,10 +273,9 @@ function BattleFightReady1(){
 		var cno = [Battle.p[i].item, Battle.p[$r(i)].item];
 		//No FIST
 		if(cno[0] != "FIST" && Card[cno[0]].type == "I"){
-			var opts = Card[cno[0]].opt.concat();
-			for(var i2=0; i2<Card[cno[0]].opt.length; i2++){
-				if(AbilityActive({type:"item", bno:i, opt:opts[i2]})){
-					var itemsts = opts[i2].split(":");
+			for(var i2 in Card[cno[0]].opt){
+				if(AbilityActive({type:"item", bno:i, opt:Card[cno[0]].opt[i2]})){
+					var itemsts = Card[cno[0]].opt[i2].split(":");
 					switch(itemsts[0]){
 					case "HOLYSTONE":
 						if(cno[1] != "FIST"){
@@ -301,10 +300,9 @@ function BattleFightReady1(){
 		var cno = Battle.p[i].item;
 		//No FIST
 		if(cno != "FIST" && Card[cno].type == "I"){
-			var opts = Card[cno].opt.concat();
-			for(var i2=0; i2<opts.length; i2++){
-				if(AbilityActive({type:"item", bno:i, opt:opts[i2]})){
-					var itemsts = opts[i2].split(":");
+			for(var i2 in Card[cno].opt){
+				if(AbilityActive({type:"item", bno:i, opt:Card[cno].opt[i2]})){
+					var itemsts = Card[cno].opt[i2].split(":");
 					switch(itemsts[0]){
 					case "EVILSTONE":
 						Battle.p[$r(i)].active = "";
@@ -331,10 +329,9 @@ function BattleFightReady2(){
 		if(wkcno != "FIST"){
 			//効果
 			if(Card[wkcno].type == "I"){
-				var opts = Card[wkcno].opt.concat();
-				for(var i2=0; i2<opts.length; i2++){
-					if(AbilityActive({type:"item", bno:i, opt:opts[i2]})){
-						var itemsts = opts[i2].split("!")[0].split(":");
+				for(var i2 in Card[wkcno].opt){
+					if(AbilityActive({type:"item", bno:i, opt:Card[wkcno].opt[i2]})){
+						var itemsts = Card[wkcno].opt[i2].split("!")[0].split(":");
 						switch(itemsts[0]){
 						case "STPLUS":
 							var stvar = BtAbilityExNo(i2, itemsts[1])
@@ -611,9 +608,8 @@ function BattleResult(){
 	//Result Item
 	for(var i=0; i<=1; i++){
 		if(Battle.p[i].lf >= 1 && Battle.p[i].item != "FIST"){
-			var opts = Card[Battle.p[i].item].opt.concat();
-			for(var i2=0; i2<opts.length; i2++){
-				switch(opts[i2]){
+			for(var i2 in Card[Battle.p[i].item].opt){
+				switch(Card[Battle.p[i].item].opt[i2]){
 				case "BACKHAND":
 					//手札追加
 					if(Player[Battle.p[i].pno].hand.length < 10){

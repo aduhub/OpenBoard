@@ -28,10 +28,10 @@ var $T = {
 		}
 	},
 	//文字列変更
-	chgstr:function(str, idx, len, rstr){
+	chgstr:function(str, idx, rstr){
 		var retstr = str.substring(0, idx);
 		retstr += rstr;
-		retstr += str.substring(idx + len);
+		retstr += str.substring(idx + rstr.length);
 		return  retstr;
 	},
 	//範囲チェック
