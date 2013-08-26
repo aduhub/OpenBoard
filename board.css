@@ -105,36 +105,54 @@ button:disabled{
 }
 /*###############################*/
 #DIV_POINT1{
-	border-color : #FF0000;
+    background-color : rgba(255,0,0,0.4);
 	left : 80px;
 }
+#DIV_POINT1 div:nth-child(1){
+    background-color : rgba(255,0,0,1.0);
+}
 #DIV_POINT2{
-	border-color : #0000CC;
+    background-color : #0000CC;
 	left : 260px;
 }
 #DIV_POINT3{
-	border-color : #00CC00;
+    background-color : #00CC00;
 	left : 440px;
 }
 #DIV_POINT4{
-	border-color : #FF9900;
+	background-color : #FF9900;
 	left : 620px;
 }
-	.class_Point{
-		cursor : pointer;
-		display:none;
-		background-color:#FEFEFE;
-		position : fixed;
-		top   : 0px;
-		width : 180px;
-		opacity : 0.8;		
-		z-index : 50;
-		border: 5px solid;
-		-webkit-box-sizing:border-box;
-	}
-	.class_Point:hover{
-		opacity : 1.0;
-	}
+.class_Point{
+    display:none;
+    position : fixed;
+    top      : 0px;
+    width    : 180px;
+    cursor  : pointer;
+    opacity : 0.8;
+    /*flex*/
+    flex-wrap: wrap;
+    align-content: flex-start;
+    /*z*/
+    z-index : 50;
+}
+.class_Point:hover{
+    opacity : 1.0;
+}
+    .class_Point_TotalG{
+        color:#FFFFFF;
+        height:48px;
+        width:100%;
+        font-size : 32px;
+        text-align:center;
+        line-height:48px;
+        border-radius: 0 0 16px 16px / 0 0 8px 8px;
+    }
+    .class_Point_Medal{
+        height:24px;
+        width:100%;
+        text-align:center;
+    }
 		.class_Point_Line{
 			/*box layout*/
 			display:-webkit-box;
