@@ -124,12 +124,13 @@ button:disabled{
 	left : 620px;
 }
 .class_Point{
-    display:none;
+    display  : flex;
     position : fixed;
     top      : 0px;
     width    : 180px;
     cursor  : pointer;
-    opacity : 0.8;
+    /*font*/
+    font-family : 'PT Sans Narrow', sans-serif;
     /*flex*/
     flex-wrap: wrap;
     align-content: flex-start;

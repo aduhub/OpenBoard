@@ -118,10 +118,10 @@ function SummonCost(i_gno, i_cno){
 function SummonConfirm(arg){
 	//確認なし
 	StepSet(41);
-	Summon.from = arg.type;
+	Summon.from = arg.from;
 	Summon.pno = Board.role;
 	Summon.cno = Player[Board.role].hand[arg.hno];
-	Summon.gno = (arg.type == "summon") ? Player[Board.role].stand : Territory.gno;
+	Summon.gno = (arg.from == "summon") ? Player[Board.role].stand : Territory.gno;
 	Summon.status = "";
 	//ステップ
 	StepSet(42);

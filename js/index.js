@@ -43,20 +43,11 @@ window.onload = function(){
 	if(sessionStorage.USERID && sessionStorage.USERID != ""){
 		LoginDisp();
 	}else{
-		//if(localStorage.ob_userid){
-		//	NetSend("LOGIN_STORAGE");
-		//}else{
-			PageOpen(1);
-		//}
+		PageOpen(1);
 	}
 	$("#btn_menu1").css("display","block");
 	$("#btn_menu4").css("display","block");
 	$("#btn_menu5").css("display","block");
-	//$("#btn_menu6").css("display","block");
-	//$("#btn_menu7").css("display","block");
-	
-	//lobbychat
-	//obNet.socketinit();
 }
 function AlertPop(msg){
 	$("#div_alert").html(msg);
@@ -270,8 +261,6 @@ function NetRecv(recvstr){
 			sessionStorage.USERRATE2 = recvcmd[7];
 			//login
 			LoginDisp();
-			//chat
-			setTimeout(function(){obNet.msgsend(sessionStorage.USERNAME+"さんがログインしました");}, 1000);
 		}
 		break;
 	case "ROOM":

@@ -128,13 +128,18 @@ function clsPlayer() {
 	this.deckname= "";
 	this.deckdata= "";
 	this.decknext= [];
-	this.HandDel =function(i_no){
-		if(String(i_no).match(/^[A-Z]+[0-9]+$/)){
-			var tgtarr = [i_no];
-			$T.arrconflict(this.hand, tgtarr);
-		}else{
-			this.hand.splice(i_no, 1);
+	this.HandDel =function(cno){
+		var hno;
+		var cnos = [];
+		switch($T.typer(cno)){
+		case "Array":
+			cnos = cnos.concat(cno);
+			break;
+		case "String":
+			cnos.push(cno);
+			break;
 		}
+		this.hand = $T.arrconflict(this.hand, cnos);
 	}
 	this.DeckAdd =function(i_cno){
 		this.deck += (this.deck == "") ? i_cno : ":" + i_cno;

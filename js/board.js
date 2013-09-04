@@ -235,7 +235,7 @@ function PlayerHandSetup(i_flg){
 		//ダイアログ
 		DispDialog({msgs:["準備完了", "他のプレイヤーを待っています・・・"]});
 		//送信
-		var deck = Player[Board.role].hand + ":" + Player[Board.role].deck;
+		var deck = Player[Board.role].hand.join(":") + ":" + Player[Board.role].deck;
 		Net.send("ready:" + deck);
 		//次を用意
 		DeckShuffle({pno:Board.role, tgt:"next"});
@@ -446,13 +446,13 @@ function HandClick(hno){
 			case 40: //Summon
 				//コストチェック
 				if(SummonCost(Player[Board.role].stand, Player[Board.role].hand[hno]) == "OK"){
-					SummonConfirm({type:"summon", step:0, hno:hno});
+					SummonConfirm({from:"summon", step:0, hno:hno});
 				}
 				break;
 			case 53: //Trritory(Summon)
 				//コストチェック
 				if(SummonCost(Territory.gno, Player[Board.role].hand[hno]) == "OK"){
-					SummonConfirm({type:"change", step:0, hno:hno});
+					SummonConfirm({from:"change", step:0, hno:hno});
 				}
 				break;
 			case 98: //Dicard(TurnEnd)
