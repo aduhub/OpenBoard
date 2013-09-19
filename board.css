@@ -105,55 +105,111 @@ button:disabled{
 }
 /*###############################*/
 #DIV_POINT1{
-    background-color : rgba(255,0,0,0.4);
 	left : 80px;
+    background-color : rgba(240,0,0,0.4);
 }
-#DIV_POINT1 div:nth-child(1){
-    background-color : rgba(255,0,0,1.0);
+#DIV_POINT1 .class_Point_Total{
+    background-color : rgba(240,0,0,1.0);
 }
 #DIV_POINT2{
-    background-color : #0000CC;
 	left : 260px;
+    background-color : rgba(0,0,196,0.4);
+}
+#DIV_POINT2 .class_Point_Total{
+    background-color : rgba(0,0,196,1.0);
 }
 #DIV_POINT3{
-    background-color : #00CC00;
 	left : 440px;
+    background-color : rgba(0,196,0,0.4);
+}
+#DIV_POINT3 .class_Point_Total{
+    background-color : rgba(0,196,0,1.0);
 }
 #DIV_POINT4{
-	background-color : #FF9900;
 	left : 620px;
+    background-color : rgba(255,160,0,0.4);
+}
+#DIV_POINT4 .class_Point_Total{
+    background-color : rgba(255,160,0,1.0);
 }
 .class_Point{
-    display  : flex;
+    display  : none;
     position : fixed;
     top      : 0px;
     width    : 180px;
     cursor  : pointer;
     /*font*/
-    font-family : 'PT Sans Narrow', sans-serif;
-    /*flex*/
-    flex-wrap: wrap;
-    align-content: flex-start;
+    font-family : "Verdana";
+	/*border*/
+	box-sizing:border-box;
+	border-radius: 0 0 8px 8px;
     /*z*/
     z-index : 50;
 }
-.class_Point:hover{
-    opacity : 1.0;
-}
-    .class_Point_TotalG{
-        color:#FFFFFF;
-        height:48px;
-        width:100%;
-        font-size : 32px;
-        text-align:center;
-        line-height:48px;
-        border-radius: 0 0 16px 16px / 0 0 8px 8px;
+	.class_Point_Total{
+		color:#FFFFFF;
+		height:42px;
+		width:100%;
+		line-height:42px;
+		/*font*/
+		font-family: 'PT Sans Narrow';
+		font-size : 32px;
+		text-align:center;
+		letter-spacing:6px;
+		padding-left:6px;
+		text-shadow:2px 0 0 rgba(0,0,0,0.2);
+		/*border*/
+		box-sizing:border-box;
+		border-radius: 0 0 16px 16px / 0 0 8px 8px;
+	}
+    .class_Point_NSWE{
+        /*position size*/
+        position : absolute;
+        top      : 34px;
+        left     : 6px;
+        height   : 62px;
+        width    : 62px;
     }
     .class_Point_Medal{
-        height:24px;
-        width:100%;
-        text-align:center;
+        display  : flex;
+        height:16px;
+        width:108px;
+        margin-left:72px;
     }
+	.class_Point_Gold{
+		/*color*/
+		background-color : rgb(255,192,0);
+		/*position size*/
+		height:28px;
+		width:104px;
+		margin-left:72px;
+		margin-right:2px;
+		padding-right:8px;
+		/*font*/
+		font-family:'Nova Round';
+		font-size : 20px;
+		line-height:24px;
+		text-align:right;
+		/*border*/
+		border-radius:4px;
+		border: 2px inset;
+		box-sizing:border-box;
+	}
+		.class_Point_Gold span{
+			margin-left:2px;
+			font-size : 16px;
+			font-weight:bold;
+		}
+	.class_Point_Hand{
+		background-color : rgba(255,255,255,0.4);
+		height:22px;
+		width:172px;
+		margin:4px;
+		padding:1px;
+		text-align:center;
+		border-radius:4px;
+		box-sizing:border-box;
+	}
 		.class_Point_Line{
 			/*box layout*/
 			display:-webkit-box;

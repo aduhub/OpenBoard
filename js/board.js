@@ -679,46 +679,58 @@ function DispInfoMap(flg){
 //
 function DispPlayer(i_pno){
 	var dispstr = "";
+	var cvsid = "";
 	var imgsrc = "";
 	var msgstr = "";
-	var wknswe = new Array("n", "s", "w", "e");
+	var NSWE = ["n","s","w","e"];
 	var wkwidth = new Array("15", "15", "20", "14");
 	for(var i=1; i<=Board.playcnt; i++){
-		//目標到達
+		$("#DIV_POINT"+i).html("");
+		//TURN PLAYER
+		//if(Board.turn == i){
+		//	$("#DIV_POINT"+i).addClass("TURNPLAYERPOP");
+		//}else{
+		//	$("#DIV_POINT"+i).removeClass("TURNPLAYERPOP");
+		//}
+		//dispstr += Infoblock.line({cls:"point", m:[PlayerRank(i, 0),Player[i].name], w:[26, 144], pd:[0,4], ta:["c",""], sp:["bw","w"]});
+		//dispstr += Infoblock.line({cls:"point", m:[Player[i].gold,TotalGold(i)], w:[85, 85], pd:[4,4], ta:["r","r"], bg:"#FEFEFE"});
+
+		//## Total ##
+		var div = $("<div></div>").addClass("class_Point_Total");
 		if(TotalGold(i) >= Board.target && i_pno != 9){
-			$("#DIV_POINT"+i).addClass("animeAlert"+Team(i));
-		}else{
-			$("#DIV_POINT"+i).removeClass("animeAlert"+Team(i));
+			div.addClass("animeAlert");
 		}
-		if(Board.turn == i){
-			$("#DIV_POINT"+i).addClass("TURNPLAYERPOP");
-		}else{
-			$("#DIV_POINT"+i).removeClass("TURNPLAYERPOP");
-		}
-		dispstr = "";
-		//NAME,G
-		dispstr += Infoblock.line({cls:"point", m:[PlayerRank(i, 0),Player[i].name], w:[26, 144], pd:[0,4], ta:["c",""], sp:["bw","w"]});
-		dispstr += Infoblock.line({cls:"point", m:[Player[i].gold,TotalGold(i)], w:[85, 85], pd:[4,4], ta:["r","r"], bg:"#FEFEFE"});
-		//NSWE
-		msgstr = "";
-		for(var i2=0; i2<=3; i2++){
-			imgsrc = "img/nswe" + wknswe[i2];
-			if(Board.flag.indexOf(wknswe[i2]) >= 0){
-				if(Player[i].flag.indexOf(wknswe[i2]) >= 0){
-					imgsrc += "2";
+		div.html(TotalGold(i));
+		$("#DIV_POINT"+i).append(div);
+
+		//## NSWE ##
+		var div = $("<div></div>").addClass("class_Point_NSWE");
+		div.html("<canvas height='62' width='62' id='CVS_NSWE"+i+"'></canvas>");
+		$("#DIV_POINT"+i).append(div);
+		for(var i2 in NSWE){
+			imgsrc = "img/nswe0.png";
+			if(Board.flag.indexOf(NSWE[i2]) >= 0){
+				if(Player[i].flag.indexOf(NSWE[i2]) >= 0){
+					imgsrc = "img/nswe"+NSWE[i2]+"1.png";
 				}else{
-					imgsrc += "1";
+					imgsrc = "img/nswe"+NSWE[i2]+"0.png";
 				}
-			}else{
-				imgsrc += "0";
 			}
-			msgstr += "<IMG src='"+imgsrc+".gif' height='20' width='"+wkwidth[i2]+"'>";
+			Canvas.draw({id:"CVS_NSWE"+i, src:imgsrc, x:[16, 16, 0, 32][i2], y:[0, 32, 16, 16][i2]});
 		}
-		//Hand
+		//## MEDAL ##
+		var div = $("<div></div>").addClass("class_Point_Medal");
+		$("#DIV_POINT"+i).append(div);
+		//## GOLD ##
+		var div = $("<div></div>").addClass("class_Point_Gold");
+		div.html(Player[i].gold+"<span>G</span>");
+		$("#DIV_POINT"+i).append(div);
+		//## Hand ##
+		var div = $("<div></div>").addClass("class_Point_Hand");
 		for(var i2 in Player[i].hand){
-			msgstr += "<IMG src='img/icon_card.gif' height='20' width='14'>";
+			div.append("<IMG src='img/icon_card.gif' height='20' width='14'>");
 		}
-		dispstr += Infoblock.line({cls:"point2", m:[msgstr], w:[170], pd:[4], bg:"#FEFEFE"});
+		$("#DIV_POINT"+i).append(div);
 		
 		//##### Option表示 #####
 		if(i_pno == i || i_pno == 9){
@@ -785,13 +797,7 @@ function DispPlayer(i_pno){
 			$("#DIV_POINT"+i).removeClass("windowopened");
 		}
 		//innerHTML
-		$("#DIV_POINT"+i).html(dispstr);
-
-		//############## DEBUG ##############
-		//手札並び替え
-		DebugHandDisp(i);
-		//デバッグフロント
-		DebugFront();
+		//$("#DIV_POINT"+i).html(dispstr);
 	}
 }
 //DIV表示設定

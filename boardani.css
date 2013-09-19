@@ -1,25 +1,7 @@
 /* ===================[ webkit animation ]=================== */
 /* class */
-div.animeAlert1{
-	-webkit-animation-name: alert1;
-	-webkit-animation-duration: 3s;
-	-webkit-animation-timing-function: linear;
-	-webkit-animation-iteration-count: infinite;
-}
-div.animeAlert2{
-	-webkit-animation-name: alert2;
-	-webkit-animation-duration: 3s;
-	-webkit-animation-timing-function: linear;
-	-webkit-animation-iteration-count: infinite;
-}
-div.animeAlert3{
-	-webkit-animation-name: alert3;
-	-webkit-animation-duration: 3s;
-	-webkit-animation-timing-function: linear;
-	-webkit-animation-iteration-count: infinite;
-}
-div.animeAlert4{
-	-webkit-animation-name: alert4;
+div.animeAlert{
+	-webkit-animation-name: frameAlert;
 	-webkit-animation-duration: 3s;
 	-webkit-animation-timing-function: linear;
 	-webkit-animation-iteration-count: infinite;
@@ -141,49 +123,12 @@ div.animeVsLog{
 	-webkit-animation-timing-function: ease;
 }
 /* animation frame */
-@-webkit-keyframes alert1{
-	0% {
-		border-color:#FF0000;
-	}
+@-webkit-keyframes frameAlert{
+	0% {}
 	50% {
-		border-color:#FFFFFF;
+        background-color:rgba(255,255,255,0.4);
 	}
-	100% {
-		border-color:#FF0000;
-	}
-}
-@-webkit-keyframes alert2{
-	0% {
-		border-color:#0000CC;
-	}
-	50% {
-		border-color:#FFFFFF;
-	}
-	100% {
-		border-color:#0000CC;
-	}
-}
-@-webkit-keyframes alert3{
-	0% {
-		border-color:#00CC00;
-	}
-	50% {
-		border-color:#FFFFFF;
-	}
-	100% {
-		border-color:#00CC00;
-	}
-}
-@-webkit-keyframes alert4{
-	0% {
-		border-color:#FF9900;
-	}
-	50% {
-		border-color:#FFFFFF;
-	}
-	100% {
-		border-color:#FF9900;
-	}
+	100% {}
 }
 @-webkit-keyframes jump{
 	50% {
