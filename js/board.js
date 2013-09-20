@@ -684,6 +684,8 @@ function DispPlayer(i_pno){
 	var msgstr = "";
 	var NSWE = ["n","s","w","e"];
 	var wkwidth = new Array("15", "15", "20", "14");
+	var imgname = new Array("", "mark_n", "mark_r", "mark_b", "mark_g", "mark_y");
+
 	for(var i=1; i<=Board.playcnt; i++){
 		$("#DIV_POINT"+i).html("");
 		//TURN PLAYER
@@ -692,9 +694,11 @@ function DispPlayer(i_pno){
 		//}else{
 		//	$("#DIV_POINT"+i).removeClass("TURNPLAYERPOP");
 		//}
-		//dispstr += Infoblock.line({cls:"point", m:[PlayerRank(i, 0),Player[i].name], w:[26, 144], pd:[0,4], ta:["c",""], sp:["bw","w"]});
-		//dispstr += Infoblock.line({cls:"point", m:[Player[i].gold,TotalGold(i)], w:[85, 85], pd:[4,4], ta:["r","r"], bg:"#FEFEFE"});
+		//PlayerRank(i, 0), Player[i].name
 
+		//##############################
+		//## PLAYER INFOMATION HEADER ##
+		//##############################
 		//## Total ##
 		var div = $("<div></div>").addClass("class_Point_Total");
 		if(TotalGold(i) >= Board.target && i_pno != 9){
@@ -702,21 +706,24 @@ function DispPlayer(i_pno){
 		}
 		div.html(TotalGold(i));
 		$("#DIV_POINT"+i).append(div);
-
 		//## NSWE ##
 		var div = $("<div></div>").addClass("class_Point_NSWE");
 		div.html("<canvas height='62' width='62' id='CVS_NSWE"+i+"'></canvas>");
 		$("#DIV_POINT"+i).append(div);
-		for(var i2 in NSWE){
-			imgsrc = "img/nswe0.png";
-			if(Board.flag.indexOf(NSWE[i2]) >= 0){
-				if(Player[i].flag.indexOf(NSWE[i2]) >= 0){
-					imgsrc = "img/nswe"+NSWE[i2]+"1.png";
-				}else{
-					imgsrc = "img/nswe"+NSWE[i2]+"0.png";
+		if(Board.flag == Player[i].flag){
+			Canvas.draw({id:"CVS_NSWE"+i, src:"img/nswego.png", x:0, y:0});
+		}else{
+			for(var i2 in NSWE){
+				imgsrc = "img/nswe0.png";
+				if(Board.flag.indexOf(NSWE[i2]) >= 0){
+					if(Player[i].flag.indexOf(NSWE[i2]) >= 0){
+						imgsrc = "img/nswe"+NSWE[i2]+"1.png";
+					}else{
+						imgsrc = "img/nswe"+NSWE[i2]+"0.png";
+					}
 				}
+				Canvas.draw({id:"CVS_NSWE"+i, src:imgsrc, x:[16, 16, 0, 32][i2], y:[0, 32, 16, 16][i2]});
 			}
-			Canvas.draw({id:"CVS_NSWE"+i, src:imgsrc, x:[16, 16, 0, 32][i2], y:[0, 32, 16, 16][i2]});
 		}
 		//## MEDAL ##
 		var div = $("<div></div>").addClass("class_Point_Medal");
@@ -731,15 +738,17 @@ function DispPlayer(i_pno){
 			div.append("<IMG src='img/icon_card.gif' height='20' width='14'>");
 		}
 		$("#DIV_POINT"+i).append(div);
-		
-		//##### Option表示 #####
+
+		//##############################
+		//## PLAYER INFOMATION OPTION ##
+		//##############################
 		if(i_pno == i || i_pno == 9){
 			if($("#DIV_POINT"+i).hasClass("windowopened")){
 				$("#DIV_POINT"+i).removeClass("windowopened");
 			}else{
 				var wkpno = i;
 				//Territories
-				var imgname = new Array("", "mark_n", "mark_r", "mark_b", "mark_g", "mark_y");
+
 				for(var i2=1; i2<=5; i2++){
 					var wkgold = 0;
 					for(var i3=1; i3<Board.grid.length; i3++){
