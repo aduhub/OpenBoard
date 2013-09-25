@@ -710,7 +710,7 @@ function DispPlayer(i_pno){
 		var div = $("<div></div>").addClass("class_Point_NSWE");
 		div.html("<canvas height='62' width='62' id='CVS_NSWE"+i+"'></canvas>");
 		$("#DIV_POINT"+i).append(div);
-		if(Board.flag == Player[i].flag){
+		if(Board.flag.length == Player[i].flag.length){
 			Canvas.draw({id:"CVS_NSWE"+i, src:"img/nswego.png", x:0, y:0});
 		}else{
 			for(var i2 in NSWE){
@@ -747,57 +747,66 @@ function DispPlayer(i_pno){
 				$("#DIV_POINT"+i).removeClass("windowopened");
 			}else{
 				var wkpno = i;
-				//Territories
-
+				//##[Territories]##
 				for(var i2=1; i2<=5; i2++){
 					var wkgold = 0;
-					for(var i3=1; i3<Board.grid.length; i3++){
-						if(Team(Board.grid[i3].owner) == Team(wkpno) && Board.grid[i3].color == i2){
-							wkgold += GridValue(i3);
+					for(var igno=1; igno<Board.grid.length; igno++){
+						if(Team(Board.grid[igno].owner) == Team(wkpno) && Board.grid[igno].color == i2){
+							wkgold += GridValue(igno);
 						}
 					}
-					msgstr = "<IMG src='img/"+imgname[i2]+".gif' height='26' width='26'>";
-					dispstr += Infoblock.line({m:[msgstr, "x"+GridCount(wkpno,i2), wkgold], w:[34, 56, 80], pd:[4,4,4], ta:["","r","r"], bd:true, bg:"FEFEFE"});
+					var div = $("<div></div>").addClass("class_Point_Line");
+					div.append("<div>"+EleName[i2]+"属性("+GridCount(wkpno, i2)+")</div>");
+					div.append("<div>"+wkgold+"</div>");
+					$("#DIV_POINT"+i).append(div);
 				}
-				//Book
+				//##[Book]##
 				msgstr = Player[wkpno].DeckCount() + "/" + Player[wkpno].DeckAllCount();
-				dispstr += Infoblock.line({m:["デッキ", msgstr], w:[100, 70], pd:[4, 4], ta:["", "r"], bd:true, bg:"FEFEFE"});
-				//lap
-				dispstr += Infoblock.line({m:["周回", Player[wkpno].lap], w:[100, 70], pd:[4, 4], ta:["", "r"], bg:"FEFEFE"});
+				var div = $("<div></div>").addClass("class_Point_Line");
+				div.append("<div>デッキ</div>");
+				div.append("<div>"+msgstr+"</div>");
+				$("#DIV_POINT"+i).append(div);
+				//##[lap]##
+				var div = $("<div></div>").addClass("class_Point_Line");
+				div.append("<div>周回</div>");
+				div.append("<div>"+Player[wkpno].lap+"</div>");
+				$("#DIV_POINT"+i).append(div);
 				if(i_pno != 9){
-					//status
+					//##[status]##
 					if(Player[wkpno].status != ""){
-						var iconsrc = StatusIcon(Player[wkpno].status);
-						var namestr = Dic(Player[wkpno].status)+"呪い";
+						var div = $("<div></div>").addClass("class_Point_Line");
+						div.append("<div>"+Dic(Player[wkpno].status)+"呪い</div>");
 						if(Player[wkpno].statime <= 9){
-							namestr += " " + Player[wkpno].statime + "R";
+							div.append("<div>"+Player[wkpno].statime+"R</div>");
+						}else{
+							div.append("<div>永続</div>");
 						}
-						dispstr += Infoblock.line({m:["<img src='img/"+iconsrc+"'>", namestr], w:[40, 130], h:26, pd:[4,4], bg:"FEFEFE"});
+						$("#DIV_POINT"+i).append(div);
 					}
 				}else{
-					//spell
-					dispstr += Infoblock.line({m:["スペル", Analytics.spell[wkpno]], w:[100, 70], pd:[4, 4], ta:["", "r"], bg:"FEFEFE"});
-					//battle
-					msgstr = Analytics.invasion[wkpno] +"(" + Analytics.invasionwin[wkpno] + ")";
-					dispstr += Infoblock.line({m:["侵略", msgstr], w:[100, 70], pd:[4, 4], ta:["", "r"], bg:"FEFEFE", bd:true});
-					msgstr = Analytics.guard[wkpno] +"(" + Analytics.guardwin[wkpno] + ")";
-					dispstr += Infoblock.line({m:["防衛", msgstr], w:[100, 70], pd:[4, 4], ta:["", "r"], bg:"FEFEFE"});
-					//take
-					dispstr += Infoblock.line({m:["収入回数", Analytics.takecnt[wkpno]], w:[100, 70], pd:[4, 4], ta:["", "r"], bg:"FEFEFE", bd:true});
-					dispstr += Infoblock.line({m:["収入魔力", Analytics.takegold[wkpno]], w:[100, 70], pd:[4, 4], ta:["", "r"], bg:"FEFEFE"});
-					//pay
-					dispstr += Infoblock.line({m:["支払回数", Analytics.paycnt[wkpno]], w:[100, 70], pd:[4, 4], ta:["", "r"], bg:"FEFEFE"});
-					dispstr += Infoblock.line({m:["支払魔力", Analytics.paygold[wkpno]], w:[100, 70], pd:[4, 4], ta:["", "r"], bg:"FEFEFE"});
-					//take
-					dispstr += Infoblock.line({m:["スペルＧ", Analytics.costspell[wkpno]], w:[100, 70], pd:[4, 4], ta:["", "r"], bg:"FEFEFE", bd:true});
-					dispstr += Infoblock.line({m:["召還Ｇ", Analytics.costsummon[wkpno]], w:[100, 70], pd:[4, 4], ta:["", "r"], bg:"FEFEFE"});
-					//deck
-					if(Board.role != wkpno){
-						msgstr = "<a href='javascript:DeckImport(\"" + Player[wkpno].deckid + "\");'>" + Player[wkpno].deckname + "</a>";
-					}else{
-						msgstr = Player[wkpno].deckname;
-					}
-					dispstr += Infoblock.line({m:[msgstr], w:[170], pd:[4], bg:"FEFEFE", bd:true});
+//					//spell
+//					dispstr += Infoblock.line({m:["スペル", Analytics.spell[wkpno]], w:[100, 70], pd:[4, 4], ta:["", "r"], bg:"FEFEFE"});
+//					//battle
+//					msgstr = Analytics.invasion[wkpno] +"(" + Analytics.invasionwin[wkpno] + ")";
+//					dispstr += Infoblock.line({m:["侵略", msgstr], w:[100, 70], pd:[4, 4], ta:["", "r"], bg:"FEFEFE", bd:true});
+//					msgstr = Analytics.guard[wkpno] +"(" + Analytics.guardwin[wkpno] + ")";
+//					dispstr += Infoblock.line({m:["防衛", msgstr], w:[100, 70], pd:[4, 4], ta:["", "r"], bg:"FEFEFE"});
+//					//take
+//					dispstr += Infoblock.line({m:["収入回数", Analytics.takecnt[wkpno]], w:[100, 70], pd:[4, 4], ta:["", "r"], bg:"FEFEFE", bd:true});
+//					dispstr += Infoblock.line({m:["収入魔力", Analytics.takegold[wkpno]], w:[100, 70], pd:[4, 4], ta:["", "r"], bg:"FEFEFE"});
+//					//pay
+//					dispstr += Infoblock.line({m:["支払回数", Analytics.paycnt[wkpno]], w:[100, 70], pd:[4, 4], ta:["", "r"], bg:"FEFEFE"});
+//					dispstr += Infoblock.line({m:["支払魔力", Analytics.paygold[wkpno]], w:[100, 70], pd:[4, 4], ta:["", "r"], bg:"FEFEFE"});
+//					//take
+//					dispstr += Infoblock.line({m:["スペルＧ", Analytics.costspell[wkpno]], w:[100, 70], pd:[4, 4], ta:["", "r"], bg:"FEFEFE", bd:true});
+//					dispstr += Infoblock.line({m:["召還Ｇ", Analytics.costsummon[wkpno]], w:[100, 70], pd:[4, 4], ta:["", "r"], bg:"FEFEFE"});
+//					//deck
+//					if(Board.role != wkpno){
+//						msgstr = "<a href='javascript:DeckImport(\"" + Player[wkpno].deckid + "\");'>" + Player[wkpno].deckname + "</a>";
+//					}else{
+//						msgstr = Player[wkpno].deckname;
+//					}
+//					dispstr += Infoblock.line({m:[msgstr], w:[170], pd:[4], bg:"FEFEFE", bd:true});
 				}
 				//Size
 				$("#DIV_POINT"+i).addClass("windowopened");
@@ -805,8 +814,6 @@ function DispPlayer(i_pno){
 		}else{
 			$("#DIV_POINT"+i).removeClass("windowopened");
 		}
-		//innerHTML
-		//$("#DIV_POINT"+i).html(dispstr);
 	}
 }
 //DIV表示設定

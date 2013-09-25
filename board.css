@@ -210,27 +210,33 @@ button:disabled{
 		border-radius:4px;
 		box-sizing:border-box;
 	}
-		.class_Point_Line{
-			/*box layout*/
-			display:-webkit-box;
-			font-size : 20px;
-			font-family : "Verdana",'ヒラギノ角ゴ Pro W3','Hiragino Kaku Gothic Pro','メイリオ','Meiryo','ＭＳ Ｐゴシック',sans-serif;
-			line-height:25px;
-			height:25px;
-			width:100%;
+	.class_Point_Line{
+		/*box layout*/
+		display:-webkit-box;
+		font-size : 16px;
+		font-family : 'メイリオ','Meiryo';
+		line-height:24px;
+		height:24px;
+		width:168px;
+		box-sizing:border-box;
+		margin:4px;
+	}
+		.class_Point_Line div:first-child{
+			background-color : rgba(255,255,255,0.4);
+			width:100px;
+			text-align:right;
+			padding-right:4px;
+			border-radius:4px 0 0 4px;
+			box-sizing:border-box;
 		}
-			.class_Point_Line div{
-				-webkit-box-sizing:border-box;
-			}
-		div.class_Point_Line2{
-			/*box layout*/
-			display:-webkit-box;
-			height:20px;
-			width:100%;
+		.class_Point_Line div:nth-last-of-type(1){
+			background-color : rgba(0,0,0,0.2);
+			width:72px;
+			font-weight:bold;
+			padding-left:4px;
+			border-radius:0 4px 4px 0;
+			box-sizing:border-box;
 		}
-			.class_Point_Line2 div{
-				-webkit-box-sizing:border-box;
-			}
 		.class_Info_Line{
 			/*box layout*/
 			display:-webkit-box;

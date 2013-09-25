@@ -26,6 +26,7 @@ var Analytics = new clsAnalytics();
 
 //Const
 var pcolor = {1:"#FF0000",2:"#0000FF",3:"#00CC00",4:"#FFCC00"}
+var EleName = ["","無","火","水","地","風"]
 //Drag
 var dragObject = null;
 var dragOffset = null;
