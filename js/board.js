@@ -683,8 +683,8 @@ function DispPlayer(i_pno){
 	var imgsrc = "";
 	var msgstr = "";
 	var NSWE = ["n","s","w","e"];
-	var wkwidth = new Array("15", "15", "20", "14");
-	var imgname = new Array("", "mark_n", "mark_r", "mark_b", "mark_g", "mark_y");
+	var wkwidth = ["15", "15", "20", "14"];
+	var imgname = ["", "mark_n", "mark_r", "mark_b", "mark_g", "mark_y"];
 
 	for(var i=1; i<=Board.playcnt; i++){
 		$("#DIV_POINT"+i).html("");
@@ -727,6 +727,14 @@ function DispPlayer(i_pno){
 		}
 		//## MEDAL ##
 		var div = $("<div></div>").addClass("class_Point_Medal");
+		for(var i2=1; i2<=3; i2++){
+			if(Player[i].medal >= i2){
+				imgsrc='img/medal1.png';
+			}else{
+				imgsrc='img/medal0.png';
+			}
+			div.append("<IMG src='"+imgsrc+"' height='12' width='32'>");
+		}
 		$("#DIV_POINT"+i).append(div);
 		//## GOLD ##
 		var div = $("<div></div>").addClass("class_Point_Gold");

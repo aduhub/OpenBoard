@@ -90,13 +90,19 @@ function SummonCost(i_gno, i_cno){
 				if(chk.walk && chk.levelcap && chk.unique){
 					if(Player[Board.role].gold >= Card[i_cno].cost){
 						if(Card[i_cno].plus){
-							var costcnt = [0, 0, 0, 0, 0, 0];
-							for(var i=0; i<Card[i_cno].plus.length; i++){
-								costcnt[colorno[Card[i_cno].plus.substr(i, 1)]]++;
-							}
-							for(var i=1; i<=5; i++){
-								if(GridCount(Board.role, i) < costcnt[i]){
+							if($T.typer(Card[i_cno].plus) == "Number"){
+								if(Card[i_cno].plus > Player[Board.role].medal){
 									ret = "PLUS";
+								}
+							}else{
+								var costcnt = [0, 0, 0, 0, 0, 0];
+								for(var i=0; i<Card[i_cno].plus.length; i++){
+									costcnt[colorno[Card[i_cno].plus.substr(i, 1)]]++;
+								}
+								for(var i=1; i<=5; i++){
+									if(GridCount(Board.role, i) < costcnt[i]){
+										ret = "PLUS";
+									}
 								}
 							}
 							if(ret != "PLUS"){

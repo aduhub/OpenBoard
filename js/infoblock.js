@@ -36,11 +36,16 @@ var Infoblock = {
 				imgtag = "<img src='img/infog.gif' height='20' width='11' style='margin-top:3px;'>";
 				imgtag2 = "";
 				if(arg[i].plus){
-					for(var i2=0; i2<arg[i].plus.length; i2++){
-						imgtag2 += "<img src='img/"+colorimg[colorno[arg[i].plus.substr(i2, 1)]]+".gif' height='26' width='26'>";
+					var medal = ""
+					if($T.typer(arg[i].plus) == "Number"){
+						medal = "("+arg[i].plus+")";
+					}else{
+						for(var i2=0; i2<arg[i].plus.length; i2++){
+							imgtag2 += "<img src='img/"+colorimg[colorno[arg[i].plus.substr(i2, 1)]]+".gif' height='26' width='26'>";
+						}
 					}
 				}
-				html += Infoblock.line({m:[imgtag, arg[i].cost, imgtag2], w:[14, 42, Infoblock._width - 66],  ta:["","r",""]});
+				html += Infoblock.line({m:[imgtag, arg[i].cost + medal, imgtag2], w:[14, 42, Infoblock._width - 66],  ta:["","r",""]});
 				break;
 			case "clsthp":
 				imgtag = "<img src='img/infost.gif' height='20' width='11' style='margin-top:3px;'>";
@@ -62,8 +67,8 @@ var Infoblock = {
 				}
 				if(arg[i].walk){
 					for(var i2=0; i2<=6; i2++){
-						if(arg[i].walk.match(["N", "F", "W", "E", "D", "T", "I"][i2])){
-							imgtag += "<img src='img/x_"+["newtral", "fire", "water", "earth", "wind", "walk", "invasion"][i2]+".gif' height='26' width='26' title='"+["無属性侵入", "火属性侵入", "水属性侵入", "地属性侵入", "風属性侵入", "領地移動", "侵略召喚"][i2]+"不可'>";
+						if(arg[i].walk.match(["N", "F", "W", "E", "D", "T", "I", "L"][i2])){
+							imgtag += "<img src='img/x_"+["newtral", "fire", "water", "earth", "wind", "walk", "invasion", "legend"][i2]+".gif' height='26' width='26' title='"+["無属性侵入", "火属性侵入", "水属性侵入", "地属性侵入", "風属性侵入", "領地移動", "侵略召喚", "伝説(仮)"][i2]+"不可'>";
 						}
 					}
 				}

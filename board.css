@@ -106,28 +106,28 @@ button:disabled{
 /*###############################*/
 #DIV_POINT1{
 	left : 80px;
-    background-color : rgba(240,0,0,0.4);
+    background-color : rgba(240, 150, 144, 0.9);
 }
 #DIV_POINT1 .class_Point_Total{
     background-color : rgba(240,0,0,1.0);
 }
 #DIV_POINT2{
 	left : 260px;
-    background-color : rgba(0,0,196,0.4);
+    background-color : rgba(138, 141, 196, 0.9);
 }
 #DIV_POINT2 .class_Point_Total{
     background-color : rgba(0,0,196,1.0);
 }
 #DIV_POINT3{
 	left : 440px;
-    background-color : rgba(0,196,0,0.4);
+    background-color : rgba(127, 196, 125, 0.9);
 }
 #DIV_POINT3 .class_Point_Total{
     background-color : rgba(0,196,0,1.0);
 }
 #DIV_POINT4{
 	left : 620px;
-    background-color : rgba(255,160,0,0.4);
+    background-color : rgba(255, 222, 162, 0.9);
 }
 #DIV_POINT4 .class_Point_Total{
     background-color : rgba(255,160,0,1.0);
@@ -170,12 +170,14 @@ button:disabled{
         height   : 62px;
         width    : 62px;
     }
-    .class_Point_Medal{
-        display  : flex;
-        height:16px;
-        width:108px;
-        margin-left:72px;
-    }
+	.class_Point_Medal{
+		height:16px;
+		width:108px;
+		margin-left:72px;
+	}
+		.class_Point_Medal img{
+			margin:2px 0px 2px 2px;
+		}
 	.class_Point_Gold{
 		/*color*/
 		background-color : rgb(255,192,0);
