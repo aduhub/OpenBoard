@@ -54,11 +54,9 @@ var Frame = {
 	//========[ LogPlayer ] ========
 	_playlog:function (){
 		if(Frame.cmdstack.length > 0){
-            //console
-            console.log("[play_0]" + JSON.stringify(Frame.cmdstack[0]))
 			var runflg = 0;
 			var cmditem = Frame.cmdstack[0];
-            var cmddata = cmditem.plog.split(":");
+			var cmddata = cmditem.plog.split(":");
 			var logpno = Number(cmditem.pno);
 			var logcmd = cmddata.shift();
 			var logpara = cmddata.join(":");
@@ -170,17 +168,16 @@ var Frame = {
 					break;
 				case "deck":
 					runflg = 2;
-                    var deckinfo = logpara.split(":");
-                    //Deck情報
-                    Player[logpno].deckid = deckinfo.shift();
-                    Player[logpno].deckname = deckinfo.shift();
-                    //Deck数
-                    Board.deckcnt += 1;
-                    //プレイヤーデータセット
-                    if(Board.playcnt == Board.deckcnt){
-                        PlayerSetup();
-                    }
-
+					var deckinfo = logpara.split(":");
+					//Deck情報
+					Player[logpno].deckid = deckinfo.shift();
+					Player[logpno].deckname = deckinfo.shift();
+					//Deck数
+					Board.deckcnt += 1;
+					//プレイヤーデータセット
+					if(Board.playcnt == Board.deckcnt){
+					    PlayerSetup();
+					}
 					break;
 				case "ready":
 					if(Board.deckcnt == Board.playcnt){
@@ -314,6 +311,7 @@ var Frame = {
 					break;
 				}
 			}
+
 			//実行
 			if(runflg >= 1){
 				//【Log】
@@ -323,6 +321,9 @@ var Frame = {
 					//再呼び出し
 					Frame._playlog();
 				}
+			}else{
+				//console
+				console.log("[play_0]"+logpno+":"+logcmd+":"+logpara);
 			}
 		}
 	},

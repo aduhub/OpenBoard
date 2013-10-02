@@ -725,6 +725,10 @@ function DispPlayer(i_pno){
 				Canvas.draw({id:"CVS_NSWE"+i, src:imgsrc, x:[16, 16, 0, 32][i2], y:[0, 32, 16, 16][i2]});
 			}
 		}
+		//## GOLD ##
+		var div = $("<div></div>").addClass("class_Point_Gold");
+		div.html(Player[i].gold+"<span>G</span>");
+		$("#DIV_POINT"+i).append(div);
 		//## MEDAL ##
 		var div = $("<div></div>").addClass("class_Point_Medal");
 		for(var i2=1; i2<=3; i2++){
@@ -735,10 +739,6 @@ function DispPlayer(i_pno){
 			}
 			div.append("<IMG src='"+imgsrc+"' height='12' width='32'>");
 		}
-		$("#DIV_POINT"+i).append(div);
-		//## GOLD ##
-		var div = $("<div></div>").addClass("class_Point_Gold");
-		div.html(Player[i].gold+"<span>G</span>");
 		$("#DIV_POINT"+i).append(div);
 		//## Hand ##
 		var div = $("<div></div>").addClass("class_Point_Hand");

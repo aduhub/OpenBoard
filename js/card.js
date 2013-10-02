@@ -121,19 +121,13 @@ function DeckShuffle(arg){
 }
 //手札並び替え
 function SortHand(){
-	var framecnt = $(".CLS_HAND").length;
 	var handcnt = Player[Board.role].hand.length;
 
+	//Clear
+	$(".CLS_HAND").remove();
 	// Hand Frame Check
-	if(framecnt - handcnt < 0){
-		for(var i=1; i<=handcnt - framecnt; i++){
-			Maker.addHand();
-		}
-	}
-	if(framecnt - handcnt > 0){
-		for(var i=1; i<=framecnt - handcnt; i++){
-			Maker.remHand();
-		}
+	for(var i=1; i<=handcnt; i++){
+		Maker.addHand();
 	}
 
 	//Hand Image
@@ -315,7 +309,7 @@ function DeckSelect(deckstr){
 	if(deckstr != null){
 		//Clear
 		if(Player[Board.role].deckid != ""){
-			$("#BTN_DECK" + deckselectid).css("backgroundColor", "");
+			$("#BTN_DECK" + Player[Board.role].deckid).css("backgroundColor", "");
 		}
 		//Set
 		var palet = {"C1":"DDDDDD","C2":"FFCCCC","C3":"CCCCFF","C4":"CCFFCC","C5":"FFFFCC","I":"EEEEEE","S":"EEDDFF"};

@@ -186,9 +186,11 @@ var $T = {
 	},
 	//object type string
 	typer:function(o){
-		//var a = Object.prototype.toString.call(o);
-		//var b = a.match(/\[object (.*)\]/)[1];
-		return o.constructor.name;
+		if(typeof o !== "undefined"){
+			return o.constructor.name;
+		}else{
+			return "Nothing";
+		}
 	},
 	//stacktime({fnc:実行関数, msec:待機ミリ秒})
 	stacktimer:function (arg){

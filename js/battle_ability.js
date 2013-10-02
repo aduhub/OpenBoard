@@ -404,11 +404,13 @@ function BattleAbiAction(arg){
 		}
 		break;
 	case "HIT":
+		var cno, rndnum;
 		if(atk.active.match("@DISCARD@")){
 			Player[def.pno].hand.sort();
-			for(var i=0; i<atk.rnd.length; i++){
-				var cno = Player[def.pno].hand[Number(atk.rnd[i])];
-				if(cno != ""){
+			for(var i in atk.rnd){
+				rndnum = Number(atk.rnd[i]);
+				if(Player[def.pno].hand.length > rndnum){
+					cno = Player[def.pno].hand[rndnum];
 					Player[def.pno].HandDel(cno);
 					BattleLog($r(arg.bno), Dic("@DISCARD@"));
 					Logprint({msg:"##" + cno + "##を破棄", pno:def.pno});
