@@ -120,16 +120,16 @@ button:disabled{
 	left : 440px;
 }
 #DIV_POINT3 .class_Point_Total{
-    background-color : rgba(0,196,0,1.0);
+    background-color : rgba(32,160,0,1.0);
 }
 #DIV_POINT4{
 	left : 620px;
 }
 #DIV_POINT4 .class_Point_Total{
-    background-color : rgba(255,160,0,1.0);
+    background-color : rgba(240,160,0,1.0);
 }
 .class_Point{
-	background-color : rgba(160,160,160,0.6);
+	background-color : rgba(204,204,204,0.9);
     display  : none;
     position : fixed;
     top      : 0px;
@@ -159,17 +159,19 @@ button:disabled{
 		box-sizing:border-box;
 		border-radius: 0 0 32px 32px / 0 0 4px 4px;
 	}
-    .class_Point_NSWE{
-        /*position size*/
-        position : absolute;
-        top      : 34px;
-        left     : 6px;
-        height   : 62px;
-        width    : 62px;
-    }
+	.class_Point_NSWE{
+		/*position size*/
+		position : absolute;
+		top      : 28px;
+		left     : 6px;
+		height   : 62px;
+		width    : 62px;
+		-webkit-transform-origin:left top;
+		-webkit-transform: scale(1.0, 0.8);
+	}
 	.class_Point_Gold{
 		/*color*/
-		background-color : rgb(192,150,0);
+		background-color : rgb(204,150,0);
 		/*position size*/
 		height:24px;
 		width:104px;
@@ -200,13 +202,28 @@ button:disabled{
 			margin:2px 0px 0px 2px;
 		}
 	.class_Point_Hand{
-		background-color : rgba(32,32,32,0.1);
-		height:21px;
-		width:140px;
-		margin:2px 0 0 20px;
+		display:-webkit-flex;
+		background-color : rgba(32,32,32,0.4);
+		justify-content:center;
+		height:10px;
+		width:170px;
+		margin:2px 0 2px 5px;
 		text-align:center;
+		border-radius: 0 0 10px 10px / 0 0 10px 10px;
 		box-sizing:border-box;
+		overflow:hidden;
 	}
+		.class_Point_Hand div{
+			background-color : rgb(10,10,10);
+			height:12px;
+			width:14px;
+			border-radius:2px;
+			margin:-3px 1px 0 0px;
+			border-left: 1px solid rgb(240,240,240);
+			border-right: 1px solid rgb(200,200,200);
+			border-bottom: 1px solid rgb(210,210,210);
+			box-sizing:border-box;
+		}
 	.class_Point_Line{
 		/*box layout*/
 		display:-webkit-box;

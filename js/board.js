@@ -743,7 +743,7 @@ function DispPlayer(i_pno){
 		//## Hand ##
 		var div = $("<div></div>").addClass("class_Point_Hand");
 		for(var i2 in Player[i].hand){
-			div.append("<IMG src='img/icon_card.gif' height='20' width='14'>");
+			div.append("<div></div>");
 		}
 		$("#DIV_POINT"+i).append(div);
 

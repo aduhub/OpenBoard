@@ -25,7 +25,7 @@ var Card = {
 	C207:{id:"C207",type:"C",name:"キマイラ",		cost:70, color:2,st:40,lf:40,opt:["@STEQUAL@:4CLR","@LFEQUAL@:4CLR"],imgsrc:"chimera",ani:"slash3",comment:"戦闘時ＳＴ＆ＨＰ＝(相手の領地種類[火水地風]×20)"},
 	C208:{id:"C208",type:"C",name:"ファイアウォール",cost:60, color:2,st:0,lf:50,item:"W",walk:"TI",opt:["@WALL@"],imgsrc:"wallf",ani:"ball",comment:"拠点"},
 	C209:{id:"C209",type:"C",name:"イフリート",		cost:80, color:2,st:30,lf:40,item:"W",opt:["@STEQUAL@:IFRIT"],imgsrc:"ifrit.png",ani:"ball",comment:"戦闘時ＳＴ＝(支配領地[火]×20)(最大100：最低0)"},
-	C210:{id:"C210",type:"C",name:"レッドドラゴン",	cost:120,plus:2, color:2,st:60,lf:60,walk:"L",opt:["@FLYING@"],imgsrc:"reddragon.png",ani:"slash3",comment:"飛行"},
+	C210:{id:"C210",type:"C",name:"レッドドラゴン",	cost:120,plus:"F", color:2,st:50,lf:50,opt:["@LEGEND","@FLYING@"],imgsrc:"reddragon.png",ani:"slash3",comment:"伝説：飛行"},
 	C211:{id:"C211",type:"C",name:"ジャガーノート",	cost:70, color:2,st:40,lf:50,walk:"W",opt:["@SLOW@","@PUSH@=80"],imgsrc:"juggernaut.png",ani:"ball",comment:"後手：◆押出(80G)対象の隣接するクリーチャーを直線上が空き地に移動させる"},
 	C212:{id:"C212",type:"C",name:"フェニックス",	cost:60, plus:"F", color:2,st:30,lf:30,item:"I",opt:["@FLYING@","@FENIX@=100"],imgsrc:"fenix.png",ani:"slash3",comment:"飛行：◆転生(100G)配置領地は売却後火属性土地になりデッキ復帰"},
 	C213:{id:"C213",type:"C",name:"バーサーカー",	cost:70, color:2,st:40,lf:40,opt:["@IRONHEART@!ATK"],imgsrc:"berserker.png",ani:"slash1",comment:"侵略戦闘時攻撃によりＨＰは0にならない"},
