@@ -145,24 +145,10 @@ var Frame = {
 						}
 						//Log
 						Logprint({msg:pinfo[1]+" 参加", ltype:"system"});
-
-						//##### Debug #####
-						if(sessionStorage.Mode == "debug"){
-							//Player 2-4
-							if(Board.playcnt >= 2){
-								for(var i=2; i<=Board.playcnt; i++){
-									//参加者カウントMAX
-									Board.joincnt++;
-									//Player セット
-									var role = Number(Board.playorder.substr(Board.joincnt - 1, 1));
-									var pinfo = logpara.split(":");
-									Player[role].id = "CPU"+i;
-									Player[role].name = "DEBUG"+i;
-									Player[role].avatar = "piece1";
-								}
-							}
-							//デッキ選択可能
-							$("#button_deckok").removeAttr("disabled");
+						//## PeerJS ##
+						if(pinfo[0] != sessionStorage.USERID){
+							//PEERJS Connect
+							Net.peerjs_conn(pinfo[0]);
 						}
 					}
 					break;

@@ -678,6 +678,7 @@ function DispInfoMap(flg){
 }
 //
 function DispPlayer(i_pno){
+	//## Variable ##
 	var dispstr = "";
 	var cvsid = "";
 	var imgsrc = "";
@@ -685,8 +686,17 @@ function DispPlayer(i_pno){
 	var NSWE = ["n","s","w","e"];
 	var wkwidth = ["15", "15", "20", "14"];
 	var imgname = ["", "mark_n", "mark_r", "mark_b", "mark_g", "mark_y"];
+	var parts = {pno:0, cls:"", htm:""}
+	//## Function ##
+	var fncDivMaker = function(arg){
+		var div = $("<div></div>");
+		div.addClass(arg.cls);
+		div.html(arg.htm);
+		$("#DIV_POINT"+arg.pno).append(div);
+	}
 
 	for(var i=1; i<=Board.playcnt; i++){
+		parts.pno = i;
 		$("#DIV_POINT"+i).html("");
 		//TURN PLAYER
 		//if(Board.turn == i){
@@ -700,16 +710,16 @@ function DispPlayer(i_pno){
 		//## PLAYER INFOMATION HEADER ##
 		//##############################
 		//## Total ##
-		var div = $("<div></div>").addClass("class_Point_Total");
+		parts.cls = "class_Point_Total";
+		parts.htm = TotalGold(i);
 		if(TotalGold(i) >= Board.target && i_pno != 9){
-			div.addClass("animeAlert");
+			parts.cls += " animeAlert";
 		}
-		div.html(TotalGold(i));
-		$("#DIV_POINT"+i).append(div);
+		fncDivMaker(parts);
 		//## NSWE ##
-		var div = $("<div></div>").addClass("class_Point_NSWE");
-		div.html("<canvas height='62' width='62' id='CVS_NSWE"+i+"'></canvas>");
-		$("#DIV_POINT"+i).append(div);
+		parts.cls = "class_Point_NSWE";
+		parts.htm = "<canvas height='62' width='62' id='CVS_NSWE"+i+"'></canvas>"
+		fncDivMaker(parts);
 		if(Board.flag.length == Player[i].flag.length){
 			Canvas.draw({id:"CVS_NSWE"+i, src:"img/nswego.png", x:0, y:0});
 		}else{
@@ -726,26 +736,28 @@ function DispPlayer(i_pno){
 			}
 		}
 		//## GOLD ##
-		var div = $("<div></div>").addClass("class_Point_Gold");
-		div.html(Player[i].gold+"<span>G</span>");
-		$("#DIV_POINT"+i).append(div);
+		parts.cls = "class_Point_Gold";
+		parts.htm = Player[i].gold+"<span>G</span>";
+		fncDivMaker(parts);
 		//## MEDAL ##
-		var div = $("<div></div>").addClass("class_Point_Medal");
+		parts.cls = "class_Point_Medal";
+		parts.htm = "";
 		for(var i2=1; i2<=3; i2++){
 			if(Player[i].medal >= i2){
 				imgsrc='img/medal1.png';
 			}else{
 				imgsrc='img/medal0.png';
 			}
-			div.append("<IMG src='"+imgsrc+"' height='12' width='32'>");
+			parts.htm += "<IMG src='"+imgsrc+"' height='12' width='32'>";
 		}
-		$("#DIV_POINT"+i).append(div);
+		fncDivMaker(parts);
 		//## Hand ##
-		var div = $("<div></div>").addClass("class_Point_Hand");
+		parts.cls = "class_Point_Hand";
+		parts.htm = "";
 		for(var i2 in Player[i].hand){
-			div.append("<div></div>");
+			parts.htm += "<div></div>";
 		}
-		$("#DIV_POINT"+i).append(div);
+		fncDivMaker(parts);
 
 		//##############################
 		//## PLAYER INFOMATION OPTION ##
@@ -792,29 +804,29 @@ function DispPlayer(i_pno){
 						$("#DIV_POINT"+i).append(div);
 					}
 				}else{
-//					//spell
-//					dispstr += Infoblock.line({m:["スペル", Analytics.spell[wkpno]], w:[100, 70], pd:[4, 4], ta:["", "r"], bg:"FEFEFE"});
-//					//battle
-//					msgstr = Analytics.invasion[wkpno] +"(" + Analytics.invasionwin[wkpno] + ")";
-//					dispstr += Infoblock.line({m:["侵略", msgstr], w:[100, 70], pd:[4, 4], ta:["", "r"], bg:"FEFEFE", bd:true});
-//					msgstr = Analytics.guard[wkpno] +"(" + Analytics.guardwin[wkpno] + ")";
-//					dispstr += Infoblock.line({m:["防衛", msgstr], w:[100, 70], pd:[4, 4], ta:["", "r"], bg:"FEFEFE"});
-//					//take
-//					dispstr += Infoblock.line({m:["収入回数", Analytics.takecnt[wkpno]], w:[100, 70], pd:[4, 4], ta:["", "r"], bg:"FEFEFE", bd:true});
-//					dispstr += Infoblock.line({m:["収入魔力", Analytics.takegold[wkpno]], w:[100, 70], pd:[4, 4], ta:["", "r"], bg:"FEFEFE"});
-//					//pay
-//					dispstr += Infoblock.line({m:["支払回数", Analytics.paycnt[wkpno]], w:[100, 70], pd:[4, 4], ta:["", "r"], bg:"FEFEFE"});
-//					dispstr += Infoblock.line({m:["支払魔力", Analytics.paygold[wkpno]], w:[100, 70], pd:[4, 4], ta:["", "r"], bg:"FEFEFE"});
-//					//take
-//					dispstr += Infoblock.line({m:["スペルＧ", Analytics.costspell[wkpno]], w:[100, 70], pd:[4, 4], ta:["", "r"], bg:"FEFEFE", bd:true});
-//					dispstr += Infoblock.line({m:["召還Ｇ", Analytics.costsummon[wkpno]], w:[100, 70], pd:[4, 4], ta:["", "r"], bg:"FEFEFE"});
-//					//deck
-//					if(Board.role != wkpno){
-//						msgstr = "<a href='javascript:DeckImport(\"" + Player[wkpno].deckid + "\");'>" + Player[wkpno].deckname + "</a>";
-//					}else{
-//						msgstr = Player[wkpno].deckname;
-//					}
-//					dispstr += Infoblock.line({m:[msgstr], w:[170], pd:[4], bg:"FEFEFE", bd:true});
+					//spell
+					dispstr += Infoblock.line({m:["スペル", Analytics.spell[wkpno]], w:[100, 70], pd:[4, 4], ta:["", "r"], bg:"FEFEFE"});
+					//battle
+					msgstr = Analytics.invasion[wkpno] +"(" + Analytics.invasionwin[wkpno] + ")";
+					dispstr += Infoblock.line({m:["侵略", msgstr], w:[100, 70], pd:[4, 4], ta:["", "r"], bg:"FEFEFE", bd:true});
+					msgstr = Analytics.guard[wkpno] +"(" + Analytics.guardwin[wkpno] + ")";
+					dispstr += Infoblock.line({m:["防衛", msgstr], w:[100, 70], pd:[4, 4], ta:["", "r"], bg:"FEFEFE"});
+					//take
+					dispstr += Infoblock.line({m:["収入回数", Analytics.takecnt[wkpno]], w:[100, 70], pd:[4, 4], ta:["", "r"], bg:"FEFEFE", bd:true});
+					dispstr += Infoblock.line({m:["収入魔力", Analytics.takegold[wkpno]], w:[100, 70], pd:[4, 4], ta:["", "r"], bg:"FEFEFE"});
+					//pay
+					dispstr += Infoblock.line({m:["支払回数", Analytics.paycnt[wkpno]], w:[100, 70], pd:[4, 4], ta:["", "r"], bg:"FEFEFE"});
+					dispstr += Infoblock.line({m:["支払魔力", Analytics.paygold[wkpno]], w:[100, 70], pd:[4, 4], ta:["", "r"], bg:"FEFEFE"});
+					//take
+					dispstr += Infoblock.line({m:["スペルＧ", Analytics.costspell[wkpno]], w:[100, 70], pd:[4, 4], ta:["", "r"], bg:"FEFEFE", bd:true});
+					dispstr += Infoblock.line({m:["召還Ｇ", Analytics.costsummon[wkpno]], w:[100, 70], pd:[4, 4], ta:["", "r"], bg:"FEFEFE"});
+					//deck
+					if(Board.role != wkpno){
+						msgstr = "<a href='javascript:DeckImport(\"" + Player[wkpno].deckid + "\");'>" + Player[wkpno].deckname + "</a>";
+					}else{
+						msgstr = Player[wkpno].deckname;
+					}
+					dispstr += Infoblock.line({m:[msgstr], w:[170], pd:[4], bg:"FEFEFE", bd:true});
 				}
 				//Size
 				$("#DIV_POINT"+i).addClass("windowopened");
