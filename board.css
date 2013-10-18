@@ -160,14 +160,11 @@ button:disabled{
 		border-radius: 0 0 32px 32px / 0 0 4px 4px;
 	}
 	.class_Point_NSWE{
-		/*position size*/
 		position : absolute;
 		top      : 28px;
 		left     : 6px;
-		height   : 62px;
-		width    : 62px;
-		-webkit-transform-origin:left top;
-		-webkit-transform: scale(1.0, 0.8);
+		height   : 48px;
+		width    : 60px;
 	}
 	.class_Point_Gold{
 		/*color*/

@@ -718,21 +718,28 @@ function DispPlayer(i_pno){
 		fncDivMaker(parts);
 		//## NSWE ##
 		parts.cls = "class_Point_NSWE";
-		parts.htm = "<canvas height='62' width='62' id='CVS_NSWE"+i+"'></canvas>"
+		parts.htm = "<canvas height='48' width='60' id='CVS_NSWE"+i+"'></canvas>"
 		fncDivMaker(parts);
-		if(Board.flag.length == Player[i].flag.length){
-			Canvas.draw({id:"CVS_NSWE"+i, src:"img/nswego.png", x:0, y:0});
-		}else{
-			for(var i2 in NSWE){
-				imgsrc = "img/nswe0.png";
-				if(Board.flag.indexOf(NSWE[i2]) >= 0){
-					if(Player[i].flag.indexOf(NSWE[i2]) >= 0){
-						imgsrc = "img/nswe"+NSWE[i2]+"1.png";
-					}else{
-						imgsrc = "img/nswe"+NSWE[i2]+"0.png";
-					}
+		//if(Board.flag.length == Player[i].flag.length){
+		//	Canvas.draw({id:"CVS_NSWE"+i, src:"img/nswego.png", x:0, y:0});
+		var xx = [[15,30,45,30],[15,30,45,30],[ 0,15,30,15],[30,45,60,45]];
+		var yy = [[12, 0,12,24],[36,24,36,48],[24,12,24,36],[24,12,24,36]];
+		var rgb = [0,0,0];
+		var alpha = 1.0;
+		for(var i2 in NSWE){
+			if(Board.flag.indexOf(NSWE[i2]) >= 0){
+				imgsrc = "img/nswe-"+NSWE[i2]+".png";
+				if(Player[i].flag.indexOf(NSWE[i2]) >= 0){
+					rgb = [255,64,0];
+					alpha = 1.0;
+				}else{
+					rgb = [0,0,0];
+					alpha = 0.8;
 				}
-				Canvas.draw({id:"CVS_NSWE"+i, src:imgsrc, x:[16, 16, 0, 32][i2], y:[0, 32, 16, 16][i2]});
+				Canvas.fill("CVS_NSWE"+i, {x:xx[i2], y:yy[i2], rgb:rgb, alpha:alpha});
+				Canvas.draw({id:"CVS_NSWE"+i, x:xx[i2][1]-5, y:yy[i2][1]+7, src:imgsrc, alpha:alpha});
+			}else{
+				Canvas.fill("CVS_NSWE"+i, {x:xx[i2],y:yy[i2],rgb:[0,0,0],alpha:0.6});
 			}
 		}
 		//## GOLD ##
