@@ -458,7 +458,7 @@ function TerritoryAbility(i_flg){
 			//Territory.mvgno = gene.get;
 			//検索
 			extarr.push(Territory.gno);
-			Territory.mvgno = GridTgtGrep({tgt:"TUGL1", ext:extarr});
+			Territory.mvgno = GridTgtGrep({pno:Board.turn, tgt:"TUGL1", ext:extarr});
 			//ライト
 			TerritoryAbiTarget("grid");
 		}else{
