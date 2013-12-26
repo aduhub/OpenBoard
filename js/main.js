@@ -289,7 +289,7 @@ var Frame = {
 					if(Board.step == 92){
 						runflg = 1;
 						//トランス
-						GridTrans(logpara);
+						Grid.trans(logpara);
 					}
 					break;
 				default:

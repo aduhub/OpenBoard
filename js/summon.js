@@ -100,7 +100,7 @@ function SummonCost(i_gno, i_cno){
 									costcnt[colorno[Card[i_cno].plus.substr(i, 1)]]++;
 								}
 								for(var i=1; i<=5; i++){
-									if(GridCount(Board.role, i) < costcnt[i]){
+									if(Grid.count({owner:Board.role, color:i}) < costcnt[i]){
 										ret = "PLUS";
 									}
 								}
@@ -238,8 +238,8 @@ function SummonGrid(){
 		break;
 	}
 	//地形カラー
-	GridSetImage(Summon.gno);
-	GridSetTax(Summon.gno);
+	Grid.Img.set(Summon.gno);
+	Grid.Img.tax({gno:Summon.gno});
 	//再表示
 	DispPlayer();
 	//エフェクト
@@ -249,7 +249,7 @@ function SummonGrid(){
 	//LogPrint
 	if(Summon.from != "change"){
 		CustomLog({type:"colorcnt", pno:Summon.pno, color:sgrid.color});
-		EffectBox({pattern:"lvlpop", level:sgrid.level, chain:GridCount(Summon.pno, sgrid.color)});
+		EffectBox({pattern:"lvlpop", level:sgrid.level, chain:Grid.count({owner:Summon.pno, color:sgrid.color})});
 	}
 	//back
 	if(["summon", "change", "battle"].indexOf(Summon.from) >= 0){

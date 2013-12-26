@@ -117,15 +117,15 @@ function DebugGridSetup(i_gno){
 	Board.grid[i_gno].statime = 99;
 	//再表示
 	DispPlayer();
-	GridSetImage(i_gno);
-	GridSetTax(i_gno)
+	Grid.Img.set(i_gno);
+	Grid.Img.tax({gno:i_gno})
 	if(Board.grid[i_gno].owner == 0){
 		$("#DIV_GICON"+i_gno).css({display:"none", backgroundImage: ""});
 	}else{
 		$("#DIV_GICON"+i_gno).css({display:"block", backgroundImage: "url(img/icon/"+Card[Board.grid[i_gno].cno].imgsrc.replace(".png", "")+".gif)"});
 	}
 	for(var i=1; i<=4; i++){
-		GridSetPlayerTax(i);
+		Grid.Img.tax({pno:i});
 	}
 	Board.step = 20;
 	DisplaySet('DIV_INFOGRID', 0);

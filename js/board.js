@@ -328,7 +328,7 @@ function TotalGold(pno){
 	for(var i=1; i<Board.grid.length; i++){
 		if([1, 2, 3, 4, 5].indexOf(Number(Board.grid[i].color)) >= 0){
 			if(Team(Board.grid[i].owner) == Team(pno)){
-				wktotal += GridValue(i);
+				wktotal += Grid.value(i);
 			}
 		}
 	}
@@ -399,7 +399,7 @@ function GridClick(i_no){
 			TerritoryAbility(i_no);
 			break;
 		case 92:
-			GridTrans(i_no);
+			Grid.trans(i_no);
 			break;
 		default:
 			if(sessionStorage.iPhone == "Y"){
@@ -663,12 +663,12 @@ function DispInfoMap(flg){
 		html += "<div>領地</div>";
 		for(var i=1; i<=5; i++){
 			html += "<div><img src='img/"+colorimg[i]+".gif' height='26' width='26'>";
-			html += "x" + GridCount(9, i) + "</div>";
+			html += "x" + Grid.count({color:i}) + "</div>";
 		}
 		html += "<div>召還</div>";
 		for(var i=1; i<=5; i++){
 			html += "<div><img src='img/"+colorimg[i]+".gif' height='26' width='26'>";
-			html += "x" + GridCnoCount(9, i) + "</div>";
+			html += "x" + Grid.count({cno_color:i}) + "</div>";
 		}
 		$("#DIV_INFOMAP").html(html);
 		$("#DIV_INFOMAP").toggle();
@@ -779,11 +779,11 @@ function DispPlayer(i_pno){
 					var wkgold = 0;
 					for(var igno=1; igno<Board.grid.length; igno++){
 						if(Team(Board.grid[igno].owner) == Team(wkpno) && Board.grid[igno].color == i2){
-							wkgold += GridValue(igno);
+							wkgold += Grid.value(igno);
 						}
 					}
 					var div = $("<div></div>").addClass("class_Point_Line");
-					div.append("<div>"+EleName[i2]+"属性("+GridCount(wkpno, i2)+")</div>");
+					div.append("<div>"+EleName[i2]+"属性("+Grid.count({owner:wkpno, color:i2})+")</div>");
 					div.append("<div>"+wkgold+"</div>");
 					$("#DIV_POINT"+i).append(div);
 				}

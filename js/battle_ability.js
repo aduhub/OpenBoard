@@ -623,11 +623,9 @@ function BattleAbiAction(arg){
 			if(atk.lf <= 0){
 				var mincnt = 99;
 				for(var i=1; i<=Board.playcnt; i++){
-					if(mincnt > GridCount(i)){
-						mincnt = GridCount(i);
-					}
+					mincnt = Grid.count({owner:i, maxcnt:mincnt});
 				}
-				if(mincnt == GridCount(atk.pno)){
+				if(mincnt == Grid.count({owner:atk.pno})){
 					atk.st = Card[atk.cno].st;
 					atk.lf = Card[atk.cno].lf;
 					atk.maxlf = Card[atk.cno].lf;
@@ -653,7 +651,7 @@ function BattleAbiAction(arg){
 				//設定
 				Board.grid[Battle.gno].color = 3;
 				//地形表示
-				GridSetImage(Battle.gno);
+				Grid.Img.set(Battle.gno);
 				//Log
 				Logprint({msg:"(地形変化) "+wkelement[wkcolor]+" > "+wkelement[3], pno:Battle.pno});
 			}
@@ -669,7 +667,7 @@ function BattleAbiAction(arg){
 					//設定
 					Board.grid[Battle.gno].level = wklevel2;
 					//地形表示
-					GridSetImage(Battle.gno);
+					Grid.Img.set(Battle.gno);
 					//Log
 					Logprint({msg:"(レベルアップ) "+wklevel1+" > "+wklevel2, pno:Battle.pno});
 				}

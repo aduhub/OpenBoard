@@ -86,7 +86,7 @@ function FlowSet(){
 			//呪いチェック
 			TurnStatusCheck();
 			//FortLight
-			GridLightFort();
+			Grid.fortlight();
 			//ロールチェック
 			if(Board.turn == Board.role){
 				var msgs = [];
@@ -123,7 +123,7 @@ function PhaseEnd(){
 	if(Board.turn == Board.role){
 		switch(Board.step){
 			case 20: //Spell
-				DiceRoll();
+				Dice.StartPhase();
 				break;
 			case 21: //Spell(Cancel)
 				if(Card[Spell.cno].tgt.match(/^T.G.*$/)){
@@ -131,7 +131,7 @@ function PhaseEnd(){
 				}
 				break;
 			case 30: //Dice
-				DiceRoll();
+				Dice.StartPhase();
 				break;
 			case 40: //Summon
 				TurnEnd();
@@ -210,7 +210,7 @@ function TurnStatusCheck(){
 				Board.grid[i].status = "";
 				Board.grid[i].statime = 0;
 				//Icon
-				GridSetTax(i);
+				Grid.Img.tax({gno:i});
 				//msgpop
 				EffectBox({pattern:"msgpop", gno:i, msg:"Dispel"});
 				//log
@@ -234,7 +234,7 @@ function TurnEnd(){
 			//PHASEENDBUTTON
 			$("#BTN_PhaseEnd").html("-");
 			//GridLightクリア
-			GridLight("clear");
+			Grid.light({clear:true});
 
 			//Close
 			TurnEndFlow(0);
@@ -268,13 +268,13 @@ function TurnEndFlow(step){
 		//マイナスチェック
 		if(Player[Board.turn].gold < 0){
 			if(Board.role == Board.turn){
-				if(GridCount(Board.turn) >= 1){
+				if(Grid.count({owner:Board.turn}) >= 1){
 					var msgs = ["売却する土地を選択して下さい"];
 					DispDialog({msgs:msgs, dtype:"ok"});
 				}
 			}
 			//トランス
-			GridTrans(0);
+			Grid.trans();
 		}else{
 			TurnEndFlow(9);
 		}
@@ -330,7 +330,7 @@ function TaxPayment(){
 		}
 		//##### GridAbi #####
 		var wkadd = GridAbility({gno:wkstand, time:"TAXPAYMENT"});
-		var wktax = GridTax(wkstand);
+		var wktax = Grid.tax(wkstand);
 		for(var i=0; i<wkadd.length; i++){
 			switch(wkadd[i].act){
 			case "taxequal":
@@ -495,15 +495,15 @@ function CustomLog(arg){
 	switch(arg.ltype){
 	case "colorcnt":
 		if($T.typer(arg.color) == "Number"){
-			if($T.inrange(arg.color, 2, 5) && GridCount(arg.pno, arg.color) >= 2){
-				msgstr = elestr[arg.color] + " " + GridCount(arg.pno, arg.color) + "連鎖";
+			if($T.inrange(arg.color, 2, 5) && Grid.count({owner:arg.pno, color:arg.color}) >= 2){
+				msgstr = elestr[arg.color] + " " + Grid.count({owner:arg.pno, color:arg.color}) + "連鎖";
 				Logprint({msg:msgstr, pno:arg.pno});
 			}
 		}else{
 			if(arg.color[0] != arg.color[1]){
 				for(var i=0; i<=1; i++){
-					if($T.inrange(arg.color[i], 2, 5) && GridCount(arg.pno, arg.color[i]) >= 2){
-						msgstr = elestr[arg.color[i]] + " " + GridCount(arg.pno, arg.color[i]) + "連鎖";
+					if($T.inrange(arg.color[i], 2, 5) && Grid.count({owner:arg.pno, color:arg.color[i]}) >= 2){
+						msgstr = elestr[arg.color[i]] + " " + Grid.count({owner:arg.pno, color:arg.color[i]}) + "連鎖";
 						Logprint({msg:msgstr, pno:arg.pno});
 					}
 				}

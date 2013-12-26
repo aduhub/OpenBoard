@@ -29,8 +29,6 @@ function clsBoard(){
 	this.deckcnt  = 0;
 	this.readycnt = 0;
 	this.playorder= "";
-	this.light    = [];
-	this.grid_gsh = 0;
 	this.discardstep = 0;
 	this.alliance  = false;
 	this.joincntA = 0;
@@ -177,16 +175,6 @@ function clsPlayer() {
 			var topno = i_no - 1;
 			return wkarr[topno];
 		}
-	}
-}
-//Dice クラス
-function clsDice(){
-	this.pno   = 0;
-	this.rest  = 0;
-	this.route = [];
-	this.teleport = [];
-	this.Roll  = function(i_num, i_flg){
-		this.rest = (i_flg) ? Math.floor(Math.random() * i_num) + 1 : i_num;
 	}
 }
 //Spell

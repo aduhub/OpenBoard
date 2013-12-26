@@ -5,10 +5,8 @@ function TerritoryInit(i_gno){
 		if(Territory.target.indexOf(i_gno) >= 0){
 			var wkarr = [];
 			//ライト
-			GridLight("clear");
-			//ライト
 			wkarr.push(i_gno);
-			GridLight("set_nosave", wkarr);
+			Grid.light({clear:true, arr:wkarr});
 			//領地INIT
 			StepSet(51);
 			Territory.pno = Board.role;
@@ -140,7 +138,7 @@ function TerritoryDialog(i_mode){
 			}
 		}
 		if(tgtgrid.status == "_SPIRITWALK_"){
-			var tgtgrids = GridTgtGrep({tgt:"TSG"});
+			var tgtgrids = Grid.grep({tgt:"TSG"});
 			for(var i = 0; i<tgtgrids.length; i++){
 				if($T.inarray(tgtgrids[i], Territory.mvgno) == false){
 					Territory.mvgno.push(tgtgrids[i]);
@@ -149,8 +147,7 @@ function TerritoryDialog(i_mode){
 		}
 		if(Territory.mvgno.length >= 1){
 			//ライト
-			GridLight("clear");
-			GridLight("set_nosave", Territory.mvgno);
+			Grid.light({clear:true, arr:Territory.mvgno});
 			//移動先入力
 			StepSet(52);
 			//PHASEENDBUTTON
@@ -164,9 +161,7 @@ function TerritoryDialog(i_mode){
 	case 4:
 		//[CreatureChange]
 		//ライト
-		GridLight("clear");
-		//ライト
-		GridLight("set_nosave", [Territory.gno]);
+		Grid.light({clear:true, arr:[Territory.gno]});
 		//交換カード選択
 		StepSet(53);
 		//PHASEENDBUTTON
@@ -182,9 +177,7 @@ function TerritoryDialog(i_mode){
 		//クリア
 		Territory.ability = "";
 		//ライト
-		GridLight("clear");
-		//ライト
-		GridLight("set_memory");
+		Grid.light({clear:true, load:true});
 		//キャンセル
 		StepSet(40);
 		//PHASEENDBUTTON
@@ -312,13 +305,13 @@ function TerritoryLevel(i_level){
 		//消費
 		Player[Territory.pno].gold -= wkvalue;
 		//地形表示
-		GridSetImage(Territory.gno);
+		Grid.Img.set(Territory.gno);
 		//Log
 		Logprint({msg:"(レベルアップ) "+wklevel+" > "+i_level, pno:Territory.pno});
 		//animation
 		EffectBox({pattern:"levelup", gno:Territory.gno});
 		EffectBox({pattern:"msgpop", gno:Territory.gno, msg:"Lv" + wklevel + ">" + i_level});
-		EffectBox({pattern:"lvlpop", level:tgtgrid.level, chain:GridCount(Territory.pno, tgtgrid.color)});
+		EffectBox({pattern:"lvlpop", level:tgtgrid.level, chain:Grid.count({owner:Territory.pno, color:tgtgrid.color})});
 		//ウェイト
 		Board.wait = 1.5;
 		//領地終了
@@ -346,14 +339,14 @@ function TerritoryColor(i_color){
 		//消費
 		Player[Territory.pno].gold -= wkvalue;
 		//地形表示
-		GridSetImage(Territory.gno);
+		Grid.Img.set(Territory.gno);
 		//Log
 		Logprint({msg:"(地形変化) "+wkelement[wkcolor]+" > "+wkelement[i_color], pno:Territory.pno});
 		CustomLog({type:"colorcnt", pno:Territory.pno, color:[wkcolor, i_color]});
 		//animation
 		EffectBox({pattern:"focusin", gno:Territory.gno});
 		EffectBox({pattern:"msgpop", gno:Territory.gno, msg:"Change"});
-		EffectBox({pattern:"lvlpop", level:tgtgrid.level, chain:GridCount(Territory.pno, tgtgrid.color)});
+		EffectBox({pattern:"lvlpop", level:tgtgrid.level, chain:Grid.count({owner:Territory.pno, color:tgtgrid.color})});
 		//ウェイト
 		Board.wait = 1.5;
 		//領地終了
@@ -385,12 +378,12 @@ function TerritoryMove(i_gno, i_flg){
 		}
 		if(Board.grid[i_gno].owner == 0){
 			//Move
-			GridMove({gno1:Territory.gno, gno2:i_gno, effect:true});
+			Grid.move({gno1:Territory.gno, gno2:i_gno, effect:true});
 			//Log
 			Logprint({msg:"(領地移動)", pno:Territory.pno});
 			var color = [Board.grid[Territory.gno].color, Board.grid[i_gno].color];
 			CustomLog({type:"colorcnt", pno:Territory.pno, color:color});
-			EffectBox({pattern:"lvlpop", level:Board.grid[i_gno].level, chain:GridCount(Territory.pno, Board.grid[i_gno].color)});
+			EffectBox({pattern:"lvlpop", level:Board.grid[i_gno].level, chain:Grid.count({owner:Territory.pno, color:Board.grid[i_gno].color})});
 			//ウェイト
 			Board.wait = 1.0;
 			//領地終了
@@ -421,7 +414,7 @@ function TerritoryAbility(i_flg){
 	case "@DIVING@":
 		if(i_flg == 0){
 			//検索
-			Territory.mvgno = GridTgtGrep({tgt:"TSGW"});
+			Territory.mvgno = Grid.grep({tgt:"TSGW"});
 			//ライト
 			TerritoryAbiTarget("grid");
 		}else{
@@ -437,7 +430,7 @@ function TerritoryAbility(i_flg){
 	case "@TOUR@":
 		if(i_flg == 0){
 			//検索
-			Territory.mvgno = GridTgtGrep({tgt:"TSGD"});
+			Territory.mvgno = Grid.grep({tgt:"TSGD"});
 			//ライト
 			TerritoryAbiTarget("grid");
 		}else{
@@ -458,7 +451,7 @@ function TerritoryAbility(i_flg){
 			//Territory.mvgno = gene.get;
 			//検索
 			extarr.push(Territory.gno);
-			Territory.mvgno = GridTgtGrep({pno:Board.turn, tgt:"TUGL1", ext:extarr});
+			Territory.mvgno = Grid.grep({pno:Board.turn, tgt:"TOGL1", ext:extarr});
 			//ライト
 			TerritoryAbiTarget("grid");
 		}else{
@@ -489,15 +482,15 @@ function TerritoryAbility(i_flg){
 		TerritoryAbiPaySend(selectdno);
 
 		//##### 還    元 #####
-		var wkvalue = GridValue(Territory.gno);
+		var wkvalue = Grid.value(Territory.gno);
 		Player[Board.turn].gold += wkvalue;
 		//領地クリア(レベル1)
-		GridClear({gno:Territory.gno, all:true});
+		Grid.clear({gno:Territory.gno, all:true});
 		//##### 火属性変更 #####
 		if(colorno != 2){
 			Board.grid[Territory.gno].color = 2;
 			//地形表示
-			GridSetImage(Territory.gno);
+			Grid.Img.set(Territory.gno);
 		}
 		//##### デッキ復帰 #####
 		Player[Board.turn].DeckInsert(tgtcno, selectdno);
@@ -525,7 +518,7 @@ function TerritoryAbility(i_flg){
 	case "@FIREBALL@":
 		if(i_flg == 0){
 			//検索
-			Territory.mvgno = GridTgtGrep({pno:Board.turn, tgt:"TOG"});
+			Territory.mvgno = Grid.grep({pno:Board.turn, tgt:"TOG"});
 			//ライト
 			TerritoryAbiTarget("grid");
 		}else{
@@ -537,7 +530,7 @@ function TerritoryAbility(i_flg){
 				//msgpop
 				EffectBox({pattern:"msgpop", gno:Territory.gno, msg:"Ability"});
 				//Map Damage
-				GridDamage({target:[Territory.gno, i_flg], dmg:20, arrow:true, scroll:true});
+				Grid.damage({gno:[Territory.gno, i_flg], dmg:20, arrow:true, scroll:true});
 				//ウェイト
 				Board.wait = 3.0;
 				//領地終了
@@ -548,7 +541,7 @@ function TerritoryAbility(i_flg){
 	case "@UNTIELEMENT@":
 		if(i_flg == 0){
 			//検索(Oppo)
-			Territory.mvgno = GridTgtGrep({pno:Board.turn, tgt:"TOG"});
+			Territory.mvgno = Grid.grep({pno:Board.turn, tgt:"TOG"});
 			//ライト
 			TerritoryAbiTarget("grid");
 		}else{
@@ -558,7 +551,7 @@ function TerritoryAbility(i_flg){
 				TerritoryAbiPaySend(i_flg);
 				Territory.gno2 = i_flg;
 				//Status
-				GridStatusChg({gno:i_flg, status:"_UNTIELEMENT_", statime:99, arrow:true, scroll:true});
+				Grid.setstatus({gno:i_flg, status:"_UNTIELEMENT_", statime:99, arrow:true, scroll:true});
 				//ウェイト
 				Board.wait = 2.5;
 				//領地終了
@@ -569,7 +562,7 @@ function TerritoryAbility(i_flg){
 	case "@REMOVE@":
 		if(i_flg == 0){
 			//検索
-			Territory.mvgno = GridTgtGrep({pno:Board.turn, tgt:"TEGALL"});
+			Territory.mvgno = Grid.grep({pno:Board.turn, tgt:"TEGALL"});
 			//ライト
 			TerritoryAbiTarget("grid");
 		}else{
@@ -584,7 +577,7 @@ function TerritoryAbility(i_flg){
 				Board.grid[i_flg].status = "";
 				Board.grid[i_flg].statime = 0;
 				//表示
-				GridSetTax(i_flg);
+				Grid.Img.tax({gno:i_flg});
 				//矢印
 				DivImg("DIV_GCLICK"+i_flg, "arrow4");
 				//スクロール
@@ -605,7 +598,7 @@ function TerritoryAbility(i_flg){
 			if(Board.role == Board.turn){
 				//隣接取得(生物)
 				var gnos = Board.grid[Territory.gno].linkarr;
-				Territory.mvgno = GridTgtGrep({tgt:"TEGLIVE", pno:Board.turn, select:gnos});
+				Territory.mvgno = Grid.grep({tgt:"TEGLIVE", pno:Board.turn, select:gnos});
 				//ライト
 				TerritoryAbiTarget("grid");
 			}
@@ -619,7 +612,7 @@ function TerritoryAbility(i_flg){
 				var tgtgno2 = Board.grid[i_flg].GetLink(arrow);
 				//Move
 				if(tgtgno2 > 0 && Board.grid[tgtgno2].color < 10 && Board.grid[tgtgno2].owner == 0){
-					GridMove({gno1:i_flg, gno2:tgtgno2, effect:true});
+					Grid.move({gno1:i_flg, gno2:tgtgno2, effect:true});
 				}else{
 					Logprint({msg:"効果がなかった", pno:ipno});
 				}
@@ -634,7 +627,7 @@ function TerritoryAbility(i_flg){
 		//コスト支払い
 		TerritoryAbiPaySend();
 		//Status
-		GridStatusChg({gno:Territory.gno, status:"_QUICKSAND_", statime:99, scroll:true});
+		Grid.setstatus({gno:Territory.gno, status:"_QUICKSAND_", statime:99, scroll:true});
 		//msgpop
 		EffectBox({pattern:"msgpop", gno:Territory.gno, msg:"Ability"});
 		//Log
@@ -652,7 +645,7 @@ function TerritoryAbility(i_flg){
 			//設定
 			Board.grid[Territory.gno].level++;
 			//地形表示
-			GridSetImage(Territory.gno);
+			Grid.Img.set(Territory.gno);
 			//animation
 			EffectBox({pattern:"levelup", gno:Territory.gno});
 			EffectBox({pattern:"msgpop", gno:Territory.gno, msg:"Ability"});
@@ -758,7 +751,7 @@ function TerritoryAbility(i_flg){
 		var rndgno;
 		var tgtgno = 0;
 		if(Board.role == Board.turn){
-			var tgtgrids = GridTgtGrep({tgt:"TSG"});
+			var tgtgrids = Grid.grep({tgt:"TSG"});
 			if(tgtgrids.length >= 1){
 				rndgno = Math.floor(Math.random() * tgtgrids.length);
 				tgtgno = tgtgrids[rndgno];
@@ -801,7 +794,7 @@ function TerritoryAbility(i_flg){
 			if(Board.role == Board.turn){
 				//隣接検索(侵略)
 				var gnos = Board.grid[Territory.gno].linkarr;
-				Territory.mvgno = GridTgtGrep({tgt:"TAGWALK", pno:Board.turn, select:gnos});
+				Territory.mvgno = Grid.grep({tgt:"TAGWALK", pno:Board.turn, select:gnos});
 				//ライト
 				TerritoryAbiTarget("grid");
 			}
@@ -974,9 +967,7 @@ function TerritoryAbiTarget(tgttype){
 	case "grid":
 		StepSet(54);
 		//ライト
-		GridLight("clear");
-		//ライト
-		GridLight("set_nosave", Territory.mvgno);
+		Grid.light({clear:true, arr:Territory.mvgno});
 		//PHASEENDBUTTON
 		$("#BTN_PhaseEnd").html("キャンセル");
 		break;

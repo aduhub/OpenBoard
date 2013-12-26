@@ -1,5 +1,7 @@
-//Clear
-function GridClear(arg){
+//Object
+var Grid = {};
+//Clear ({pno, gno, all})
+Grid.clear = function(arg){
 	if(Board.grid[arg.gno].color < 10){
 		var pno = (arg.pno || Board.grid[arg.gno].owner);
 		Board.grid[arg.gno].flush();
@@ -8,12 +10,12 @@ function GridClear(arg){
 		}
 		$("#DIV_GICON"+arg.gno).css("backgroundImage", "");
 		$("#DIV_GICON"+arg.gno).html("");
-		GridSetTax(arg.gno);
-		GridSetImage(arg.gno, pno);
+		Grid.Img.set(arg.gno);
+		Grid.Img.tax({pno:pno});
 	}
 }
 //Move A to B
-function GridMove(arg){
+Grid.move = function(arg){
 	var cno = Board.grid[arg.gno1].cno;
 	//Move
 	Board.grid[arg.gno2].owner = Board.grid[arg.gno1].owner;
@@ -25,18 +27,18 @@ function GridMove(arg){
 	Board.grid[arg.gno2].statime = 0;
 	//Icon
 	$("#DIV_GICON"+arg.gno2).css("backgroundImage", "url(img/icon/"+Card[cno].imgsrc.replace(".png", "")+".gif)");
-	GridSetImage(arg.gno2);
+	Grid.Img.set(arg.gno2);
 	//Clear From
-	GridClear({gno:arg.gno1});
+	Grid.clear({gno:arg.gno1});
 	//Annimation
 	if(arg.effect){
 		EffectBox({pattern:"invasion", cno:cno, gno1:arg.gno1, gno2:arg.gno2});
 		EffectBox({pattern:"msgpop", gno:arg.gno1, msg:"Move"});
 	}
 }
-//Damage ({gno:, dmg:, [arrow:], [scroll:]})
-function GridDamage(arg){
-	var msec, target = [];
+//Damage ({gno, dmg, [arrow], [scroll]})
+Grid.damage = function(arg){
+	var target = [].concat(arg.gno);
 	var damage = arg.dmg;
 	//### Area Ability ###
 	var abiarr = GridAreaAbility({time:"MAPDAMAGE"});
@@ -45,11 +47,6 @@ function GridDamage(arg){
 		if($T.search(abiarr, "act", "reduce")){
 			damage -= $T.result.val;
 		}
-	}
-	if(arg.gno){
-		target.push(arg.gno);
-	}else{
-		target = arg.target;
 	}
 	for(var i=0; i<target.length; i++){
 		(function(gno){
@@ -67,7 +64,7 @@ function GridDamage(arg){
 					//判定
 					if(Board.grid[gno].lf == 0){
 						//領地クリア
-						GridClear({gno:gno});
+						Grid.clear({gno:gno});
 						//Grave
 						Board.grave.push(tgtcno);
 						//Animation
@@ -96,16 +93,11 @@ function GridDamage(arg){
 		})(target[i]);
 	}
 }
-//Status Change ({gno:, status:, statime, [arrow:], [scroll:]})
-function GridStatusChg(arg){
-	var msec, target = [];
+//Status Change ({gno, status, statime, [arrow], [scroll]})
+Grid.setstatus = function (arg){
 	var turn;
-	if(arg.gno){
-		target.push(arg.gno);
-	}else{
-		target = arg.target;
-	}
-	for(var i=0; i<target.length; i++){
+	var tgt = [].concat(arg.gno);
+	for(var i in tgt){
 		(function(gno){
 			var fnc = function(){
 				var clearflg = false;
@@ -123,7 +115,7 @@ function GridStatusChg(arg){
 					Board.grid[gno].status = arg.status;
 					Board.grid[gno].statime = turn;
 					//表示
-					GridSetTax(gno);
+					Grid.Img.tax({gno:gno});
 					//ログ
 					Logprint({msg:"##"+Board.grid[gno].cno+"##は呪いを受けた", pno:Board.grid[gno].owner});
 					//msgpop
@@ -139,127 +131,76 @@ function GridStatusChg(arg){
 				}
 			}
 			$T.stacktimer({fnc:fnc, msec:100});
-		})(target[i]);
+		})(tgt[i]);
 	}
 }
-//処理 Grid数取得
-//引数 [0]:オーナー [1]:色 [2]:カウント上限
-function GridCount(){
-	var arg = arguments;
-	var wkcnt = 0;
-	for(var i=1; i<Board.grid.length; i++){
-		if(arg[0] == 9 || Team(Board.grid[i].owner) == Team(arg[0])){
-			if(arg[1] != undefined){
-				if(Board.grid[i].color == arg[1]){
-					wkcnt++;
-				}
-			}else{
-				wkcnt++;
-			}
-		}
-	}
-	if(arg[2] != undefined){
-		wkcnt = (wkcnt >= arg[2]) ? arg[2] : wkcnt;
-	}
-	return wkcnt;
+//Count ({owner, color, maxcnt})
+Grid.count = function (arg){
+	var retarr = Board.grid.filter(function(val, idx ,arr){
+		if(arg.owner && Team(val.owner) != Team(arg.owner)) return false;
+		if(arg.color && val.color != arg.color) return false;
+		if(arg.cno_color && Card[val.cno].color != arg.cno_color) return false;
+		return true;
+	});
+	return Math.min(retarr.length, (arg.maxcnt || 0));
 }
-//処理 Grid数取得
-//引数 [0]:オーナー [1]:色 [2]:カウント上限
-function GridCnoCount(){
-	var arg = arguments;
-	var wkcnt = 0;
-	for(var i=1; i<Board.grid.length; i++){
-		if(Board.grid[i].cno != ""){
-			if(arg[0] == 9 || Team(Board.grid[i].owner) == Team(arg[0])){
-				if(arg[1] != undefined){
-					if(Card[Board.grid[i].cno].color == arg[1]){
-						wkcnt++;
-					}
-				}else{
-					wkcnt++;
-				}
-			}
-		}
-	}
-	if(arg[2] != undefined){
-		wkcnt = (wkcnt >= arg[2]) ? arg[2] : wkcnt;
-	}
-	return wkcnt;
-}
-//
-function GridValue(i_no){
-	var wkbase;
+//Value (gno)
+Grid.value = function (gno){
 	var wklevel = [0, 1.0, 2.0, 4.0, 8.0, 16.0];
 	var wkchain = [0, 1.0, 1.5, 1.8, 2.0, 2.2];
 	var wkret = 0;
-	if(Board.grid[i_no].color <= 10){
-		wkbase = Board.grid[i_no].gold;
+	var tgtgrid = Board.grid[gno];
+	if(tgtgrid.color <= 10){
+		var wkbase = tgtgrid.gold;
 		var retarr = GridAbility({time:"GRID_VALUE", gno:i_no});
 		if($T.search(retarr, "act", "percent")){
 			wkbase = Math.floor(wkbase * $T.result.val);
 		}
-		if(Board.grid[i_no].owner == 0 || Board.grid[i_no].color == 1){
-			wkret = Math.floor(wkbase * wklevel[Board.grid[i_no].level]);
+		if(Board.grid[gno].owner == 0 || tgtgrid.color == 1){
+			wkret = Math.floor(wkbase * wklevel[tgtgrid.level]);
 		}else{
-			wkret = Math.floor(wkbase * wklevel[Board.grid[i_no].level] * wkchain[GridCount(Board.grid[i_no].owner, Board.grid[i_no].color, 5)]);
+			wkret = Math.floor(wkbase * wklevel[tgtgrid.level] * wkchain[Grid.count({owner:tgtgrid.owner, color:tgtgrid.color, maxcnt:5})]);
 		}
-	}else{
-		wkret = 0;
 	}
 	return wkret;
 }
-//
-function GridTax(i_no){
-	var wkvalue = GridValue(i_no);
-	var wktax = new Array(0,0.2,0.3,0.4,0.6,0.8);
+//Tax (gno)
+Grid.tax = function (gno){
+	var wktax = new Array(0, 0.2, 0.3, 0.4, 0.6, 0.8);
 	var wkret = 0;
-	if(Board.grid[i_no].color <= 5){
-		wkret = Math.floor(wkvalue * wktax[Board.grid[i_no].level]);
-	}else{
-		wkret = 0;
+	if(Board.grid[gno].color <= 5){
+		wkret = Math.floor(Grid.value(gno) * wktax[Board.grid[gno].level]);
 	}
 	return wkret;
 }
-//処理 Gridライト処理
-//引数 [0]:処理フラグ(set,clear) [1-]:対象Gird番号配列
-function GridLight(){
-	var arg = arguments;
-	switch(arg[0]){
-	case "clear":
+//Light ({arr, load, save, clear})
+Grid.light_memory = [];
+Grid.light = function (arg){
+	if(arg.clear){
 		$(".animeGridlight").remove();
-		break;
-	case "set": //memory plus
-		Board.light = arg[1];
-		//nobreak
-	case "set_nosave": //arg display
-		for(var i=0; i<arg[1].length; i++){
-			var divy = Board.grid[arg[1][i]].top;
-			var divx = Board.grid[arg[1][i]].left;
+	}
+	if(arg.arr || arg.load){
+		var tgtgrid = (arg.load) ? Grid.light_memory : arg.arr;
+		if(arg.save){
+			Grid.light_memory = arg.arr;
+		}
+		for(var i in tgtgrid){
+			var divy = Board.grid[tgtgrid[i]].top;
+			var divx = Board.grid[tgtgrid[i]].left;
 			var lightdiv = $("<div></div>");
 			lightdiv.addClass("animeGridlight");
 			lightdiv.css({top:divy, left:divx});
 			$("#DIV_FRAME").append(lightdiv);
 		}
-		break;
-	case "set_memory": //memory display
-		for(var i=0; i<Board.light.length; i++){
-			var divy = Board.grid[Board.light[i]].top;
-			var divx = Board.grid[Board.light[i]].left;
-			var lightdiv = $("<div></div>");
-			lightdiv.addClass("animeGridlight");
-			lightdiv.css({top:divy, left:divx});
-			$("#DIV_FRAME").append(lightdiv);
-		}
-		break;
 	}
 }
-function GridLightFort(){
+Grid.fortlight = function (){
 	var nswe = ["n", "s", "w", "e"];
 	var nswe2 = ["N", "S", "W", "E"];
 	$(".animeFortlight").remove();
 	for(var i=0; i<4; i++){
 		if(Player[Board.turn].flag.match(nswe[i])){
-			tgtarr = GridTgtGrep({tgt:"TXGF"+nswe2[i]});
+			tgtarr = Grid.grep({tgt:"TXGF"+nswe2[i]});
 			for(var i2=0; i2<tgtarr.length; i2++){
 				var divy = Board.grid[tgtarr[i2]].top;
 				var divx = Board.grid[tgtarr[i2]].left;
@@ -322,171 +263,154 @@ function GridGuideSearch(gene){
 	gene.depth--;
 	return gene;
 }
-//
-function GridSetImage(){
-	var arg = arguments;
+//Image
+Grid.Img = {};
+Grid.Img.tax_gsh = 0;
+Grid.Img.set = function(gno){
 	//Canvas
-	var pos = {x:Number(Board.grid[arg[0]].left), y:Number(Board.grid[arg[0]].top)};
-	var img1 = "GRID" + Board.grid[arg[0]].color;
-	var img2 = "img/border" + Team(Board.grid[arg[0]].owner) + Board.grid[arg[0]].level + ".gif";
+	var pos = {x:Number(Board.grid[gno].left), y:Number(Board.grid[gno].top)};
+	var img1 = "GRID" + Board.grid[gno].color;
+	var img2 = "img/border" + Team(Board.grid[gno].owner) + Board.grid[gno].level + ".gif";
 	Canvas.draw({id:"CVS_BACK", src:[Canvas.srcs[img1], img2], x:pos.x, y:pos.y});
 	//
-	if(Board.grid[arg[0]].owner >= 1){
-		GridSetPlayerTax(Board.grid[arg[0]].owner);
-	}else{
-		$("#DIV_GCLICK"+arg[0]).html("");
-		if(arg[1] != undefined){
-			GridSetPlayerTax(arg[1]);
-		}
-	}
-}
-//
-function GridSetTax(gno){
-	var html = "";
 	if(Board.grid[gno].owner >= 1){
-		//Status
-		if(Board.grid[gno].status != ""){
-			var imgsrc = StatusIcon(Board.grid[gno].status);
-			html = "<img src='img/"+imgsrc+".gif' width='32' height='22' style='margin-top:28px;'><br>";
-		}else{
-			html = "<div style='height:50px;'></div>";
-		}
-		switch(Board.grid_gsh){
-		case 0: //Tax
-			var wktax = String(GridTax(gno));
-			for(var i2=1; i2<=wktax.length; i2++){
-				html += "<IMG src='img/num"+wktax.substr(i2 - 1, 1)+".gif' width='11' height='14'>";
-			}
-			break;
-		case 1: //ST
-			var wkst = String(Board.grid[gno].st);
-			for(var i2=1; i2<=wkst.length; i2++){
-				html += "<IMG src='img/numr"+wkst.substr(i2 - 1, 1)+".gif' width='11' height='14'>";
-			}
-			break;
-		case 2: //HP/MHP
-			var wkhp = String(Board.grid[gno].lf);
-			var wkmhp = String(Board.grid[gno].maxlf);
-			var clrstr = (wkhp == wkmhp) ? "b" : "";
-			for(var i2=1; i2<=wkhp.length; i2++){
-				html += "<IMG src='img/num"+clrstr+wkhp.substr(i2 - 1, 1)+".gif' width='11' height='14'>";
-			}
-			html += "<IMG src='img/numbs.gif' width='10' height='14'>";
-			for(var i2=1; i2<=wkmhp.length; i2++){
-				html += "<IMG src='img/numb"+wkmhp.substr(i2 - 1, 1)+".gif' width='11' height='14'>";
-			}
-			break;
-		}
-	}
-	$("#DIV_GCLICK"+gno).html(html);
-}
-//
-function GridSetPlayerTax(i_pno){
-	for(var i=1; i<Board.grid.length; i++){
-		if(Team(Board.grid[i].owner) == Team(i_pno)){
-			GridSetTax(i);
-		}
+		Grid.Img.tax({pno:Board.grid[gno].owner});
+	}else{
+		$("#DIV_GCLICK"+gno).html("");
 	}
 }
-function GridNumberChange(){
-	switch(Board.grid_gsh){
+Grid.Img.tax = function(arg){
+	var html = "";
+	var tgt = [];
+	if(arg.gno){
+		tgt = [].concat(arg.gno);
+	}else{
+		tgt = Grid.grep({pno:arg.pno, tgt:"AMG"});
+	}
+	for(var i in tgt){
+		html = "";
+		if(Board.grid[tgt[i]].owner >= 1){
+			//Status
+			if(Board.grid[tgt[i]].status != ""){
+				var imgsrc = StatusIcon(Board.grid[tgt[i]].status);
+				html = "<img src='img/"+imgsrc+".gif' width='32' height='22' style='margin-top:28px;'><br>";
+			}else{
+				html = "<div style='height:50px;'></div>";
+			}
+			switch(Grid.Img.tax_gsh){
+			case 0: //Tax
+				var wktax = String(Grid.tax(tgt[i]));
+				for(var i2=1; i2<=wktax.length; i2++){
+					html += "<IMG src='img/num"+wktax.substr(i2 - 1, 1)+".gif' width='11' height='14'>";
+				}
+				break;
+			case 1: //ST
+				var wkst = String(Board.grid[tgt[i]].st);
+				for(var i2=1; i2<=wkst.length; i2++){
+					html += "<IMG src='img/numr"+wkst.substr(i2 - 1, 1)+".gif' width='11' height='14'>";
+				}
+				break;
+			case 2: //HP/MHP
+				var wkhp = String(Board.grid[tgt[i]].lf);
+				var wkmhp = String(Board.grid[tgt[i]].maxlf);
+				var clrstr = (wkhp == wkmhp) ? "b" : "";
+				for(var i2=1; i2<=wkhp.length; i2++){
+					html += "<IMG src='img/num"+clrstr+wkhp.substr(i2 - 1, 1)+".gif' width='11' height='14'>";
+				}
+				html += "<IMG src='img/numbs.gif' width='10' height='14'>";
+				for(var i2=1; i2<=wkmhp.length; i2++){
+					html += "<IMG src='img/numb"+wkmhp.substr(i2 - 1, 1)+".gif' width='11' height='14'>";
+				}
+				break;
+			}
+		}
+		$("#DIV_GCLICK"+tgt[i]).html(html);
+	}
+}
+Grid.Img.chgnum = function (){
+	switch(Grid.Img.tax_gsh){
 	case 0: //G
-		Board.grid_gsh = 1;
+		Grid.Img.tax_gsh = 1;
 		break;
 	case 1: //ST
-		Board.grid_gsh = 2;
+		Grid.Img.tax_gsh = 2;
 		break;
 	case 2: //HP
-		Board.grid_gsh = 0;
+		Grid.Img.tax_gsh = 0;
 		break;
 	}
 	for(var i=1; i<=4; i++){
-		GridSetPlayerTax(i);
+		Grid.Img.tax({pno:i});
 	}
 }
 //########################################
-//対象取得
-function GridTgtGrep(arg){
+//Grep ({pno, tgt, select, ext, all})
+Grid.grep = function(arg){
 	var colorno = {N:1, F:2, W:3, E:4, D:5};
 	var retitem = [];
-	var ownflg, optflg, colorflg, tgtgrid, opts, protect;
-	var clrchk = [false, false, false, false, false, false];
-
+	var optflg, tgtgrid, protect;
+	var clrchk = "";
+	var antiprotect = false;
+	var tg3 = arg.tgt.substr(0, 3);
 	//準備
-	var optstr = arg.tgt.match(/^..G([A-Z0-9]*)$/)[1];
-	//Protect
-	var antiprotect = (["ALL", "WALK"].indexOf(optstr) >= 0) ? true : false
-	//Color Check
-	switch(optstr){
-	case "MASS": //Mass
-		var gcnt = [0,0,0,0,0,0];
-		var maxcnt = 0;
-		for(var i=1; i<=5; i++){
-			gcnt[i] = GridCount(9, i);
-			maxcnt = Math.max(maxcnt, gcnt[i]);
+	if(optstr = arg.tgt.match(/^..G([A-Z0-9]*)$/)[1]){
+		//Protect
+		if(optstr.match(/ALL|WALK/)){
+			antiprotect = true;
 		}
-		for(var i=1; i<=5; i++){
-			clrchk[i] = (maxcnt == gcnt[i]) ? true : false;
+		//特殊計算(最大数)
+		if(optstr == "MASS"){
+			var gcnt = [0,0,0,0,0,0];
+			var maxcnt = 0;
+			for(var i=1; i<=5; i++){
+				gcnt[i] = Grid.count({color:i});
+				maxcnt = Math.max(maxcnt, gcnt[i]);
+			}
+			for(var i=1; i<=5; i++){
+				clrchk[i] = (maxcnt == gcnt[i]) ? true : false;
+			}
 		}
-		break;
-	case "N":
-	case "F":
-	case "W":
-	case "E":
-	case "D":
 		//指定色
-		clrchk[colorno[optstr]] = true;
-		break;
-	default:
-		//全色
-		clrchk = [false, true, true, true, true, true];
-		break;
+		if(optstr.match(/[NFWED]/)){
+			clrchk = colorno[optstr];
+		}
 	}
-	//判定・集計
-	for(var i=1; i<Board.grid.length; i++){
+	//============= 判定・集計 ===============
+	for(var i in Board.grid){
 		tgtgrid = Board.grid[i];
-		ownflg = false;
 		optflg = false;
-		colorflg = false;
 		protect = false;
 		//対象リスト
-		if(arg.select){
-			if(arg.select.indexOf(i) == -1){
-				continue;
-			}
+		if(arg.select && arg.select.indexOf(i) == -1){
+			continue;
 		}
 		//地形チェック
 		if(tgtgrid.color < 10){
 			//[基本地形]
 			//色チェック
-			if(clrchk[tgtgrid.color]){
-				colorflg = true;
+			if(clrchk && clrchk != tgtgrid.color){
+				continue;
 			}
 			//所有者チェック
 			if(tgtgrid.owner == 0){
 				//空き地検索
-				if(arg.tgt.match(/^.[AUS]G.*$/)){
-					ownflg = true;
+				if(!(tg3[1].match(/[AS]/))){
+					continue;
 				}
 			}else{
 				//領地検索
-				if(antiprotect == false){
-					if(CardOptCheck({cno:tgtgrid.cno, tgt:"@PROTECT@"}) || tgtgrid.status == "_PROTECT_"){
-						protect = true;
-					}
+				if(CardOptCheck({cno:tgtgrid.cno, tgt:"@PROTECT@"}) || tgtgrid.status == "_PROTECT_"){
+					protect = (antiprotect) ? false : true;
 				}
-				if(arg.tgt.match(/^A.G.*$/) || (arg.tgt.match(/^T.G.*$/) && protect == false)){
-					if(arg.tgt.match(/^.[AE]G.*$/)){
-						ownflg = true;
-					}
-					if(arg.tgt.match(/^.MG.*$/)){
-						if(Team(tgtgrid.owner) == Team(arg.pno)){
-							ownflg = true;
+				if(tg3[0] == "A" || (tg3[0] == "T" && protect == false)){
+					if(tg3[1] == "M"){
+						if(Team(tgtgrid.owner) != Team(arg.pno)){
+							continue;
 						}
 					}
-					if(arg.tgt.match(/^.[UO]G.*$/)){
-						if(Team(tgtgrid.owner) != Team(arg.pno)){
-							ownflg = true;
+					if(tg3[1] == "O"){
+						if(Team(tgtgrid.owner) == Team(arg.pno)){
+							continue;
 						}
 					}
 				}
@@ -550,12 +474,7 @@ function GridTgtGrep(arg){
 				break;
 			}
 		}else{
-			//色なし
-			colorflg = true;
 			//[特殊地形]
-			if(arg.tgt.match(/^.XG.*$/)){
-				ownflg = true;
-			}
 			//[オプションチェック]
 			switch(optstr){
 			case "FN":
@@ -576,51 +495,17 @@ function GridTgtGrep(arg){
 			}
 		}
 		//所有・オプション・色
-		if(ownflg && optflg && colorflg){
+		if(optflg){
 			retitem.push(i);
 		}
 	}
 	//対象外リスト
 	if(arg.ext){
-		for(var i=0; i<arg.ext.length; i++){
-			if(retitem.indexOf(arg.ext[i]) >= 0){
-				retitem.splice(retitem.indexOf(arg.ext[i]), 1);
-			}
-		}
+		retitem = retitem.filter(function(val,idx,arr){
+			return (arg.ext.indexOf(val) == -1);
+		});
 	}
 	return retitem;
-}
-//特殊地形衝突検索(LineStop)
-function GridLineStopSearch(gene){
-// 	var linkarr, tgtgrid, status;
-// 	if(gene.flg == "init"){
-// 		gene.flg = "loop";
-// 		gene.root = gene.gno;
-// 		gene.get = [];
-// 		gene.chk = [];
-// 	}
-// 	linkarr = Board.grid[gene.gno].linkarr;
-// 	for(var i=0; i<=3; i++){
-// 		if(linkarr[i] > 0 && gene.root != linkarr[i] && gene.chk.indexOf(linkarr[i]) == -1){
-// 			tgtgrid = Board.grid[linkarr[i]];
-// 			if(tgtgrid.color <= 5){
-// 				if(tgtgrid.owner != Board.role){
-// 					status = [];
-// 					if(tgtgrid.owner >= 1){
-// 						status = Card[tgtgrid.cno].opts();
-// 					}
-// 					status.push(tgtgrid.status);
-// 					if(!$T.inarray(/@PROTECT@|_PROTECT_|_JAIL_/, status)){
-// 						gene.get.push(linkarr[i]);
-// 					}
-// 				}
-// 				gene.chk.push(linkarr[i]);
-// 				gene.gno = linkarr[i];
-// 				gene = GridLineStopSearch(gene);
-// 			}
-// 		}
-// 	}
-// 	return gene;
 }
 //最短目標物検索{gno:, flg:, tgt:}(複数対象返却)
 function GridNearTgtSearch(arg){
@@ -698,42 +583,6 @@ function GridTgtSearch(gene){
 	gene.depth--;
 	return gene;
 }
-//隣接土地取得({gno, tgt})
-function GridNeighborGrep(arg){
-	var gnoarr = [];
-	var opts = [];
-	var linkgrid;
-	var tgtgrid = Board.grid[arg.gno];
-	for(var i=0; i<=3; i++){
-		if(tgtgrid.linkarr[i] >= 1){
-			linkgrid = Board.grid[tgtgrid.linkarr[i]];
-			if(linkgrid.color < 10){
-				switch(arg.tgt){
-				case "space":
-					if(linkgrid.owner == 0){
-						gnoarr.push(tgtgrid.linkarr[i]);
-					}
-					break;
-				case "live":
-					if(linkgrid.owner != 0){
-						if((Card[linkgrid.cno].opt.indexOf("@PROTECT@") >= 0 && linkgrid.status != "_BIND_") || linkgrid.status == "_PROTECT_"){
-							gnoarr.push(tgtgrid.linkarr[i]);
-						}
-					}
-					break;
-				case "invasion":
-					if(linkgrid.owner == 0 || Team(linkgrid.owner) != Team(Board.turn)){
-						if((Card[linkgrid.cno].opt.indexOf("@PROTECT@") >= 0 && linkgrid.status != "_BIND_") || ["_PROTECT_", "_JAIL_"].indexOf(linkgrid.status) == -1){
-							gnoarr.push(tgtgrid.linkarr[i]);
-						}
-					}
-					break;
-				}
-			}
-		}
-	}
-	return gnoarr;
-}
 //####################################
 //Grid Infomation
 function GridInfo(i_no){
@@ -746,7 +595,7 @@ function GridInfo(i_no){
 			if(Board.grid[i_no].color <= 9){
 				infoarg.push({type:"width", px:190});
 				infoarg.push({type:"gridhead", color:Board.grid[i_no].color, level:Board.grid[i_no].level});
-				infoarg.push({type:"gridvalue", gold:GridValue(i_no)});
+				infoarg.push({type:"gridvalue", gold:Grid.value(i_no)});
 				if(Board.grid[i_no].owner >= 1){
 					var cno = Board.grid[i_no].cno;
 					infoarg.push({type:"clname", color:Card[cno].color, name:Card[cno].name});
@@ -801,20 +650,19 @@ function GridInfoEscape(){
 }
 //########################################
 //Trans
-function GridTrans(i_no){
-	if(i_no == 0){
-		//【領地売却可不可判定】
+Grid.trans = function(gno){
+	if(arguments.length == 0){
 		//所持金マイナス
 		if(Player[Board.turn].gold < 0){
 			StepSet(92);
 			//領地有無
-			if(GridCount(Board.turn) >= 1){
+			if(Grid.count({owner:Board.turn}) >= 1){
 				//role
 				if(Board.turn == Board.role){
 					//Target
-					var wkarr = GridTgtGrep({pno:Board.turn, tgt:"TMGALL"});
+					var wkarr = Grid.grep({pno:Board.turn, tgt:"TMGALL"});
 					//ライト
-					GridLight("set", wkarr);
+					Grid.light({arr:wkarr, save:true});
 					//Log
 					Logprint({msg:"土地売却", pno:Board.turn, ltype:"system"});
 				}
@@ -826,7 +674,7 @@ function GridTrans(i_no){
 					//【魔力枯渇】
 					Bankrupt();
 					//ライト
-					GridLight("clear");
+					Grid.light({clear:true});
 					//ターン終了
 					setTimeout(function(){TurnEndFlow(9);}, 4000);
 				}
@@ -834,26 +682,26 @@ function GridTrans(i_no){
 		}else{
 			//【支払い終了】
 			//ライト
-			GridLight("clear");
+			Grid.light({clear:true});
 			//ターン終了
 			setTimeout(function(){TurnEndFlow(9);}, 2000);
 		}
 	}else{
 		//【領地売却】
-		if(Team(Board.grid[i_no].owner) == Team(Board.turn)){
+		if(Team(Board.grid[gno].owner) == Team(Board.turn)){
 			StepSet(93);
 			//Animation
 			EffectBox({pattern:"soldout", gno:i_no});
 			////コマンド送信
 			if(Board.turn == Board.role){
 				//送信
-				Net.send("trans:"+i_no);
+				Net.send("trans:"+gno);
 			}
 			//還元
-			var wkvalue = GridValue(i_no);
+			var wkvalue = Grid.value(gno);
 			Player[Board.turn].gold += wkvalue;
 			//領地クリア(レベル1)
-			GridClear({gno:i_no, all:true});
+			Grid.clear({gno:gno, all:true});
 			//msgpop
 			EffectBox({pattern:"msgpop",gno:Player[Board.turn].stand, msg:wkvalue+"G", color:"#ffcc00", player:true});
 			//log
@@ -861,7 +709,7 @@ function GridTrans(i_no){
 			//総魔力表示
 			DispPlayer();
 			//再実行
-			GridTrans(0);
+			Grid.trans();
 		}
 	}
 }
@@ -909,6 +757,7 @@ function GridAbility(arg){
 				//種別分岐
 				switch(true){
 				case /^@BALOON@/.test(ability[i]):
+					var tgtpno = tgtgrid.owner;
 					tgtgrid.maxlf += 10;
 					tgtgrid.lf += 10;
 					if(tgtgrid.maxlf >= 100){
@@ -920,9 +769,8 @@ function GridAbility(arg){
 						//Clear
 						tgtgrid.flush();
 						DivImg("DIV_GICON"+arg.gno, "");
-						GridSetImage(arg.gno);
-						GridSetTax(arg.gno);
-						GridSetPlayerTax(arg.gno);
+						Grid.Img.set(arg.gno);
+						Grid.Img.tax({pno:tgtpno});
 						//Animation
 						EffectBox({pattern:"destroy", cno:tgtcno, gno:arg.gno});
 					}else{
@@ -963,18 +811,18 @@ function GridAbility(arg){
 					}
 					break;
 				case /_DISEASE_/.test(ability[i]):
+					var tgtpno = tgtgrid.owner;
 					tgtgrid.maxlf = Math.max(0, tgtgrid.maxlf - 10);
 					tgtgrid.lf = Math.min(tgtgrid.lf, tgtgrid.maxlf);
 					tgtgrid.st = Math.max(0, tgtgrid.st - 10);
 					if(tgtgrid.lf <= 0){
 						//Log
-						Logprint({msg:"##"+tgtcno+"##は破壊した", pno:tgtgrid.owner});
+						Logprint({msg:"##"+tgtcno+"##は破壊した", pno:tgtpno});
 						//Clear
 						tgtgrid.flush();
 						DivImg("DIV_GICON"+arg.gno, "");
-						GridSetImage(arg.gno);
-						GridSetTax(arg.gno);
-						GridSetPlayerTax(arg.gno);
+						Grid.Img.set(arg.gno);
+						Grid.Img.tax({pno:tgtpno});
 						//Animation
 						EffectBox({pattern:"destroy", cno:tgtcno, gno:arg.gno});
 					}else{
@@ -994,7 +842,7 @@ function GridAbility(arg){
 					//解除
 					Board.grid[arg.gno].status = "";
 					Board.grid[arg.gno].statime = 0;
-					GridSetTax(arg.gno);
+					Grid.Img.tax({gno:arg.gno});
 					break;
 				}
 				break;
@@ -1088,7 +936,7 @@ function GridAbility(arg){
 					//解除
 					Board.grid[arg.gno].status = "";
 					Board.grid[arg.gno].statime = 0;
-					GridSetTax(arg.gno);
+					Grid.Img.tax({gno:arg.gno});
 					//log
 					Logprint({msg:"##"+tgtcno+"##は呪いが解けた", pno:tgtgrid.owner});
 					break;
@@ -1102,7 +950,7 @@ function GridAbility(arg){
 						//設定
 						tgtgrid.gold += 10;
 						//地形表示
-						GridSetImage(arg.gno);
+						Grid.Img.set(arg.gno);
 						//Log
 						Logprint({msg:"地価上昇 "+tgtgrid.gold+"G", pno:tgtgrid.owner});
 						//animation
@@ -1126,7 +974,7 @@ function GridAbility(arg){
 					var tax = 0;
 					for(var igno = 1; igno<Board.grid.length; igno++){
 						if(Board.grid[igno].owner == tgtgrid.owner){
-							tax = Math.max(tax, GridTax(igno));
+							tax = Math.max(tax, Grid.tax(igno));
 						}
 					}
 					retitem.push({act:"taxequal", val:tax});

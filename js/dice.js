@@ -1,5 +1,9 @@
+Dice = {};
+Dice.rest  = 0;
+Dice.route = [];
+Dice.teleport = [];
 //########[ ROLL ]########
-function DiceRoll(){
+Dice.StartPhase = function (){
 	//自分のターン
 	if(Board.turn == Board.role){
 		if(Board.step == 20 || (Board.step == 30 && Player[Board.turn].dicepass == false)){
@@ -47,9 +51,8 @@ function DiceRollResult(arg){
 		//ダイアログ非表示
 		DispDialog("none");
 		//ロール
-		Dice.pno = Board.role;
 		Dice.route = [];
-		Dice.Roll(arg.pow, arg.roll);
+		Dice.rest = (arg.roll) ? Math.floor(Math.random() * arg.pow) + 1 : arg.pow;
 		//コマンド送信
 		var wkcmd = "dice:"+Dice.rest;
 		Net.send(wkcmd);
@@ -59,7 +62,6 @@ function DiceRollResult(arg){
 		//スクロール
 		BoardScroll(Player[arg.pno].stand);
 		//ロール
-		Dice.pno = arg.pno;
 		Dice.rest = arg.pow;
 		Dice.route = [];
 	}
@@ -67,7 +69,7 @@ function DiceRollResult(arg){
 	$("#DIV_DICE").html(Dice.rest);
 	DisplaySet("DIV_DICE", 21);
 	//ログ
-	Logprint({msg:"ダイス <span class='d'>"+Dice.rest+"</span>", pno:Dice.pno});
+	Logprint({msg:"ダイス <span class='d'>"+Dice.rest+"</span>", pno:Board.turn});
 	//移動
 	setTimeout(function(){DicePieceMove(0);}, 500);
 }
@@ -83,13 +85,12 @@ function NoDiceRoll(){
 		//スクロール
 		BoardScroll(Player[Board.turn].stand);
 		//ロール
-		Dice.pno = Board.turn;
 		Dice.route = [];
 		Dice.rest = 0;
 		//ルート記憶
-		Dice.route.push(Player[Dice.pno].stand);
+		Dice.route.push(Player[Board.turn].stand);
 		//地形チェック
-		var stand = Player[Dice.pno].stand;
+		var stand = Player[Board.turn].stand;
 		if(CastleCheck() == false){
 			DiceNextMove();
 		}
@@ -103,10 +104,10 @@ function DicePieceMove(i_mvto){
 		//表示
 		$("#DIV_DICE").html(Dice.rest);
 		//コマ最前面
-		$("#DIV_PLAYER"+Dice.pno).css({zIndex:140});
+		$("#DIV_PLAYER"+Board.turn).css({zIndex:140});
 		//現在情報
-		var standNow = Player[Dice.pno].stand;
-		var shadoNow = Player[Dice.pno].shadow;
+		var standNow = Player[Board.turn].stand;
+		var shadoNow = Player[Board.turn].shadow;
 		//番号指定無し
 		if(i_mvto == 0){
 			//分岐なし
@@ -133,7 +134,7 @@ function DicePieceMove(i_mvto){
 					nextgno = i_mvto;
 					if(Board.turn == Board.role){
 						//クリア
-						GridLight("clear");
+						Grid.light({clear:true});
 						//コマンド送信
 						var wkcmd = "move:"+nextgno;
 						Net.send(wkcmd);
@@ -150,22 +151,22 @@ function DicePieceMove(i_mvto){
 			//歩数残--
 			Dice.rest--;
 			//セット
-			Player[Dice.pno].shadow = standNow;
-			Player[Dice.pno].stand = nextgno;
-			Player[Dice.pno].foot += 1;
-			if(Dice.pno == Board.role){
+			Player[Board.turn].shadow = standNow;
+			Player[Board.turn].stand = nextgno;
+			Player[Board.turn].foot += 1;
+			if(Board.turn == Board.role){
 				//ルート記憶
-				Dice.route.push(Player[Dice.pno].stand);
+				Dice.route.push(Player[Board.turn].stand);
 			}
 			//表示
 			$("#DIV_DICE").html(Dice.rest);
 			//Animation & ImageChange
-			EffectBox({pattern:"piecemove", pno:Dice.pno, gno:nextgno, msec:msec});
+			EffectBox({pattern:"piecemove", pno:Board.turn, gno:nextgno, msec:msec});
 
 			//##### GridAbi #####
-			GridAbility({pno:Dice.pno, gno:nextgno, time:"DICE_PASS_THROUGH"});
+			GridAbility({pno:Board.turn, gno:nextgno, time:"DICE_PASS_THROUGH"});
 			//##### Enchant #####
-			Enchant({pno:Dice.pno, gno:nextgno, time:"DICE_PASS_THROUGH"});
+			Enchant({pno:Board.turn, gno:nextgno, time:"DICE_PASS_THROUGH"});
 			//Bridge
 			if(BridgeCheck()){
 				waitsec += (Frame.skipchk()) ? 50 : 500;
@@ -182,11 +183,11 @@ function DicePieceMove(i_mvto){
 			//ステップ
 			StepSet(32);
 			//スクロール
-			BoardScroll(Player[Dice.pno].stand);
-			if(Dice.pno == Board.role){
+			BoardScroll(Player[Board.turn].stand);
+			if(Board.turn == Board.role){
 				//現在情報
-				var standNow = Player[Dice.pno].stand;
-				var shadoNow = Player[Dice.pno].shadow;
+				var standNow = Player[Board.turn].stand;
+				var shadoNow = Player[Board.turn].shadow;
 				var gnoarr = [];
 				for(var i=0; i<Board.grid[standNow].linkarr.length; i++){
 					if(Board.grid[standNow].linkarr[i] > 0 && shadoNow != Board.grid[standNow].linkarr[i]){
@@ -194,7 +195,7 @@ function DicePieceMove(i_mvto){
 					}
 				}
 				//ライト
-				GridLight("set_nosave", gnoarr);
+				Grid.light({arr:gnoarr});
 				//ChessClock
 				$("#DIV_GCLICK"+gnoarr[0]).addClass(Chessclock.set(32, "mousedown"));
 			}
@@ -206,33 +207,33 @@ function BridgeCheck(arg){
 	var ret = false;
 	var msec = (Frame.skipchk()) ? 50 : 300;
 	//Cross Road
-	if(Board.grid[Player[Dice.pno].stand].color == 22){
+	if(Board.grid[Player[Board.turn].stand].color == 22){
 		var stdgrid, arrowno, mvgno;
 		var dirlinks = [0,0,0,0,0]; 
 		var revdirno = [0,3,4,1,2];
 		//現在情報
-		var standNow = Player[Dice.pno].stand;
-		var shadoNow = Player[Dice.pno].shadow;
+		var standNow = Player[Board.turn].stand;
+		var shadoNow = Player[Board.turn].shadow;
 		//分岐なし、影あり
 		if(standNow != shadoNow && shadoNow != 0){
 			for(var i=0; i<=3; i++){
 				arrowno = Number(Board.grid[standNow].arrow.substr(i, 1));
 				dirlinks[arrowno] = Board.grid[standNow].linkarr[i];
 			}
-			Player[Dice.pno].shadow = standNow;
-			Player[Dice.pno].stand = dirlinks[revdirno[dirlinks.indexOf(shadoNow)]];
-			mvgno = Player[Dice.pno].stand;
-			if(Dice.pno == Board.role){
+			Player[Board.turn].shadow = standNow;
+			Player[Board.turn].stand = dirlinks[revdirno[dirlinks.indexOf(shadoNow)]];
+			mvgno = Player[Board.turn].stand;
+			if(Board.turn == Board.role){
 				//ルート記憶
-				Dice.route.push(Player[Dice.pno].stand);
+				Dice.route.push(Player[Board.turn].stand);
 			}
 			//Animation & ImageChange
-			EffectBox({pattern:"piecemove", pno:Dice.pno, gno:mvgno, msec:msec});
+			EffectBox({pattern:"piecemove", pno:Board.turn, gno:mvgno, msec:msec});
 			
 			//##### GridAbi #####
-			GridAbility({pno:Dice.pno, gno:mvgno, time:"DICE_PASS_THROUGH"});
+			GridAbility({pno:Board.turn, gno:mvgno, time:"DICE_PASS_THROUGH"});
 			//##### Enchant #####
-			Enchant({pno:Dice.pno, gno:mvgno, time:"DICE_PASS_THROUGH"});
+			Enchant({pno:Board.turn, gno:mvgno, time:"DICE_PASS_THROUGH"});
 			//
 			ret = true;
 		}
@@ -244,20 +245,20 @@ function ForceGateCheck(waitsec){
 	var ret = false;
 	var msec = (Frame.skipchk()) ? 50 : 300;
 	//Cross Road
-	if(Board.grid[Player[Dice.pno].stand].color == 24){
+	if(Board.grid[Player[Board.turn].stand].color == 24){
 		//現在情報
-		var standNow = Player[Dice.pno].stand;
+		var standNow = Player[Board.turn].stand;
 		var mvto = Number(Board.grid[standNow].linkx);
-		Player[Dice.pno].shadow = standNow;
-		Player[Dice.pno].stand = mvto;
-		if(Dice.pno == Board.role){
+		Player[Board.turn].shadow = standNow;
+		Player[Board.turn].stand = mvto;
+		if(Board.turn == Board.role){
 			//ルート記憶
-			Dice.route.push(Player[Dice.pno].stand);
+			Dice.route.push(Player[Board.turn].stand);
 		}
 		//Animation & ImageChange
-		setTimeout(function(){EffectBox({pattern:"piecemove", pno:Dice.pno, gno:mvto, msec:msec})}, waitsec);
+		setTimeout(function(){EffectBox({pattern:"piecemove", pno:Board.turn, gno:mvto, msec:msec})}, waitsec);
 		//Scroll
-		BoardScroll(Player[Dice.pno].stand);
+		BoardScroll(Player[Board.turn].stand);
 		//
 		ret = true;
 	}
@@ -267,13 +268,13 @@ function ForceGateCheck(waitsec){
 function CastleCheck(){
 	var retcode = false;
 	var flg = {spellflg:false}
-	var color = Board.grid[Player[Dice.pno].stand].color;
+	var color = Board.grid[Player[Board.turn].stand].color;
 	if(color >= 10 && color <= 14){
 		var imgsrc = "";
 		var nswe = {11:'n',12:'s',13:'w',14:'e'};
 
 		//Enchant
-		var encflg = Enchant({pno:Dice.pno, time:"DICE_CASTLECHECK"});
+		var encflg = Enchant({pno:Board.turn, time:"DICE_CASTLECHECK"});
 		for(var i in encflg){
 			if(encflg[i] == "forgery"){
 				flg.spellflg = true;
@@ -283,19 +284,19 @@ function CastleCheck(){
 		if(color == 10){
 			//###### castle ######
 			//砦規定数通過
-			if(flg.spellflg || Player[Dice.pno].flag.length == Board.flag.length){
+			if(flg.spellflg || Player[Board.turn].flag.length == Board.flag.length){
 				var msgarr = [];
 				//周回回復
 				for(var i=1; i<Board.grid.length; i++){
-					if(Board.grid[i].owner == Dice.pno){
+					if(Board.grid[i].owner == Board.turn){
 						//20% plus
 						Board.grid[i].lf += Board.grid[i].maxlf * 0.2;
 						Board.grid[i].lf = Math.min(Board.grid[i].maxlf, Board.grid[i].lf)
 					}
 				}
 				//メダル
-				if(!flg.spellflg && Player[Dice.pno].medal <= 2){
-					Player[Dice.pno].medal += 1;
+				if(!flg.spellflg && Player[Board.turn].medal <= 2){
+					Player[Board.turn].medal += 1;
 					msgarr.push("メダルを獲得");
 				}
 				//周回BONUS
@@ -304,7 +305,7 @@ function CastleCheck(){
 				var bonus1p = 0;
 				for(var i=1; i<Board.grid.length; i++){
 					//##### GridAbi #####
-					abiret = GridAbility({time:"CASTLE_BONUS", gno:i, pno:Dice.pno, nightmare:nightmare});
+					abiret = GridAbility({time:"CASTLE_BONUS", gno:i, pno:Board.turn, nightmare:nightmare});
 					for(var i2 in abiret){
 						switch(abiret[i2].act){
 						case "bonus":
@@ -316,37 +317,37 @@ function CastleCheck(){
 						}
 					}
 				}
-				var bonus1 = GridCount(Dice.pno) * 20 + bonus1p;
-				var bonus2 = Board.bonus + (Player[Dice.pno].medal * 100);
+				var bonus1 = Grid.count({owner:Board.turn}) * 20 + bonus1p;
+				var bonus2 = Board.bonus + (Player[Board.turn].medal * 100);
 				var bonus9 = bonus1 + bonus2;
-				Player[Dice.pno].gold += bonus9;
-				Player[Dice.pno].lap ++;
-				Player[Dice.pno].flag = "";
+				Player[Board.turn].gold += bonus9;
+				Player[Board.turn].lap ++;
+				Player[Board.turn].flag = "";
 				//Icon
-				$("#DIV_PLAYER"+Dice.pno).css("backgroundPosition", "0px 0px, 128px 0px, 128px 0px");
+				$("#DIV_PLAYER"+Board.turn).css("backgroundPosition", "0px 0px, 128px 0px, 128px 0px");
 				//Log
-				msgarr.push("【 " + Player[Dice.pno].lap + " 周目ボーナス】");
+				msgarr.push("【 " + Player[Board.turn].lap + " 周目ボーナス】");
 				msgarr.push("周回ボーナス <span class='g'>" + bonus2 + "G</span>");
 				msgarr.push("領地ボーナス <span class='g'>" + bonus1 + "G</span>");
 				msgarr.push("ボーナス合計 <span class='g'>" + bonus9 + "G</span>");
 				msgarr.push("クリーチャー20%回復");
-				Logprint({msg:msgarr, pno:Dice.pno, ltype:"block"});
+				Logprint({msg:msgarr, pno:Board.turn, ltype:"block"});
 				//Light
-				GridLightFort();
+				Grid.fortlight();
 				//Scroll
-				BoardScroll(Player[Dice.pno].stand);
+				BoardScroll(Player[Board.turn].stand);
 				//Animation
-				EffectBox({pattern:"fortpuff", img:"gicon_cas", pno:Dice.pno});
-				EffectBox({pattern:"msgpop",gno:Player[Dice.pno].stand, msg:bonus9+"G", color:"#ffcc00", player:true});
+				EffectBox({pattern:"fortpuff", img:"gicon_cas", pno:Board.turn});
+				EffectBox({pattern:"msgpop",gno:Player[Board.turn].stand, msg:bonus9+"G", color:"#ffcc00", player:true});
 				//処理有
 				retcode = true;
 			}
 			//目標達成チェック
-			if(Board.target <= TotalGold(Dice.pno)){
+			if(Board.target <= TotalGold(Board.turn)){
 				//ステップ（終了）
 				StepSet(100);
 				//Icon
-				$("#DIV_PLAYER"+Dice.pno).css("backgroundPosition", "0px 0px, 128px 0px, 128px 0px");
+				$("#DIV_PLAYER"+Board.turn).css("backgroundPosition", "0px 0px, 128px 0px, 128px 0px");
 				DisplaySet("DIV_DICE", 0);
 				PopBigMsg("目標達成", 9);
 				//処理有
@@ -356,7 +357,7 @@ function CastleCheck(){
 					//次の移動
 					setTimeout(function(){
 						//imgsrc
-						SetPlayerImg(Dice.pno);
+						SetPlayerImg(Board.turn);
 						//next
 						DiceNextMove();
 					}, 1500);
@@ -365,20 +366,20 @@ function CastleCheck(){
 		}else{
 			//###### fort ######
 			//今回通過
-			if(!flg.spellflg && Player[Dice.pno].flag.indexOf(nswe[color]) < 0){
+			if(!flg.spellflg && Player[Board.turn].flag.indexOf(nswe[color]) < 0){
 				//Log
-				Logprint({msg:["砦　ボーナス <span class='g'>" + Board.bonus_f + "G</span>"], pno:Dice.pno, ltype:"block"});
-				Player[Dice.pno].gold += Board.bonus_f;
-				Player[Dice.pno].flag += nswe[color];
+				Logprint({msg:["砦　ボーナス <span class='g'>" + Board.bonus_f + "G</span>"], pno:Board.turn, ltype:"block"});
+				Player[Board.turn].gold += Board.bonus_f;
+				Player[Board.turn].flag += nswe[color];
 				imgsrc = "gicon_" + nswe[color];
 				//Light
-				GridLightFort();
+				Grid.fortlight();
 				//Scroll
-				BoardScroll(Player[Dice.pno].stand);
+				BoardScroll(Player[Board.turn].stand);
 				//Animation
-				EffectBox({pattern:"fortpuff", img:imgsrc, pno:Dice.pno});
+				EffectBox({pattern:"fortpuff", img:imgsrc, pno:Board.turn});
 				//msgpop
-				EffectBox({pattern:"msgpop",gno:Player[Dice.pno].stand, msg:Board.bonus_f+"G", color:"#ffcc00", player:true});
+				EffectBox({pattern:"msgpop",gno:Player[Board.turn].stand, msg:Board.bonus_f+"G", color:"#ffcc00", player:true});
 				//次の移動
 				setTimeout(function(){DiceNextMove();}, 400);
 				//処理有
@@ -392,8 +393,8 @@ function CastleCheck(){
 }
 //
 function DiceNextMove(){
-	var standNow = Player[Dice.pno].stand;
-	var shadwNow = Player[Dice.pno].shadow;
+	var standNow = Player[Board.turn].stand;
+	var shadwNow = Player[Board.turn].shadow;
 	var msec = (Frame.skipchk()) ? 50 : 500;
 	//Dice Step End
 	if(Dice.rest == 0){
@@ -401,14 +402,14 @@ function DiceNextMove(){
 			//### 転送円 ###
 			if(Board.grid[shadwNow].color != 24){
 				var mvto = Number(Board.grid[standNow].linkx);
-				Player[Dice.pno].shadow = mvto;
-				Player[Dice.pno].stand = mvto;
-				if(Dice.pno == Board.role){
+				Player[Board.turn].shadow = mvto;
+				Player[Board.turn].stand = mvto;
+				if(Board.turn == Board.role){
 					//ルート記憶
-					Dice.route.push(Player[Dice.pno].stand);
+					Dice.route.push(Player[Board.turn].stand);
 				}
 				//Animation & ImageChange
-				EffectBox({pattern:"piecemove", pno:Dice.pno, gno:mvto, msec:msec});
+				EffectBox({pattern:"piecemove", pno:Board.turn, gno:mvto, msec:msec});
 				//現在地
 				standNow = mvto;
 				shadwNow = mvto;
@@ -417,14 +418,14 @@ function DiceNextMove(){
 			//### 転送門 ###
 			if(standNow == shadwNow){
 				var mvto = Number(Board.grid[standNow].linkx);
-				Player[Dice.pno].shadow = standNow;
-				Player[Dice.pno].stand = mvto;
-				if(Dice.pno == Board.role){
+				Player[Board.turn].shadow = standNow;
+				Player[Board.turn].stand = mvto;
+				if(Board.turn == Board.role){
 					//ルート記憶
-					Dice.route.push(Player[Dice.pno].stand);
+					Dice.route.push(Player[Board.turn].stand);
 				}
 				//Animation & ImageChange
-				EffectBox({pattern:"piecemove", pno:Dice.pno, gno:mvto, msec:msec});
+				EffectBox({pattern:"piecemove", pno:Board.turn, gno:mvto, msec:msec});
 			}
 		}
 		//祭壇
@@ -435,7 +436,7 @@ function DiceNextMove(){
 			return;
 		}
 		//### GridAbility ###
-		var abiret = GridAbility({time:"DICE_REST_OVER", gno:Player[Dice.pno].stand});
+		var abiret = GridAbility({time:"DICE_REST_OVER", gno:Player[Board.turn].stand});
 		for(var i2=0; i2<abiret.length; i2++){
 			switch(abiret[i2].act){
 			case "teleport":
@@ -463,7 +464,7 @@ function DiceStepTeleport(arg){
 		if(Board.role == Board.turn){
 			Dice.teleport = arg.tgt;
 			//ライト
-			GridLight("set_nosave", arg.tgt);
+			Grid.light({arr:arg.tgt});
 
 			//Dialog
 			DispDialog({msgs:["テレポート先を選択してください"], dtype:"ok"});
@@ -473,7 +474,7 @@ function DiceStepTeleport(arg){
 		//Role Player
 		if(Board.turn == Board.role){
 			//ライト
-			GridLight("clear");
+			Grid.light({clear:true});
 			//コマンド送信
 			var wkcmd = "dicetele:"+arg.gno;
 			//送信
@@ -481,7 +482,7 @@ function DiceStepTeleport(arg){
 		}
 		Player[Board.turn].shadow = arg.gno;
 		Player[Board.turn].stand = arg.gno;
-		if(Dice.pno == Board.role){
+		if(Board.turn == Board.role){
 			//ルート記憶
 			Dice.route.push(arg.gno);
 		}
@@ -584,8 +585,7 @@ function MoveEnd(){
 		Territory.target = wkarr;
 		//通過点ライト
 		if(wkarr.length >= 1){
-			GridLight("set", wkarr);
-			GridLight("set_memory");
+			Grid.light({arr:wkarr, save:true});
 		}
 		//
 		SummonCheck(Player[Board.role].stand);

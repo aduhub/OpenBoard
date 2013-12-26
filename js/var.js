@@ -11,8 +11,6 @@ Player[1] = new clsPlayer();
 Player[2] = new clsPlayer();
 Player[3] = new clsPlayer();
 Player[4] = new clsPlayer();
-//Dice Work
-var Dice = new clsDice();
 //Spell
 var Spell = new clsSpell();
 //Summon

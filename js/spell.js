@@ -46,11 +46,9 @@ function SpellTarget(i_hno){
 		}
 		//Grid
 		if(tgt.match(/^T.G.*$/)){
-			Spell.check = GridTgtGrep({pno:Board.turn, tgt:tgt});
+			Spell.check = Grid.grep({pno:Board.turn, tgt:tgt});
 			//ライト
-			GridLight("clear");
-			//ライト
-			GridLight("set_nosave", Spell.check);
+			Grid.light({clear:true, arr:Spell.check});
 			//PHASEENDBUTTON
 			$("#BTN_PhaseEnd").html("キャンセル");
 			//timer cancel set
@@ -72,7 +70,7 @@ function SpellTarget(i_hno){
 		}
 		//Grid
 		if(tgt.match(/^A.G.*$/)){
-			Spell.target = GridTgtGrep({pno:Board.turn, tgt:tgt});
+			Spell.target = Grid.grep({pno:Board.turn, tgt:tgt});
 		}
 		//ターゲット確定
 		StepSet(22);
@@ -119,11 +117,9 @@ function SpellTgtGirdCheck(i_gno){
 			//使用確認
 			SpellConfirm(0);
 		}else{
-			Spell.check = GridTgtGrep({pno:Board.turn, tgt:tgtarr[Spell.target.length], ext:Spell.target});
+			Spell.check = Grid.grep({pno:Board.turn, tgt:tgtarr[Spell.target.length], ext:Spell.target});
 			//ライト
-			GridLight("clear");
-			//ライト
-			GridLight("set_nosave", Spell.check);
+			Grid.light({clear:true, arr:Spell.check});
 			//
 			DispDialog({msgs:["次のターゲットを選択してください"], dtype:"ok"});
 		}
@@ -132,7 +128,7 @@ function SpellTgtGirdCheck(i_gno){
 //スペル使用確認
 function SpellConfirm(i_num){
 	//ライト
-	GridLight("clear");
+	Grid.light({clear:true});
 	//ダイアログ
 	switch(i_num){
 	case 0: //表示
@@ -242,7 +238,7 @@ function SpellFire(i_flg){
 		var wkgold = 0;
 		for(var i=0; i<Spell.target.length; i++){
 			var tgtpno = Spell.target[i];
-			wkgold = PlayerRank(tgtpno, 0) * GridCount(tgtpno) * 20;
+			wkgold = PlayerRank(tgtpno, 0) * Grid.count({owner:tgtpno}) * 20;
 			Player[tgtpno].gold += wkgold;
 			//msgpop
 			EffectBox({pattern:"msgpop", gno:Player[tgtpno].stand, msg:wkgold+"G", color:"#ffcc00", player:true});
@@ -366,7 +362,7 @@ function SpellFire(i_flg){
 			mvto.push(Spell.target[1]);
 			if(Board.turn == Board.role){
 				//ライト
-				GridLight("clear");
+				Grid.light({clear:true});
 				//コマンド送信
 				var wkcmd = "spellplus:"+Spell.target.join("_");
 				//送信
@@ -537,7 +533,7 @@ function SpellFire(i_flg){
 		//設定
 		tgtgrid.color = wkcolor[1];
 		//地形表示
-		GridSetImage(tgtgno);
+		Grid.Img.set(tgtgno);
 		//スクロール
 		BoardScroll(tgtgno);
 		//animation
@@ -548,7 +544,7 @@ function SpellFire(i_flg){
 		//Log
 		Logprint({msg:"地形変化 "+elestr[wkcolor[0]]+" > "+elestr[wkcolor[1]], pno:tgtpno});
 		CustomLog({type:"colorcnt", pno:tgtpno, color:wkcolor});
-		EffectBox({pattern:"lvlpop", level:tgtgrid.level, chain:GridCount(tgtpno, tgtgrid.color)});
+		EffectBox({pattern:"lvlpop", level:tgtgrid.level, chain:Grid.count({owner:tgtpno, color:tgtgrid.color})});
 		break;
 	case "INFLUENCE":
 		if(i_flg == 0){
@@ -558,11 +554,11 @@ function SpellFire(i_flg){
 				var maxcnt = 0;
 				var maxclr = [2, 3, 4, 5];
 				for(var i=2; i<=5; i++){
-					if(maxcnt < GridCount(tgtpno, i)){
-						maxcnt = GridCount(tgtpno, i);
+					if(maxcnt < Grid.count({owner:tgtpno, color:i})){
+						maxcnt = Grid.count({owner:tgtpno, color:i});
 						maxclr = [];
 					}
-					if(maxcnt == GridCount(tgtpno, i)){
+					if(maxcnt == Grid.count({owner:tgtpno, color:i})){
 						maxclr.push(i);
 					}
 				}
@@ -586,7 +582,7 @@ function SpellFire(i_flg){
 			//設定
 			Board.grid[tgtgno].color = wkcolor[1];
 			//地形表示
-			GridSetImage(tgtgno);
+			Grid.Img.set(tgtgno);
 			//スクロール
 			BoardScroll(tgtgno);
 			//animation
@@ -606,7 +602,7 @@ function SpellFire(i_flg){
 				var tgtgno = Number(Spell.target[0]);
 				var extarr = [];
 				extarr.push(tgtgno);
-				var gridarr = GridTgtGrep({tgt:"AMG", pno:Board.grid[tgtgno].owner, ext:extarr});
+				var gridarr = Grid.grep({tgt:"AMG", pno:Board.grid[tgtgno].owner, ext:extarr});
 				if(gridarr.length == 0){
 					Spell.target.push(tgtgno);
 				}else{
@@ -646,7 +642,7 @@ function SpellFire(i_flg){
 				//スクロール
 				BoardScroll(tgtgno1);
 				//地形表示
-				GridSetImage(tgtgno1);
+				Grid.Img.set(tgtgno1);
 				//animation
 				EffectBox({pattern:"levelup", gno:tgtgno1});
 				EffectBox({pattern:"msgpop", gno:tgtgno1, msg:"Lv" + baselevel + ">1"});
@@ -654,7 +650,7 @@ function SpellFire(i_flg){
 					//スクロール
 					BoardScroll(tgtgno2);
 					//地形表示
-					GridSetImage(tgtgno2);
+					Grid.Img.set(tgtgno2);
 					//animation
 					EffectBox({pattern:"levelup", gno:tgtgno2});
 					EffectBox({pattern:"msgpop", gno:tgtgno2, msg:"Lv"+baselevel2+">"+upperlevel});
@@ -668,13 +664,13 @@ function SpellFire(i_flg){
 		var tgtgno = Spell.target[0];
 		var dmg = Number(Card[Spell.cno].opt[0]);
 		//Map Damage
-		GridDamage({gno:tgtgno, dmg:dmg, arrow:true, scroll:true});
+		Grid.damage({gno:tgtgno, dmg:dmg, arrow:true, scroll:true});
 		wait = 2000;
 		break;
 	case "AREADMG":
 		var dmg = Number(Card[Spell.cno].opt[0]);
 		//Map Damage
-		GridDamage({target:Spell.target, dmg:dmg, arrow:true});
+		Grid.damage({gno:Spell.target, dmg:dmg, arrow:true});
 		wait = 3000;
 		break;
 	case "EARTHQUAKE":
@@ -700,7 +696,7 @@ function SpellFire(i_flg){
 			var tgtgno = Spell.target[i];
 			var dmg = 10 * intensity;
 			//Map Damage
-			GridDamage({gno:tgtgno, dmg:dmg, arrow:true});
+			Grid.damage({gno:tgtgno, dmg:dmg, arrow:true});
 		}
 		wait = 3000;
 		break;
@@ -713,7 +709,7 @@ function SpellFire(i_flg){
 			}
 		}
 		//Map Damage
-		GridDamage({gno:tgtgno, dmg:dmg, arrow:true, scroll:true});
+		Grid.damage({gno:tgtgno, dmg:dmg, arrow:true, scroll:true});
 		wait = 2000;
 		break;
 	case "DISTORTION":
@@ -764,7 +760,7 @@ function SpellFire(i_flg){
 				tgtgrid.status = "";
 				tgtgrid.statime = 0;
 				//地形カラー
-				GridSetImage(tgtgno);
+				Grid.Img.set(tgtgno);
 				//Animation
 				EffectBox({pattern:"summon", gno:tgtgno, pno:tgtpno, cno:tgtcno2});
 				EffectBox({pattern:"msgpop", gno:tgtgno, msg:"Unsummon"});
@@ -787,7 +783,7 @@ function SpellFire(i_flg){
 			//スクロール
 			BoardScroll(tgtgno);
 			//クリア
-			GridClear({gno:tgtgno});
+			Grid.clear({gno:tgtgno});
 			//手札追加
 			if(Player[tgtpno].hand.length < 10){
 				Player[tgtpno].hand.push(tgtcno);
@@ -817,7 +813,7 @@ function SpellFire(i_flg){
 		Board.grid[tgtgno].status = "";
 		Board.grid[tgtgno].statime = 0;
 		//表示
-		GridSetTax(tgtgno);
+		Grid.Img.tax({gno:tgtgno});
 		//スクロール
 		BoardScroll(tgtgno);
 		//矢印
@@ -837,7 +833,7 @@ function SpellFire(i_flg){
 		if(Board.grid[nowgno].owner == Spell.pno){
 			var wkcno = Board.grid[nowgno].cno;
 			//Move
-			GridMove({gno1:nowgno, gno2:tgtgno, effect:true});
+			Grid.move({gno1:nowgno, gno2:tgtgno, effect:true});
 			//矢印
 			DivImg("DIV_GCLICK"+nowgno, "arrow4");
 			//スクロール
@@ -863,7 +859,7 @@ function SpellFire(i_flg){
 				linkgno2 = Board.grid[linkgno].GetLink(arrowno);
 				if(linkgno2 > 0 && Board.grid[linkgno2].color < 10 && Board.grid[linkgno2].owner != 0){
 					//Move
-					GridMove({gno1:linkgno2, gno2:linkgno, effect:true});
+					Grid.move({gno1:linkgno2, gno2:linkgno, effect:true});
 				}
 			}
 		}
@@ -894,8 +890,8 @@ function SpellFire(i_flg){
 		//表示
 		$("#DIV_GICON"+tgtgno1).css("backgroundImage", "url(img/icon/"+Card[Board.grid[tgtgno1].cno].imgsrc.replace(".png", "")+".gif)");
 		$("#DIV_GICON"+tgtgno2).css("backgroundImage", "url(img/icon/"+Card[Board.grid[tgtgno2].cno].imgsrc.replace(".png", "")+".gif)");
-		GridSetTax(tgtgno1);
-		GridSetTax(tgtgno2);
+		Grid.Img.tax({gno:tgtgno1});
+		Grid.Img.tax({gno:tgtgno2});
 		//矢印
 		DivImg("DIV_GCLICK"+tgtgno1, "arrow4");
 		DivImg("DIV_GCLICK"+tgtgno2, "arrow4");
@@ -920,10 +916,10 @@ function SpellFire(i_flg){
 			gridto[i].owner = gridfrom[i].owner;
 		}
 		//表示
-		GridSetTax(tgtgno1);
-		GridSetTax(tgtgno2);
-		GridSetImage(tgtgno1);
-		GridSetImage(tgtgno2);
+		Grid.Img.set(tgtgno1);
+		Grid.Img.set(tgtgno2);
+		Grid.Img.tax({gno:tgtgno1});
+		Grid.Img.tax({gno:tgtgno2});
 		//矢印
 		DivImg("DIV_GCLICK"+tgtgno1, "arrow4");
 		DivImg("DIV_GCLICK"+tgtgno2, "arrow4");
@@ -940,8 +936,8 @@ function SpellFire(i_flg){
 		Board.grid[tgtgno1].st = starr[1];
 		Board.grid[tgtgno2].st = starr[0];
 		//表示
-		GridSetTax(tgtgno1);
-		GridSetTax(tgtgno2);
+		Grid.Img.tax({gno:tgtgno1});
+		Grid.Img.tax({gno:tgtgno2});
 
 		//矢印
 		DivImg("DIV_GCLICK"+tgtgno1, "arrow4");
@@ -976,7 +972,7 @@ function SpellFire(i_flg){
 		EffectBox({pattern:"msgpop",gno:tgtgno, msg:"MHP-20"});
 		if(Board.grid[tgtgno].lf > 0){
 			//Status
-			GridStatusChg({gno:tgtgno, status:"_CONTRACT_", statime:99});
+			Grid.setstatus({gno:tgtgno, status:"_CONTRACT_", statime:99});
 		}else{
 			//Grave
 			Board.grave.push(tgtgrid.cno);
@@ -985,14 +981,14 @@ function SpellFire(i_flg){
 			//ログ
 			Logprint({msg:"##"+tgtgrid.cno+"##は破壊された", pno:tgtgrid.owner});
 			//領地クリア
-			GridClear({gno:tgtgno});
+			Grid.clear({gno:tgtgno});
 		}
 		wait = 2000;
 		break;
 	case "SETSTATUSG":
 		var tgtgno = Number(Spell.target[0]);
 		//Status
-		GridStatusChg({gno:tgtgno, status:Card[Spell.cno].opt[0], statime:Card[Spell.cno].opt[1], arrow:true, scroll:true});
+		Grid.setstatus({gno:tgtgno, status:Card[Spell.cno].opt[0], statime:Card[Spell.cno].opt[1], arrow:true, scroll:true});
 		//cantrip
 		if(Card[Spell.cno].opt[2] == "draw"){
 			var diagimg = [];
@@ -1016,7 +1012,7 @@ function SpellFire(i_flg){
 		//Status
 		var opt2 = Number(Card[Spell.cno].opt[1]);
 		var time = ($T.inrange(opt2, 1, 9)) ? opt2 * Board.playcnt : 99;
-		GridStatusChg({target:Spell.target, status:Card[Spell.cno].opt[0], statime:Card[Spell.cno].opt[1]});
+		Grid.setstatus({gno:Spell.target, status:Card[Spell.cno].opt[0], statime:Card[Spell.cno].opt[1]});
 		wait = 3000;
 		break;
 	case "GROUPSTATUS":
@@ -1033,7 +1029,7 @@ function SpellFire(i_flg){
 			}
 		}
 		//Status
-		GridStatusChg({target:gridgroup, status:Card[Spell.cno].opt[0], statime:Card[Spell.cno].opt[1]});
+		Grid.setstatus({gno:gridgroup, status:Card[Spell.cno].opt[0], statime:Card[Spell.cno].opt[1]});
 		wait = 2000;
 		break;
 	case "LINKGATE":
@@ -1055,8 +1051,8 @@ function SpellFire(i_flg){
 			}
 			//Status
 			var tgtstr = "AMG"+["", "N", "F", "W", "E", "D"][Spell.target];
-			var tgtarr = GridTgtGrep({pno:Board.turn, tgt:tgtstr});
-			GridStatusChg({target:tgtarr, status:Card[Spell.cno].opt[0], statime:Card[Spell.cno].opt[1]});
+			var tgtarr = Grid.grep({pno:Board.turn, tgt:tgtstr});
+			Grid.setstatus({gno:tgtarr, status:Card[Spell.cno].opt[0], statime:Card[Spell.cno].opt[1]});
 			wait = 3000;
 		}
 		break;
@@ -1402,15 +1398,13 @@ function SpellTgtSecond(arg){
 		switch(arg.step){
 		case 0: //表示
 			//ライト
-			GridLight("clear");
-			//ライト
-			GridLight("set_nosave", Spell.check);
+			Grid.light({clear:true, arr:Spell.check});
 			//PHASEENDBUTTON
 			$("#BTN_PhaseEnd").html("-");
 			break;
 		case 1: //OK
 			//ライト
-			GridLight("clear");
+			Grid.light({clear:true});
 			//ターゲット追加
 			Spell.target.push(arg.gno);
 			//ターゲット確定
@@ -1588,7 +1582,7 @@ function Enchant(arg){
 			case "_PLAGUE_":
 				if(Board.grid[arg.gno].owner != 0){
 					//status set
-					GridStatusChg({gno:arg.gno, status:"_POISON_", statime:99});
+					Grid.setstatus({gno:arg.gno, status:"_POISON_", statime:99});
 				}
 				break;
 			case "_GATHER_":

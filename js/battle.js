@@ -654,13 +654,13 @@ function BattleResult(){
 		BattleLog(9, "全滅");
 		Battle.result = 0;
 		//クリア
-		GridClear({gno:Battle.gno});
+		Grid.clear({gno:Battle.gno});
 		//Animation
 		EffectBox({pattern:"destroy", cno:Battle.p[1].cno, gno:Battle.gno});
 		//クリア(移動元)
 		if(Battle.from == "M"){
 			//クリア
-			GridClear({gno:Battle.gno_atk, pno:Battle.p[0].pno});
+			Grid.clear({gno:Battle.gno_atk, pno:Battle.p[0].pno});
 			//Animation
 			EffectBox({pattern:"destroy", cno:Battle.p[0].cno, gno:Battle.gno_atk});
 		}
@@ -670,11 +670,11 @@ function BattleResult(){
 		Battle.result = 1;
 		//クリア
 		Board.grid[Battle.gno].flush();
-		GridSetPlayerTax(Battle.p[1].pno);
+		Grid.Img.tax({pno:Battle.p[1].pno});
 		//移動時
 		if(Battle.from == "M"){
 			//クリア
-			GridClear({gno:Battle.gno_atk, pno:Battle.p[0].pno});
+			Grid.clear({gno:Battle.gno_atk, pno:Battle.p[0].pno});
 		}
 		//召還
 		Summon.from = "battle";
@@ -703,7 +703,7 @@ function BattleResult(){
 				Board.grid[Battle.gno].statime = Board.Round+":"+Board.turn;
 			}
 			//イメージ再設定
-			GridSetTax(Battle.gno);
+			Grid.Img.tax({gno:Battle.gno});
 		}
 		//攻撃側生存
 		if(Battle.p[0].lf >= 1){
@@ -734,7 +734,7 @@ function BattleResult(){
 			//移動時
 			if(Battle.from == "M"){
 				//クリア
-				GridClear({gno:Battle.gno_atk, pno:Battle.p[0].pno});
+				Grid.clear({gno:Battle.gno_atk, pno:Battle.p[0].pno});
 			}
 		}
 		break;
