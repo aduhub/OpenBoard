@@ -147,11 +147,11 @@ var Net = {
 		case "Net.ongetCGI":
 			Net.ongetCGI(event.data[0]);
 			break;
-		case "onDeckList":
-			onDeckList(event.data[0]);
+		case "Deck.onList":
+			Deck.onList(event.data[0]);
 			break;
 		case "onDeckRecv":
-			onDeckRecv(event.data[0]);
+			Deck.onRecv(event.data[0]);
 			break;
 		case "onDeckImport":
 			onDeckImport(event.data[0]);

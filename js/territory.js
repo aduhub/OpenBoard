@@ -207,7 +207,7 @@ function TerritoryCheck(arg){
 		if(tgtgrid.status.match(/_BIND_/)){
 			ret = false;
 		}
-		if(CardOptCheck({gno:Territory.gno, tgt:/@LEVELUP@/}) && tgtgrid.level == 5){
+		if(Card.Tool.chkopt({gno:Territory.gno, tgt:/@LEVELUP@/}) && tgtgrid.level == 5){
 			ret = false;
 		}
 		break;
@@ -660,12 +660,12 @@ function TerritoryAbility(i_flg){
 		//コスト支払い
 		TerritoryAbiPaySend();
 		//手札追加
-		var cno = Drawcard({pno:Board.turn, from:"deck"});
+		var cno = Deck.Tool.draw({pno:Board.turn, from:"deck"});
 		if(Board.turn == Board.role){
 			diagimg.push(cno);
 			//ダイアログ
 			DispDialog({dtype:"ok", cnos:diagimg});
-			SortHand();
+			Deck.Tool.sorthand();
 		}
 		//msgpop
 		EffectBox({pattern:"msgpop", gno:Territory.gno, msg:"Ability"});
@@ -847,7 +847,7 @@ function TerritoryAbility(i_flg){
 		}
 		if(Board.role == Board.turn){
 			//手札再表示
-			SortHand();
+			Deck.Tool.sorthand();
 		}
 		//ウェイト
 		Board.wait = 2.5;
@@ -896,7 +896,7 @@ function TerritoryAbility(i_flg){
 				}
 				if(Board.role == Board.turn){
 					//手札再表示
-					SortHand();
+					Deck.Tool.sorthand();
 				}
 				//ウェイト
 				Board.wait = 1.5;
@@ -951,7 +951,7 @@ function TerritoryAbility(i_flg){
 				//msgpop
 				EffectBox({pattern:"msgpop", gno:Player[ipno].stand, msg:"Discard", player:true});
 				//手札再表示
-				if(ipno == Board.role) SortHand();
+				if(ipno == Board.role) Deck.Tool.sorthand();
 				break;
 			}
 		}
@@ -1027,7 +1027,7 @@ function TerritoryEnd(){
 		StepSet(60);
 		if(Board.role == Board.turn){
 			//手札ソート
-			SortHand();
+			Deck.Tool.sorthand();
 			//TurnEnd
 			TurnEnd();
 		}

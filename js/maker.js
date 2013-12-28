@@ -55,7 +55,7 @@ var Maker = {
 		var div_id = "DIV_HAND" + hno;
 		var cvs_id = "CVS_HAND" + hno;
 		var divitem = {base:"#DIV_HANDFRAME", id:div_id, class:"CLS_HAND", css:{zIndex:hno + 1, overflow:"hidden"}}
-		divitem["attr"] = {"onclick":"HandClick("+hno+")", "oncontextmenu":"CardInfo({hno:"+hno+"});return false;", "onmouseout":"CardInfo()"}
+		divitem["attr"] = {"onclick":"HandClick("+hno+")", "oncontextmenu":"Card.Tool.info({hno:"+hno+"});return false;", "onmouseout":"Card.Tool.info()"}
 		this.addDiv(divitem);
 		this.addCanvas({div:div_id, id:cvs_id, h:"130", w:"100"});
 	},

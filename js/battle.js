@@ -95,16 +95,16 @@ function BattleInit(){
 	//Creature表示
 	$("#DIV_VSCARD0").css({height:0});
 	$("#DIV_VSCARD1").css({height:0});
-	CardInfoSet({tgt:"#DIV_VSCARDINFO0", cno: Battle.p[0].cno});
-	CardInfoSet({tgt:"#DIV_VSCARDINFO1", cno: Battle.p[1].cno});
+	Card.Tool.createinfo({tgt:"#DIV_VSCARDINFO0", cno: Battle.p[0].cno});
+	Card.Tool.createinfo({tgt:"#DIV_VSCARDINFO1", cno: Battle.p[1].cno});
 	var fnc0 = function(){
 		$("#DIV_VSCARD0").animate({height:260}, 2000);
 	}
 	var fnc1 = function(){
 		$("#DIV_VSCARD1").animate({height:260}, 2000);
 	}
-	CardImgSet({cvs:"CVS_VSCARD0", cno:Battle.p[0].cno, fnc:fnc0});
-	CardImgSet({cvs:"CVS_VSCARD1", cno:Battle.p[1].cno, fnc:fnc1});
+	Card.Tool.imgset({cvs:"CVS_VSCARD0", cno:Battle.p[0].cno, fnc:fnc0});
+	Card.Tool.imgset({cvs:"CVS_VSCARD1", cno:Battle.p[1].cno, fnc:fnc1});
 	//数値表示
 	BattleBar("ST0", Battle.p[0].st, Battle.p[0].stplus);
 	BattleBar("LF0", Battle.p[0].lf, Battle.p[0].lfplus);
@@ -134,7 +134,7 @@ function BattleInit(){
 	//ItemSelect
 	if(Battle.p[0].pno == Board.role || Battle.p[1].pno == Board.role){
 		//再表示
-		SortHand();
+		Deck.Tool.sorthand();
 		//PHASEENDBUTTON
 		$("#BTN_PhaseEnd").html("キャンセル");
 		//使用可能チェック
@@ -252,7 +252,7 @@ function BattleFight(){
 			Player[Battle.p[i].pno].gold -= Card[wkcno].cost;
 			//カード消費
 			Player[Battle.p[i].pno].HandDel(wkcno);
-			CardImgSet({cvs:"CVS_VSITEM"+i, cno:wkcno, zoom:0.5});
+			Card.Tool.imgset({cvs:"CVS_VSITEM"+i, cno:wkcno, zoom:0.5});
 			//Effect
 			EffectBox({pattern:"itemopen", bno:i})
 		}
@@ -616,7 +616,7 @@ function BattleResult(){
 						Player[Battle.p[i].pno].hand.push(Battle.p[i].item);
 						if(Board.role == Battle.p[i].pno){
 							//手札ソート
-							SortHand();
+							Deck.Tool.sorthand();
 						}
 						//Log
 						BattleLog(i, "手札復帰");
@@ -713,7 +713,7 @@ function BattleResult(){
 				if(Player[Battle.p[0].pno].hand.length < 10){
 					Player[Battle.p[0].pno].hand.push(Battle.p[0].cno);
 					//手札枚数再表示
-					if(Battle.p[0].pno == Board.role) SortHand();
+					if(Battle.p[0].pno == Board.role) Deck.Tool.sorthand();
 					DispPlayer();
 				}
 			}
@@ -776,7 +776,7 @@ function BattleClose(){
 
 	if(Battle.p[0].pno == Board.role || Battle.p[1].pno == Board.role){
 		//手札ソート
-		SortHand();
+		Deck.Tool.sorthand();
 	}
 	if(Battle.result == 1){
 		//次処理

@@ -215,14 +215,14 @@ function PlayerHandSetup(i_flg){
 		}
 	}
 	//デッキシャッフル(残し)
-	DeckShuffle({pno:Board.role, tgt:"deck", puttop:puttop});
+	Deck.Tool.shuffle({pno:Board.role, tgt:"deck", puttop:puttop});
 	//初期手札(5draw)
 	Player[Board.role].hand = [];
 	for(var i=1; i<=5; i++){
-		Drawcard({pno:Board.role, from:"deck", nlog:true});
+		Deck.Tool.draw({pno:Board.role, from:"deck", nlog:true});
 	}
 	//手札ソート
-	SortHand();
+	Deck.Tool.sorthand();
 	//引きなおしダイアログ
 	if(i_flg == 0){
 		//ダイアログ
@@ -238,7 +238,7 @@ function PlayerHandSetup(i_flg){
 		var deck = Player[Board.role].hand.join(":") + ":" + Player[Board.role].deck;
 		Net.send("ready:" + deck);
 		//次を用意
-		DeckShuffle({pno:Board.role, tgt:"next"});
+		Deck.Tool.shuffle({pno:Board.role, tgt:"next"});
 	}
 }
 //マリガン
@@ -377,11 +377,11 @@ function GridClick(i_no){
 			break;
 		case 32:
 			//移動先決定
-			DicePieceMove(i_no);
+            Dice.Step.move(i_no);
 			break;
 		case 36:
 			if(Dice.teleport.indexOf(i_no) >= 0){
-				DiceStepTeleport({step:1, gno:i_no});
+                Dice.Step.teleport({step:1, gno:i_no});
 			}
 			break;
 		case 40:
@@ -457,7 +457,7 @@ function HandClick(hno){
 				break;
 			case 98: //Dicard(TurnEnd)
 				if(Board.discardstep == 1){
-					Discard({pno:Board.role, hno:hno});
+					Deck.Tool.discard({pno:Board.role, hno:hno});
 				}
 				break;
 			}
@@ -969,7 +969,7 @@ function DispDialog(param){
 				size = "640px";
 			}
 			for(var i=0; i<param.imgbtns.length; i++){
-				html += "<a href=\"javascript:"+param.imgbtns[i][1]+"\" oncontextmenu=\"CardInfo({cno:'"+param.imgbtns[i][0]+"'});return false;\">";
+				html += "<a href=\"javascript:"+param.imgbtns[i][1]+"\" oncontextmenu=\"Card.Tool.info({cno:'"+param.imgbtns[i][0]+"'});return false;\">";
 				html += "<canvas id='CVS_DIALOG"+i+"' width='100' height='130'></canvas></a>";
 			}
 		}
@@ -1009,12 +1009,12 @@ function DispDialog(param){
 		//canvas
 		if(param.cnos != undefined){
 			for(var i=0; i<param.cnos.length; i++){
-				CardImgSet({cvs:"CVS_DIALOG"+i, cno:param.cnos[i], zoom:0.5});
+				Card.Tool.imgset({cvs:"CVS_DIALOG"+i, cno:param.cnos[i], zoom:0.5});
 			}
 		}
 		if(param.imgbtns != undefined){
 			for(var i=0; i<param.imgbtns.length; i++){
-				CardImgSet({cvs:"CVS_DIALOG"+i, cno:param.imgbtns[i][0], zoom:0.5});
+				Card.Tool.imgset({cvs:"CVS_DIALOG"+i, cno:param.imgbtns[i][0], zoom:0.5});
 			}
 		}
 	}

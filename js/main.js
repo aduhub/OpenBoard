@@ -133,7 +133,7 @@ var Frame = {
                                 //Board.roleセット
 								Board.role = role;
 								//デッキリスト表示
-								DeckList();
+								Deck.Tool.decklist();
                                 //ping
                                 Net.ping();
 							}
@@ -173,7 +173,7 @@ var Frame = {
 							Player[logpno].deck = logpara;
 							//初期手札
 							for(var i=1; i<=5; i++){
-								Drawcard({pno:logpno, from:"deck", nlog:true});
+								Deck.Tool.draw({pno:logpno, from:"deck", nlog:true});
 							}
 						}
 						//準備完了カウント
@@ -194,14 +194,14 @@ var Frame = {
 					if(Board.step == 11){
 						runflg = 1;
 						//ドロー
-						Draw2Hand();
+						Draw.Step.hand();
 					}
 					break;
 				case "discard":
 					if(Board.step == 98){
 						runflg = 1;
 						//破棄
-						Discard({pno:logpno, cno:logpara});
+						Deck.Tool.discard({pno:logpno, cno:logpara});
 					}
 					break;
 				case "spell":
@@ -231,7 +231,7 @@ var Frame = {
 						runflg = 1;
 						var pow = Number(logpara);
 						//ダイス
-						DiceRollResult({pno:logpno, pow:pow});
+                        Dice.Step.roll({pno:logpno, pow:pow});
 					}
 					break;
 				case "move":
@@ -239,21 +239,21 @@ var Frame = {
 						runflg = 1;
 						var gno = Number(logpara);
 						//ダイス
-						DicePieceMove(gno);
+                        Dice.Step.move(gno);
 					}
 					break;
 				case "dicedraw":
 					if(Board.step == 34){
 						runflg = 1;
 						//ダイス
-						DiceStepDraw(logpara);
+                        Dice.Step.draw(logpara);
 					}
 					break;
 				case "dicetele":
 					if(Board.step == 36){
 						runflg = 1;
 						//ダイス
-						DiceStepTeleport({step:1, gno:Number(logpara)})
+                        Dice.Step.teleport({step:1, gno:Number(logpara)})
 					}
 					break;
 				case "summon":

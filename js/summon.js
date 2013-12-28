@@ -7,7 +7,7 @@ function SummonCheck(i_gno){
 	Summon.gno = 0;
 	Summon.status = "";
 	//手札再表示
-	SortHand();
+	Deck.Tool.sorthand();
 	//アイコンセット
 	for(var i in Player[Board.role].hand){
 		var cno = Player[Board.role].hand[i];
@@ -171,7 +171,7 @@ function SummonReady(){
 		//コマンド送信
 		Net.send(Summon.from+":"+Summon.cno+":"+Summon.gno);
 		//手札再表示
-		SortHand();
+		Deck.Tool.sorthand();
 	}
 	//手札再表示
 	DispPlayer();

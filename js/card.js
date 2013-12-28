@@ -1,40 +1,11 @@
-//Option Check
-function CardOptCheck(arg){
-	var opts = [];
-	//Card No
-	if(arg.cno){
-		if(Card[arg.cno].opt){
-			opts = Card[arg.cno].opt.concat();
-		}
-	}
-	//Grid No
-	if(arg.gno){
-		if(Board.grid[arg.gno].status != "_BIND_"){
-			if(Card[Board.grid[arg.gno].cno].opt){
-				opts = Card[Board.grid[arg.gno].cno].opt.concat();
-				opts.push(Board.grid[arg.gno].status);
-			}
-		}
-	}
-	//Check
-	for(var i in opts){
-		if($T.typer(arg.tgt) == "Array"){
-			for(var ii in arg.tgt){
-				if(opts[i].match(arg.tgt[ii])){
-					return true;
-				}
-			}
-		}else{
-			if(opts[i].match(arg.tgt)){
-				return true;
-			}
-		}
-	}
-	return false;
-}
-//###################################################################
+var Draw = {};
+var Deck = {};
+Draw.Step = {};
+Card.Tool = {};
+Deck.Tool = {};
+//####################################
 //カードドロー
-function DrawStepInit(){
+Draw.Step.start = function (){
 	//ターンプレイヤー
 	if(Board.turn == Board.role){
 		//ドロー・クリック待ち
@@ -48,11 +19,11 @@ function DrawStepInit(){
 			//timer
 			$("#DIV_DRAW").addClass(Chessclock.set());
 		}
-		CardImgSet({cvs:"CVS_DRAW", cno:cno, fnc:termfnc});
+		Card.Tool.imgset({cvs:"CVS_DRAW", cno:cno, fnc:termfnc});
 	}
 }
 //手札追加
-function Draw2Hand(){
+Draw.Step.hand = function (){
 	var encret, nlog = false;
 	//ドロー
 	StepSet(13);
@@ -68,11 +39,11 @@ function Draw2Hand(){
 		nlog = true;
 	}
 	//Draw
-	var cno = Drawcard({pno:Board.turn, from:"top", nlog:nlog});
+	var cno = Deck.Tool.draw({pno:Board.turn, from:"top", nlog:nlog});
 	Player[Board.turn].draw = cno;
 	if(Board.turn == Board.role){
 		//手札ソート
-		SortHand();
+		Deck.Tool.sorthand();
 	}
 	//msgpop
 	EffectBox({pattern:"msgpop",gno:Player[Board.turn].stand, msg:"Draw", player:true});
@@ -81,10 +52,10 @@ function Draw2Hand(){
 	//手札枚数再表示
 	DispPlayer();
 	//ドロー終了
-	DrawStepEnd();
+	Draw.Step.end();
 }
 //ドロー終了
-function DrawStepEnd(){
+Draw.Step.end = function (){
 	//ドロー終了
 	StepSet(20);
 	if(Board.role == Board.turn){
@@ -96,9 +67,9 @@ function DrawStepEnd(){
 		$("#BTN_PhaseEnd").addClass(Chessclock.set(20));
 	}
 }
-//###############################################################
+//####################################
 //デッキシャッフル
-function DeckShuffle(arg){
+Deck.Tool.shuffle = function (arg){
 	if(arg.pno == Board.role){
 		var deckarr = Player[arg.pno].deckdata.split(":");
 		var sortarr = $T.rndsort(deckarr);
@@ -120,7 +91,7 @@ function DeckShuffle(arg){
 	}
 }
 //手札並び替え
-function SortHand(){
+Deck.Tool.sorthand = function (){
 	var handcnt = Player[Board.role].hand.length;
 
 	//Clear
@@ -156,15 +127,14 @@ function SortHand(){
 		$(".CLS_HAND").css({marginLeft:marginpix, marginRight:marginpix});
 		//再表示
 		for(var i=0; i<handcnt; i++){
-			CardImgSet({hno:i});
+			Card.Tool.imgset({hno:i});
 		}
 		//グレイ戻し
 		$(".CLS_HAND").removeClass("CLS_HAND_GLAY");
 	}
 }
-//###################################################################
 //Hand add {pno:, from:, [dno:], [nlog:]}
-function Drawcard(arg){
+Deck.Tool.draw = function (arg){
 	var cno = "";
 	switch(arg.from){
 	case "dno": //deck top no
@@ -200,27 +170,13 @@ function Drawcard(arg){
 		Logprint({msg:"デッキをシャッフル", pno:arg.pno});
 		if(Board.role == arg.pno){
 			//次を用意
-			DeckShuffle({pno:arg.pno, tgt:"next"});
+			Deck.Tool.shuffle({pno:arg.pno, tgt:"next"});
 		}
 	}
 	return cno;
 }
-//###################################################################
-function DiscardInit(){
-	if(Board.role == Board.turn){
-		//step
-		Board.discardstep = 1;
-		//ダイアログ表示
-		DispDialog({msgs:["破棄するカード選択してください"]});
-	}else{
-		//step
-		Board.discardstep = 9;
-		//ダイアログ表示
-		DispDialog({msgs:["破棄カード選択中・・・"]});
-	}
-}
 //手札破棄 (pno, hno | pno, cno)
-function Discard(arg){
+Deck.Tool.discard = function (arg){
 	var tgtcno;
 	//ダイアログ非表示
 	DispDialog("none");
@@ -242,14 +198,160 @@ function Discard(arg){
 	DispPlayer();
 	if(Board.role == arg.pno){
 		//手札ソート
-		SortHand();
+		Deck.Tool.sorthand();
 	}
 	//Step 処理
 	TurnEndFlow(1);
 }
-//#######################################################################
+//リスト表示
+Deck.Tool.decklist = function (){
+	DisplaySet("DIV_DECK", 40);
+    //IDクリア
+    Player[Board.role].deckid = "";
+	//DECK LIST READ
+	var pars = "DECKCMD=LIST&USERID="+sessionStorage.USERID;
+	//Worker
+	Net.xhr({cgi:"perl/ocdeck.cgi", para:pars, fnc:"Deck.onList"});
+}
+//DECKデータ表示
+Deck.Tool.deckcard = function (deckstr){
+	//Clear
+	if(Player[Board.role].deckid != ""){
+		$("#BTN_DECK" + Player[Board.role].deckid).css("backgroundColor", "");
+	}
+	//Set
+	var palet = {"C1":"DDDDDD","C2":"FFCCCC","C3":"CCCCFF","C4":"CCFFCC","C5":"FFFFCC","I":"EEEEEE","S":"EEDDFF"};
+	var deckdat = deckstr.split(":");
+    //ID保持
+    Player[Board.role].deckid = deckdat.shift();
+    Player[Board.role].deckname = deckdat.shift();
+    Player[Board.role].deckdata = deckdat.join(":");
+	if(Player[Board.role].deckid != ""){
+		$("#BTN_DECK" + Player[Board.role].deckid).css("backgroundColor", "#FF6600");
+	}
+	//Clear
+	$("#SEL_DECKSET button").remove();
+	if(deckdat.length > 0){
+        deckdat.sort();
+		for(var i=0; i<deckdat.length; i++){
+			var clrno = Card[deckdat[i]].type;
+			if(clrno == "C") clrno += Card[deckdat[i]].color;
+			var button = "<button oncontextmenu='Card.Tool.info({cno:\""+deckdat[i]+"\"});return false;' style='background-color:#"+palet[clrno]+";'>" + Card[deckdat[i]].name + "</button>";
+			$("#SEL_DECKSET").append(button);
+		}
+	}
+}
+//DECK決定
+Deck.Tool.deckok = function (){
+	if(Player[Board.role].deckid != ""){
+		//表示DIV削除
+		$("#DIV_DECK").remove();
+		//送信
+		var cmd = "deck:"+Player[Board.role].deckid+":"+ Player[Board.role].deckname;
+		Net.send(cmd);
+		//Deck数
+		Board.deckcnt += 1;
+		//プレイヤーデータセット
+		if(Board.playcnt == Board.deckcnt){
+			PlayerSetup();
+		}
+		//##### Debug #####
+		if(sessionStorage.Mode == "debug"){
+			for(var i=1; i<=4; i++){
+			    //全員同データ
+			    Player[i].deckid = Player[Board.role].deckid;
+			    Player[i].deckname = Player[Board.role].deckname;
+			    Player[i].deckdata = Player[Board.role].deckdata;
+			}
+			//デッキセレクトカウント
+			Board.deckcnt = 4;
+			//プレイヤーデータセット
+			PlayerSetup();
+		}
+	}
+}
+//------------------------------------
+//リスト取得値セット
+Deck.onList = function (recvstr){
+	var recvcmd = recvstr.split(",");
+	if (recvcmd[0] != "0"){
+		for(var i=1; i<=Number(recvcmd[0]); i++){
+			var wkdeck = recvcmd[i].split(":");
+			gid("SEL_DECKLIST").options[i - 1].value = recvcmd[i];
+			gid("SEL_DECKLIST").options[i - 1].text = "[" + wkdeck[0] + "]" + wkdeck[1];
+		}
+	}
+}
+//DECK受信
+Deck.onRecv = function (recvstr){
+	var recvcmd = recvstr.split(",");
+	if(Board.deckcnt <= 3){
+		if(recvcmd[0] != "0"){
+			//デッキセレクトカウント
+			Board.deckcnt++
+			//デッキ設定
+			var deckinfo = recvcmd[2].split(":");
+			Player[Number(recvcmd[1])].deckname = deckinfo.shift();
+			Player[Number(recvcmd[1])].deckdata = deckinfo.join(":");
+			if(Board.deckcnt == 4){
+				//プレイヤーデータセット
+				PlayerSetup()
+			}
+			//【Log】
+			Logprint("DeckRecv:"+recvcmd[1], "debug");
+		}else{
+			//【Log】
+			Logprint("DeckRecv:Error", "debug");
+		}
+	}
+}
+// ######[ インポート ]######
+function DeckImport(deckno){
+	if(deckno != ""){
+		if(!deckno.match(/^DT[0-9]{4}$/)){
+			return;
+		}
+		//DECK LIST READ
+		var pars = "DECKCMD=IMPORT&USERID="+sessionStorage.USERID+"&DECKID="+deckno;
+		//Worker
+		Net.xhr({cgi:"perl/ocdeck.cgi", para:pars, fnc:"onDeckImport"});
+	}
+}
+function onDeckImport(recvstr){
+	DispDialog({dtype:"ok", msgs:["インポートしました。"]});
+}
+//####################################
+//Option Check
+Card.Tool.chkopt = function (arg){
+	var opts = [];
+	var tgt = [].concat(arg.tgt);
+	//Card No
+	if(arg.cno){
+		if(Card[arg.cno].opt){
+			opts = Card[arg.cno].opt.concat();
+		}
+	}
+	//Grid No
+	if(arg.gno){
+		if(Board.grid[arg.gno].status != "_BIND_"){
+			if(Card[Board.grid[arg.gno].cno].opt){
+				opts = Card[Board.grid[arg.gno].cno].opt.concat();
+				opts.push(Board.grid[arg.gno].status);
+			}
+		}
+	}
+	//Check
+	for(var i in opts){
+		for(var j in tgt){
+			if(opts[i].match(tgt[j])){
+				return true;
+			}
+		}
+	}
+	return false;
+}
 //Card表示
-function CardImgSet(arg){
+Card.Tool.imgset = function (arg){
 	var cno, cvs;
 	var card_src, frame_src, imgtype;
 	if(arg.cno){
@@ -273,119 +375,8 @@ function CardImgSet(arg){
 	}
 	Canvas.draw(para);
 }
-//##############################################################
-//リスト表示
-function DeckList(){
-	DisplaySet("DIV_DECK", 40);
-    //IDクリア
-    Player[Board.role].deckid = "";
-	//DECK LIST READ
-	var pars = "DECKCMD=LIST&USERID="+sessionStorage.USERID;
-	//Worker
-	Net.xhr({cgi:"perl/ocdeck.cgi", para:pars, fnc:"onDeckList"});
-}
-//リスト取得値セット
-function onDeckList(recvstr){
-	var wkdeck, button, deckname, clsnm, wkarr;
-	var recvcmd = recvstr.split(",");
-	if (recvcmd[0] != "0"){
-		for(var i=1; i<=Number(recvcmd[0]); i++){
-			wkdeck = recvcmd[i].split(":");
-			if(wkdeck[1].match(/\([0-9]+\)$/)){
-				wkarr = wkdeck[1].match(/^(.*)\(([0-9]+)\)$/);
-				deckname = wkarr[1];
-				clsnm = "class='DeckColor" + wkarr[2] + "'";
-			}else{
-				deckname = wkdeck[1];
-				clsnm = "";
-			}
-			button = "<button onclick='DeckSelect(\"" + recvcmd[i] + "\")' id='BTN_DECK" + wkdeck[0] + "' "+clsnm+">" + deckname + "</button>";
-			$("#SEL_DECKLIST").append(button);
-		}
-	}
-}
-//DECKデータ表示
-function DeckSelect(deckstr){
-	if(deckstr != null){
-		//Clear
-		if(Player[Board.role].deckid != ""){
-			$("#BTN_DECK" + Player[Board.role].deckid).css("backgroundColor", "");
-		}
-		//Set
-		var palet = {"C1":"DDDDDD","C2":"FFCCCC","C3":"CCCCFF","C4":"CCFFCC","C5":"FFFFCC","I":"EEEEEE","S":"EEDDFF"};
-		var deckdat = deckstr.split(":");
-        //ID保持
-        Player[Board.role].deckid = deckdat.shift();
-        Player[Board.role].deckname = deckdat.shift();
-        Player[Board.role].deckdata = deckdat.join(":");
-		if(Player[Board.role].deckid != ""){
-			$("#BTN_DECK" + Player[Board.role].deckid).css("backgroundColor", "#FF6600");
-		}
-
-		//Clear
-		$("#SEL_DECKSET button").remove();
-		if(deckdat.length > 0){
-            deckdat.sort();
-			for(var i=0; i<deckdat.length; i++){
-				var clrno = Card[deckdat[i]].type;
-				if(clrno == "C") clrno += Card[deckdat[i]].color;
-				var button = "<button oncontextmenu='CardInfo({cno:\""+deckdat[i]+"\"});return false;' style='background-color:#"+palet[clrno]+";'>" + Card[deckdat[i]].name + "</button>";
-				$("#SEL_DECKSET").append(button);
-			}
-		}
-	}
-}
-//DECK決定
-function DeckSend(){
-	if(Player[Board.role].deckid != ""){
-		//表示DIV削除
-		$("#DIV_DECK").remove();
-
-        //送信
-        var cmd = "deck:"+Player[Board.role].deckid+":"+ Player[Board.role].deckname;
-        Net.send(cmd);
-
-        //Deck数
-        Board.deckcnt += 1;
-        //プレイヤーデータセット
-        if(Board.playcnt == Board.deckcnt){
-            PlayerSetup();
-        }
-
-        //##### Debug #####
-        if(sessionStorage.Mode == "debug"){
-            for(var i=1; i<=4; i++){
-                //全員同データ
-                Player[i].deckid = Player[Board.role].deckid;
-                Player[i].deckname = Player[Board.role].deckname;
-                Player[i].deckdata = Player[Board.role].deckdata;
-            }
-            //デッキセレクトカウント
-            Board.deckcnt = 4;
-            //プレイヤーデータセット
-            PlayerSetup();
-        }
-	}
-}
-// ######[ インポート ]######
-function DeckImport(deckno){
-	if(deckno != ""){
-		if(!deckno.match(/^DT[0-9]{4}$/)){
-			return;
-		}
-		//DECK LIST READ
-		var pars = "DECKCMD=IMPORT&USERID="+sessionStorage.USERID+"&DECKID="+deckno;
-		//Worker
-		Net.xhr({cgi:"perl/ocdeck.cgi", para:pars, fnc:"onDeckImport"});
-	}
-}
 //
-function onDeckImport(recvstr){
-	DispDialog({dtype:"ok", msgs:["インポートしました。"]});
-}
-//#########################################################
-//
-function CardInfo(arg){
+Card.Tool.info = function (arg){
 	if(Board.step >= 1){
 		if(!arg){
 			DisplaySet('DIV_INFOCARD', 0);
@@ -393,9 +384,9 @@ function CardInfo(arg){
 			var cno = arg.cno || Player[Board.role].hand[arg.hno];
 			if(cno != ""){
 				//image set
-				CardImgSet({cvs:"CVS_INFOCARD", cno:cno});
+				Card.Tool.imgset({cvs:"CVS_INFOCARD", cno:cno});
 				//ifomation set
-				var cardhtml = CardInfoSet({tgt:"#DIV_INFOCARD_RIGHT", cno:cno});
+				Card.Tool.createinfo({tgt:"#DIV_INFOCARD_RIGHT", cno:cno});
 				//display
 				DisplaySet("DIV_INFOCARD", 60);
 			}
@@ -403,7 +394,7 @@ function CardInfo(arg){
 	}
 }
 //
-function CardInfoSet(arg){
+Card.Tool.createinfo = function (arg){
 	if(arg.cno != ""){
 		//detail
 		var infoarg = [];

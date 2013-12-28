@@ -92,7 +92,7 @@ function FlowSet(){
 				var msgs = [];
 				var btns = [];
 				msgs.push("あなたのターンです");
-				btns.push(["ＯＫ", "DrawStepInit()"]);
+				btns.push(["ＯＫ", "Card.Step.start()"]);
 				DispDialog({msgs:msgs, btns:btns});
 				//Sound Effect
 				Audie.seplay("info");
@@ -123,7 +123,7 @@ function PhaseEnd(){
 	if(Board.turn == Board.role){
 		switch(Board.step){
 			case 20: //Spell
-				Dice.StartPhase();
+                Dice.Step.start();
 				break;
 			case 21: //Spell(Cancel)
 				if(Card[Spell.cno].tgt.match(/^T.G.*$/)){
@@ -131,7 +131,7 @@ function PhaseEnd(){
 				}
 				break;
 			case 30: //Dice
-				Dice.StartPhase();
+                Dice.Step.start();
 				break;
 			case 40: //Summon
 				TurnEnd();
@@ -230,7 +230,7 @@ function TurnEnd(){
 			//表示
 			DispInfo();
 			DispPlayer();
-			SortHand();
+			Deck.Tool.sorthand();
 			//PHASEENDBUTTON
 			$("#BTN_PhaseEnd").html("-");
 			//GridLightクリア
@@ -250,7 +250,17 @@ function TurnEndFlow(step){
 			//ディスカードステップ
 			StepSet(98);
 			//ダイアログ
-			DiscardInit();
+			if(Board.role == Board.turn){
+				//step
+				Board.discardstep = 1;
+				//ダイアログ表示
+				DispDialog({msgs:["破棄するカード選択してください"]});
+			}else{
+				//step
+				Board.discardstep = 9;
+				//ダイアログ表示
+				DispDialog({msgs:["破棄カード選択中・・・"]});
+			}
 		}else{
 			TurnEndFlow(1);
 		}
@@ -480,7 +490,7 @@ function LogChkCard(msg){
 	if(String(msg).match(/##[CIS][0-9]{3}##/)){
 		cno = String(msg).match(/##[CIS][0-9]{3}##/);
 		cno = String(cno).replace(/##/g, "");
-		fnc = "<span class='c' onmousedown='CardInfo({cno:\""+cno+"\"});' onmouseout='CardInfo();'>";
+		fnc = "<span class='c' onmousedown='Card.Tool.info({cno:\""+cno+"\"});' onmouseout='Card.Tool.info();'>";
 		fnc += Card[cno].name;
 		fnc += "</span>";
 		ret = String(msg).replace(/##[CIS][0-9]{3}##/, fnc);

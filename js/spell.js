@@ -397,7 +397,7 @@ function SpellFire(i_flg){
 		//Draw X
 		for(var i=1; i<=drawcnt; i++){
 			//手札追加
-			var cno = Drawcard({pno:Spell.pno, from:"deck"});
+			var cno = Deck.Tool.draw({pno:Spell.pno, from:"deck"});
 			diagimg.push(cno);
 		}
 		if(Board.turn == Board.role){
@@ -407,7 +407,7 @@ function SpellFire(i_flg){
 		//msgpop
 		EffectBox({pattern:"msgpop", gno:Player[Spell.pno].stand, msg:"Draw", player:true});
 		//hand
-		if(Board.turn == Board.role) SortHand();
+		if(Board.turn == Board.role) Deck.Tool.sorthand();
 		//ReDisp
 		DispPlayer();
 		//復帰
@@ -424,13 +424,13 @@ function SpellFire(i_flg){
 		//Draw
 		var drawcnt = handcnt + 1;
 		for(var i=1; i<=drawcnt; i++){
-			Drawcard({pno:Spell.pno, from:"deck"});
+			Deck.Tool.draw({pno:Spell.pno, from:"deck"});
 		}
 		//msgpop
 		EffectBox({pattern:"msgpop", gno:Player[Spell.pno].stand, msg:"Draw", player:true});
 		//Logprint({msg:drawcnt+"枚ドロー", pno:Spell.pno});
 		//hand
-		if(Board.turn == Board.role) SortHand();
+		if(Board.turn == Board.role) Deck.Tool.sorthand();
 		//ReDisp
 		DispPlayer();
 		//WAIT
@@ -468,7 +468,7 @@ function SpellFire(i_flg){
 				if(Player[ipno].hand.length < 4){
 					//{Draw}
 					while(Player[ipno].hand.length < 4){
-						var cno = Drawcard({pno:ipno, from:"deck"});
+						var cno = Deck.Tool.draw({pno:ipno, from:"deck"});
 					}
 					//msgpop
 					EffectBox({pattern:"msgpop", gno:Player[ipno].stand, msg:"Draw", player:true});
@@ -484,7 +484,7 @@ function SpellFire(i_flg){
 				}
 				//Animation
 				EffectBox({pattern:"piecejump",pno:ipno});
-				if(ipno == Board.role) SortHand();
+				if(ipno == Board.role) Deck.Tool.sorthand();
 			}
 			//ReDisp
 			DispPlayer();
@@ -517,7 +517,7 @@ function SpellFire(i_flg){
 				Net.send(wkcmd);
 			}
 			//手札追加
-			Drawcard({pno:Spell.pno, from:"dno", dno:tgttop});
+			Deck.Tool.draw({pno:Spell.pno, from:"dno", dno:tgttop});
 			//msgpop
 			EffectBox({pattern:"msgpop", gno:Player[Spell.pno].stand, msg:"Draw", player:true});
 			//WAIT
@@ -689,7 +689,7 @@ function SpellFire(i_flg){
 			Player[Spell.pno].HandDel(Spell.cno);
 		}
 		if(Board.role == Board.turn){
-			SortHand();
+			Deck.Tool.sorthand();
 		}
 		//Damage
 		for(var i=0; i<Spell.target.length; i++){
@@ -787,7 +787,7 @@ function SpellFire(i_flg){
 			//手札追加
 			if(Player[tgtpno].hand.length < 10){
 				Player[tgtpno].hand.push(tgtcno);
-				if(tgtpno == Board.role) SortHand();
+				if(tgtpno == Board.role) Deck.Tool.sorthand();
 				Logprint({msg:"##"+tgtcno+"##は手札に戻った", pno:tgtpno});
 			}else{
 				Logprint({msg:"##"+tgtcno+"##を破棄", pno:tgtpno});
@@ -992,7 +992,7 @@ function SpellFire(i_flg){
 		//cantrip
 		if(Card[Spell.cno].opt[2] == "draw"){
 			var diagimg = [];
-			var cno = Drawcard({pno:Spell.pno, from:"deck"});
+			var cno = Deck.Tool.draw({pno:Spell.pno, from:"deck"});
 			diagimg.push(cno);
 			if(Board.turn == Board.role){
 				//ダイアログ
@@ -1001,7 +1001,7 @@ function SpellFire(i_flg){
 			//msgpop
 			EffectBox({pattern:"msgpop", gno:Player[Spell.pno].stand, msg:"Draw", player:true});
 			//hand
-			if(Board.turn == Board.role) SortHand();
+			if(Board.turn == Board.role) Deck.Tool.sorthand();
 			//ReDisp
 			DispPlayer();
 		}
@@ -1110,7 +1110,7 @@ function SpellFire(i_flg){
 				EffectBox({pattern:"piecejump",pno:tgtpno});
 				EffectBox({pattern:"discard", cno:tgtcno});
 				//手札再表示
-				if(tgtpno == Board.role) SortHand();
+				if(tgtpno == Board.role) Deck.Tool.sorthand();
 				//WAIT
 				wait = 400;
 			}else{
@@ -1137,7 +1137,7 @@ function SpellFire(i_flg){
 				EffectBox({pattern:"piecejump",pno:tgtpno});
 				EffectBox({pattern:"msgpop",gno:Player[tgtpno].stand, msg:"Discard", player:true});
 				//手札再表示
-				if(tgtpno == Board.role) SortHand();
+				if(tgtpno == Board.role) Deck.Tool.sorthand();
 			}
 		}
 		break;
@@ -1177,7 +1177,7 @@ function SpellFire(i_flg){
 					EffectBox({pattern:"msgpop",gno:Player[tgtpno].stand, msg:"+"+cardprice+"G", color:"#ffcc00", player:true});
 					Logprint({msg:Player[tgtpno].name+"から##" + tgtcno + "##を買った", pno:Spell.pno});
 					//手札再表示
-					if(tgtpno == Board.role) SortHand();
+					if(tgtpno == Board.role) Deck.Tool.sorthand();
 					//WAIT
 					wait = 400;
 				}else{
@@ -1226,13 +1226,13 @@ function SpellFire(i_flg){
 					Logprint({msg:"デッキをシャッフル", pno:tgtpno});
 					if(Board.role == tgtpno){
 						//次を用意
-						DeckShuffle({pno:tgtpno, tgt:"next"});
+						Deck.Tool.shuffle({pno:tgtpno, tgt:"next"});
 					}
 				}
 				//msgpop
 				EffectBox({pattern:"msgpop",gno:Player[tgtpno].stand, msg:"Drop", player:true});
 				//手札再表示
-				if(tgtpno == Board.role) SortHand();
+				if(tgtpno == Board.role) Deck.Tool.sorthand();
 			}else{
 				Logprint({msg:"対象がなかった", pno:tgtpno});
 			}
@@ -1450,7 +1450,7 @@ function SpellHandBack(){
 		Player[Spell.pno].hand.push(Spell.cno);
 		if(Board.role == Spell.pno){
 			//手札ソート
-			SortHand();
+			Deck.Tool.sorthand();
 		}
 	}
 	//Log
@@ -1489,7 +1489,7 @@ function SpellEnd(){
 	}
 	if(Board.role == Board.turn){
 		//手札ソート
-		SortHand();
+		Deck.Tool.sorthand();
 		if(Player[Spell.pno].dicepass){
 			//PHASEENDBUTTON
 			$("#BTN_PhaseEnd").html("-");
@@ -1510,7 +1510,7 @@ function SpellEnd(){
 	StepSet(30);
 	//パス
 	if(Player[Spell.pno].dicepass){
-		setTimeout(NoDiceRoll, 100);
+		setTimeout(Dice.Step.rollskip, 100);
 	}
 }
 //#############################################

@@ -39,11 +39,11 @@
 	<div id="DIV_MSG2"></div>
 	<div id="DIV_DIALOG_BACK"><div id="DIV_DIALOG"></div></div>
 	<div id="DIV_INFOGRID" onmouseover="GridInfoEscape()"></div>
-	<div id="DIV_INFOCARD" onclick="CardInfo()" onmouseout="CardInfo()">
+	<div id="DIV_INFOCARD" onclick="Card.Tool.info()" onmouseout="Card.Tool.info()">
 		<div id="DIV_INFOCARD_LEFT"><CANVAS id="CVS_INFOCARD" width="200" height="260"></CANVAS></div>
 		<div id="DIV_INFOCARD_RIGHT"></div>
 	</div>
-	<div id="DIV_DRAW" onclick="Draw2Hand()"><CANVAS id="CVS_DRAW" width="200" height="260"></CANVAS></div>
+	<div id="DIV_DRAW" onclick="Draw.Step.hand()"><CANVAS id="CVS_DRAW" width="200" height="260"></CANVAS></div>
 	<div id="DIV_RESULT">
 		<div id="DIV_RESULT_HEAD">RESULT</div>
 		<div><canvas id="CVS_GRAPH" width="400" height="200"></canvas></div>
@@ -90,7 +90,7 @@
 			<TD><div id='SEL_DECKLIST' class='CARDLIST'></div></TD>
 			<TD><div id='SEL_DECKSET'  class='CARDLIST'></div></TD>
 		</tr>
-		<tr><TD colspan='2' align='center'><BUTTON id="button_deckok" disabled="true" onclick='DeckSend()'>デッキ決定</BUTTON></td></tr>
+		<tr><TD colspan='2' align='center'><BUTTON id="button_deckok" disabled="true" onclick='Deck.Tool.deckok()'>デッキ決定</BUTTON></td></tr>
 	</table></div>
 	<!-- CONTROL PANEL -->
 	<div id="DIV_CONTROLPANEL">

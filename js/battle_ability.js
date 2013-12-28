@@ -93,7 +93,7 @@ function AbilityActive(arg){
 				}
 				//FLYING
 				if(abi[1].match(/^FLY/)){
-					if(CardOptCheck({cno:Battle.p[o_bno].cno, tgt:"@FLYING@"})){
+					if(Card.Tool.chkopt({cno:Battle.p[o_bno].cno, tgt:"@FLYING@"})){
 						act = true;
 					}
 				}
@@ -178,7 +178,7 @@ function BattleAbiAction(arg){
 				atk.item = cno;
 				def.item = "FIST";
 				//imgsrc
-				CardImgSet({cvs:"CVS_VSITEM"+arg.bno, cno:cno, zoom:0.5});
+				Card.Tool.imgset({cvs:"CVS_VSITEM"+arg.bno, cno:cno, zoom:0.5});
 				$("#DIV_VSITEM"+$r(arg.bno)).css("display", "none");
 				EffectBox({pattern:"itemdestroy", bno:$r(arg.bno), cno:cno});
 				//Log
@@ -415,7 +415,7 @@ function BattleAbiAction(arg){
 					BattleLog($r(arg.bno), Dic("@DISCARD@"));
 					Logprint({msg:"##" + cno + "##を破棄", pno:def.pno});
 					if(Board.role == def.pno){
-						SortHand();
+						Deck.Tool.sorthand();
 					}
 					break;
 				}
@@ -472,7 +472,7 @@ function BattleAbiAction(arg){
 					Player[atk.pno].hand.push(atk.cno);
 					if(Board.role == atk.pno){
 						//手札ソート
-						SortHand();
+						Deck.Tool.sorthand();
 					}
 				}
 				//Log
@@ -499,7 +499,7 @@ function BattleAbiAction(arg){
 					Logprint({msg:"*##" + atk.cno + "##は手札に戻った", pno:atk.pno});
 					if(Board.role == atk.pno){
 						//手札ソート
-						SortHand();
+						Deck.Tool.sorthand();
 					}
 				}else{
 					Logprint({msg:"*##" + atk.cno + "##を破棄", pno:atk.pno});
@@ -573,7 +573,7 @@ function BattleAbiAction(arg){
 					Logprint({msg:"*##" + atk.cno + "##は手札に戻った", pno:atk.pno});
 					if(Board.role == atk.pno){
 						//手札ソート
-						SortHand();
+						Deck.Tool.sorthand();
 					}
 				}else{
 					Logprint({msg:"*##" + atk.cno + "##を破棄", pno:atk.pno});
@@ -632,7 +632,7 @@ function BattleAbiAction(arg){
 					atk.status = "";
 					//Creature表示
 					$("#DIV_VSCARD"+arg.bno).css({height:0});
-					CardImgSet({cvs:"CVS_VSCARD"+arg.bno, cno:atk.cno});
+					Card.Tool.imgset({cvs:"CVS_VSCARD"+arg.bno, cno:atk.cno});
 					$("#DIV_VSCARD"+arg.bno).animate({height:260}, 2000);
 					//Log
 					BattleLog(arg.bno, Dic("@UROBOROS@"));

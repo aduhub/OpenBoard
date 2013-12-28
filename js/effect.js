@@ -8,7 +8,7 @@ function EffectBox(arg){
 			effdiv.css({position:"fixed", top:245, left:390, zIndex:300});
 			$("BODY").append(effdiv);
 			//Img
-			CardImgSet({cvs:"cvs"+effid, cno:arg.cno, zoom:0.5});
+			Card.Tool.imgset({cvs:"cvs"+effid, cno:arg.cno, zoom:0.5});
 			//CSS
 			CSSAnimation({obj:effdiv, class:"animeDiscard", remove:true});
 		}
@@ -23,7 +23,7 @@ function EffectBox(arg){
 			effdiv.one('webkitAnimationEnd', function(){$(this).remove();});
 			$("BODY").append(effdiv);
 			//Img
-			CardImgSet({cvs:"cvs"+effid, cno:arg.cno, zoom:0.5});
+			Card.Tool.imgset({cvs:"cvs"+effid, cno:arg.cno, zoom:0.5});
 		}
 		$T.stacktimer({key:"cardeffect", fnc:fnc, msec:800});
 		break;
@@ -101,7 +101,7 @@ function EffectBox(arg){
 		effdiv.one('webkitAnimationEnd', function(){$(this).remove();});
 		$("BODY").append(effdiv);
 		//Img
-		CardImgSet({cvs:"cvs"+effid, cno:Spell.cno});
+		Card.Tool.imgset({cvs:"cvs"+effid, cno:Spell.cno});
 		//Sound
 		Audie.seplay("spell");
 		break;

@@ -399,7 +399,7 @@ Grid.grep = function(arg){
 				}
 			}else{
 				//領地検索
-				if(CardOptCheck({cno:tgtgrid.cno, tgt:"@PROTECT@"}) || tgtgrid.status == "_PROTECT_"){
+				if(Card.Tool.chkopt({cno:tgtgrid.cno, tgt:"@PROTECT@"}) || tgtgrid.status == "_PROTECT_"){
 					protect = (antiprotect) ? false : true;
 				}
 				if(tg3[0] == "A" || (tg3[0] == "T" && protect == false)){
