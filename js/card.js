@@ -60,7 +60,7 @@ Draw.Step.end = function (){
 	StepSet(20);
 	if(Board.role == Board.turn){
 		//スペルチェック
-		SpellCheck();
+		Spell.Tool.chkHand();
 		//PHASEENDBUTTON
 		$("#BTN_PhaseEnd").html("ダイス");
 		//timer
@@ -273,12 +273,21 @@ Deck.Tool.deckok = function (){
 //------------------------------------
 //リスト取得値セット
 Deck.onList = function (recvstr){
+	var wkdeck, button, deckname, clsnm, wkarr;
 	var recvcmd = recvstr.split(",");
 	if (recvcmd[0] != "0"){
 		for(var i=1; i<=Number(recvcmd[0]); i++){
-			var wkdeck = recvcmd[i].split(":");
-			gid("SEL_DECKLIST").options[i - 1].value = recvcmd[i];
-			gid("SEL_DECKLIST").options[i - 1].text = "[" + wkdeck[0] + "]" + wkdeck[1];
+			wkdeck = recvcmd[i].split(":");
+			if(wkdeck[1].match(/\([0-9]+\)$/)){
+				wkarr = wkdeck[1].match(/^(.*)\(([0-9]+)\)$/);
+				deckname = wkarr[1];
+				clsnm = "class='DeckColor" + wkarr[2] + "'";
+			}else{
+				deckname = wkdeck[1];
+				clsnm = "";
+			}
+			button = "<button onclick='Deck.Tool.deckcard(\"" + recvcmd[i] + "\")' id='BTN_DECK" + wkdeck[0] + "' "+clsnm+">" + deckname + "</button>";
+			$("#SEL_DECKLIST").append(button);
 		}
 	}
 }

@@ -152,7 +152,7 @@ Grid.value = function (gno){
 	var tgtgrid = Board.grid[gno];
 	if(tgtgrid.color <= 10){
 		var wkbase = tgtgrid.gold;
-		var retarr = GridAbility({time:"GRID_VALUE", gno:i_no});
+		var retarr = GridAbility({time:"GRID_VALUE", gno:gno});
 		if($T.search(retarr, "act", "percent")){
 			wkbase = Math.floor(wkbase * $T.result.val);
 		}
@@ -907,7 +907,7 @@ function GridAbility(arg){
 										Summon.lf = Board.grid[arg.gno].lf;
 										Summon.maxlf = Board.grid[arg.gno].maxlf;
 										//
-										SummonGrid();
+										Summon.Step.setgrid();
 									}
 									retitem.push({act:"nightmare", arr:summonarr});
 									//Log

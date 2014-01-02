@@ -2,7 +2,6 @@
 // filename : var.js
 // update   : 2007-01-12 adu
 //===================================
-
 //ボード
 var Board = new clsBoard();
 //Player
@@ -11,12 +10,6 @@ Player[1] = new clsPlayer();
 Player[2] = new clsPlayer();
 Player[3] = new clsPlayer();
 Player[4] = new clsPlayer();
-//Spell
-var Spell = new clsSpell();
-//Summon
-var Summon = new clsSummon();
-//Territory
-var Territory = new clsTerritory();
 //Battle
 var Battle = new clsBattle();
 //Analytics

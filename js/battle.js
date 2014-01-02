@@ -680,7 +680,6 @@ function BattleResult(){
 		Summon.from = "battle";
 		Summon.pno = Battle.p[0].pno;
 		Summon.cno = Battle.p[0].cno;
-		Summon.hand = 0;
 		Summon.gno = Battle.gno;
 		Summon.st = Battle.p[0].st;
 		Summon.lf = Battle.p[0].lf;
@@ -780,7 +779,7 @@ function BattleClose(){
 	}
 	if(Battle.result == 1){
 		//次処理
-		SummonGrid();
+		Summon.Step.setgrid();
 	}else{
 		//ターン終了
 		StepSet(80);

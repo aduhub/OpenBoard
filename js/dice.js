@@ -307,7 +307,7 @@ Dice.Step.end = function (){
             Grid.light({arr:wkarr, save:true});
         }
         //
-        SummonCheck(Player[Board.role].stand);
+	    Summon.Step.start(Player[Board.role].stand);
 
         //PHASEENDBUTTON
         $("#BTN_PhaseEnd").html("ターンエンド");

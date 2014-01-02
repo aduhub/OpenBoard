@@ -20,7 +20,6 @@ function clsBoard(){
 	this.role     = 0;
 	this.turn     = 0;
 	this.step     = 0;
-	this.wait     = 0;
 	this.grave    = [];
 	this.spelled  = [];
 	this.timer    = 0;
@@ -176,36 +175,6 @@ function clsPlayer() {
 			return wkarr[topno];
 		}
 	}
-}
-//Spell
-function clsSpell(){
-	this.pno    = 0;
-	this.cno    = "";
-	this.tgttype= "";
-	this.check  = [];
-	this.target = [];
-}
-//Summon
-function clsSummon(){
-	this.from = "";
-	this.pno   = 0;
-	this.gno   = 0;
-	this.cno   = "";
-	this.hand  = 0;
-	this.st    = 0;
-	this.lf    = 0;
-	this.maxlf = 0;
-	this.status = "";
-}
-//Territory
-function clsTerritory(){
-	this.pno  = 0;
-	this.target = [];
-	this.gno  = 0;
-	this.cno  = "";
-	this.gno2 = "";
-	this.mvgno= [];
-	this.ability = "";
 }
 //Fighter
 function clsFighter(){

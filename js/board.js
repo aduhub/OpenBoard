@@ -363,50 +363,52 @@ function PlayerClick(i_no){
 	}
 }
 //グリッドクリック判定
-function GridClick(i_no){
+function GridClick(gno){
 	if(Board.turn == Board.role){
 		switch(Board.step){
 		case 21:
-			SpellTgtGirdCheck(i_no);
+			Spell.Step.chkGrid(gno);
 			break;
 		case 25:
-			if(Spell.check.indexOf(i_no) >= 0){
+			if(Spell.check.indexOf(gno) >= 0){
 				//使用確認
-				SpellTgtSecond({step:1, gno:i_no});
+				Spell.Step.second({step:1, gno:gno});
 			}
 			break;
 		case 32:
 			//移動先決定
-            Dice.Step.move(i_no);
+            Dice.Step.move(gno);
 			break;
 		case 36:
-			if(Dice.teleport.indexOf(i_no) >= 0){
-                Dice.Step.teleport({step:1, gno:i_no});
+			if(Dice.teleport.indexOf(gno) >= 0){
+                Dice.Step.teleport({step:1, gno:gno});
 			}
 			break;
 		case 40:
 			//スクロール
-			BoardScroll(i_no);
+			BoardScroll(gno);
 			//領地選択
-			TerritoryInit(i_no);
+			Territory.Step.start(gno);
 			break;
 		case 52:
 			//移動先決定
-			TerritoryMove(i_no, 0);
+			Territory.Step.move(gno, 0);
 			break;
 		case 54:
 			//領地選択
-			TerritoryAbility(i_no);
+			if(Territory.check.indexOf(gno) >= 0){
+				Territory.Step.ability(gno);
+			}
 			break;
 		case 92:
-			Grid.trans(i_no);
+			Grid.trans(gno);
 			break;
 		default:
 			if(sessionStorage.iPhone == "Y"){
 				return false;
 			}
 			//スクロール
-			BoardScroll(i_no);
+			BoardScroll(gno);
 			break;
 		}
 	}else{
@@ -414,7 +416,7 @@ function GridClick(i_no){
 			return false;
 		}
 		//スクロール
-		BoardScroll(i_no);
+		BoardScroll(gno);
 	}
 	//Sound Effect
 	Audie.seplay("click");
@@ -422,7 +424,7 @@ function GridClick(i_no){
 	//###### Debug ######
 	if(sessionStorage.Mode == "debug"){
 		if(Board.step == 20){
-			DebugGridInfo(i_no);
+			DebugGridInfo(gno);
 		}
 	}
 }
@@ -439,20 +441,18 @@ function HandClick(hno){
 			switch(Board.step){
 			case 20:
 				//コストチェック
-				if(SpellCost(hno)){
-					SpellTarget(hno);
-				}
+				Spell.Step.chkTarget(hno);
 				break;
 			case 40: //Summon
 				//コストチェック
-				if(SummonCost(Player[Board.role].stand, Player[Board.role].hand[hno]) == "OK"){
-					SummonConfirm({from:"summon", step:0, hno:hno});
+				if(Summon.Tool.chkcost(Player[Board.role].stand, Player[Board.role].hand[hno]) == "OK"){
+					Summon.Step.confirm({from:"summon", step:0, hno:hno});
 				}
 				break;
 			case 53: //Trritory(Summon)
 				//コストチェック
-				if(SummonCost(Territory.gno, Player[Board.role].hand[hno]) == "OK"){
-					SummonConfirm({from:"change", step:0, hno:hno});
+				if(Summon.Tool.chkcost(Territory.gno, Player[Board.role].hand[hno]) == "OK"){
+					Summon.Step.confirm({from:"change", step:0, hno:hno});
 				}
 				break;
 			case 98: //Dicard(TurnEnd)

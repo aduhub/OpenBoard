@@ -92,7 +92,7 @@ function FlowSet(){
 				var msgs = [];
 				var btns = [];
 				msgs.push("あなたのターンです");
-				btns.push(["ＯＫ", "Card.Step.start()"]);
+				btns.push(["ＯＫ", "Draw.Step.start()"]);
 				DispDialog({msgs:msgs, btns:btns});
 				//Sound Effect
 				Audie.seplay("info");
@@ -127,7 +127,7 @@ function PhaseEnd(){
 				break;
 			case 21: //Spell(Cancel)
 				if(Card[Spell.cno].tgt.match(/^T.G.*$/)){
-					SpellConfirm(2);
+					Spell.Step.confirm(9);
 				}
 				break;
 			case 30: //Dice
@@ -139,7 +139,8 @@ function PhaseEnd(){
 			case 52: //Trritory(Move)
 			case 53: //Trritory(Summon)
 			case 54: //T Ability
-				TerritoryDialog(5);
+				//cancel
+				Territory.Step.dialog(9);
 				break;
 		}
 	}

@@ -208,14 +208,14 @@ var Frame = {
 					if(Board.step == 20){
 						runflg = 1;
 						//スペル
-						SpellRecv(1, logpno, logpara);
+						Spell.Step.recv({cmd:logpara});
 					}
 					break;
 				case "spellplus":
 					if(Board.step == 25){
 						runflg = 1;
 						//セカンドターゲット
-						SpellRecv(2, logpno, logpara);
+						Spell.Step.recv({cmd:logpara, plus:true});
 					}
 					break;
 				case "spellback":
@@ -223,7 +223,7 @@ var Frame = {
 						runflg = 1;
 						var dno = Number(logpara);
 						//復帰
-						SpellDeckBack({step:1, dno:dno});
+						Spell.Tool.deckback({step:1, dno:dno});
 					}
 					break;
 				case "dice":
@@ -261,14 +261,14 @@ var Frame = {
 					if(Board.step == 40){
 						runflg = 1;
 						//受信処理
-						SummonRecv(logpno, logcmd, logpara);
+						Summon.Step.recv(logpno, logcmd, logpara);
 					}
 					break;
 				case "territory":
 					if(Board.step == 40){
 						runflg = 1;
 						//受信処理
-						TerritoryRecv(logpno, logpara);
+						Territory.Step.recv(logpno, logpara);
 					}
 					break;
 				case "item":

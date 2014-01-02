@@ -1,5 +1,16 @@
+var Summon = {};
+Summon.Step = {};
+Summon.Tool = {};
+Summon.from = "";
+Summon.pno   = 0;
+Summon.gno   = 0;
+Summon.cno   = "";
+Summon.st    = 0;
+Summon.lf    = 0;
+Summon.maxlf = 0;
+Summon.status = "";
 //
-function SummonCheck(i_gno){
+Summon.Step.start = function (i_gno){
 	//クリア
 	Summon.from = "summon";
 	Summon.pno = 0;
@@ -14,7 +25,7 @@ function SummonCheck(i_gno){
 		if(Card[cno].type != "C"){
 			$("#DIV_HAND"+i).addClass("CLS_HAND_GLAY");
 		}else{
-			switch(SummonCost(i_gno, cno)){
+			switch(Summon.Tool.chkcost(i_gno, cno)){
 			case "NG":
 				Canvas.draw({id:"CVS_HAND"+i, src:"img/icon_nouse.gif"});
 				break;
@@ -28,8 +39,157 @@ function SummonCheck(i_gno){
 		}
 	}
 }
+//使用確認
+Summon.Step.confirm = function (arg){
+	//確認なし
+	StepSet(41);
+	Summon.from = arg.from;
+	Summon.pno = Board.role;
+	Summon.cno = Player[Board.role].hand[arg.hno];
+	Summon.gno = (arg.from == "summon") ? Player[Board.role].stand : Territory.gno;
+	Summon.status = "";
+	//ステップ
+	StepSet(42);
+	Summon.Step.ready();
+}
+//受信処理
+Summon.Step.recv = function (){
+	var arg = arguments;
+	var wkarr = arg[2].split(":");
+	//変数設定
+	Summon.from = arg[1];
+	Summon.pno = arg[0];
+	Summon.cno = wkarr[0];
+	Summon.gno = Number(wkarr[1]);
+	Summon.status = "";
+	//スクロール
+	BoardScroll(Summon.gno);
+	//矢印表示
+	DivImg("DIV_GCLICK"+Summon.gno, "arrow2");
+	//Step
+	StepSet(42);
+	//準備設定
+	Summon.Step.ready();
+}
+//
+Summon.Step.ready = function (){
+	//ダイアログ非表示
+	DispDialog("none");
+
+	//コスト消費
+	Player[Summon.pno].gold -= Card[Summon.cno].cost;
+	//カード消費
+	Player[Summon.pno].HandDel(Summon.cno);
+	//交換時手札追加
+	if(Summon.from == "change"){
+		Player[Summon.pno].hand.push(Board.grid[Summon.gno].cno);
+	}
+	//Analytics
+	Analytics.costsummon[Summon.pno] += Card[Summon.cno].cost;
+	
+	if(Board.turn == Board.role){
+		//コマンド送信
+		Net.send(Summon.from+":"+Summon.cno+":"+Summon.gno);
+		//手札再表示
+		Deck.Tool.sorthand();
+	}
+	//手札再表示
+	DispPlayer();
+
+	if(Summon.from == "summon" && Board.grid[Summon.gno].owner != 0){
+		//Log
+		Logprint({msg:"(侵略召喚)##"+Summon.cno+"##", pno:Summon.pno});
+		//戦闘
+		BattleInit("S", Summon.gno, Board.turn, Summon.cno);
+	}else{
+		//Log
+		var summoncomment = (Summon.from == "summon") ? "支配" : "交換";
+		Logprint({msg:"("+summoncomment+"召喚)##"+Summon.cno+"##", pno:Summon.pno});
+		//ステップ
+		StepSet(42);
+		//次処理
+		setTimeout(function(){Summon.Step.setgrid();}, 400);
+	}
+}
+//
+Summon.Step.setgrid = function (){
+	if(["summon","change","territory"].indexOf(Summon.from) >= 0){
+		//手札・矢印表示
+		if(Board.role == Board.turn){
+			//PHASEENDBUTTON
+			$("#BTN_PhaseEnd").html("-");
+		}else{
+			DivImg("DIV_GCLICK"+Summon.gno, "");
+		}
+	}
+	//グリッドセット
+	var sgrid = Board.grid[Summon.gno];
+	sgrid.owner = Summon.pno;
+	sgrid.cno = Summon.cno;
+	switch(Summon.from){
+	case "summon":
+	case "change":
+		sgrid.st = Card[Summon.cno].st;
+		sgrid.lf = Card[Summon.cno].lf;
+		sgrid.maxlf = Card[Summon.cno].lf;
+		sgrid.status = "";
+		sgrid.statime = 0;
+		break;
+	case "battle":
+		sgrid.st = Summon.st;
+		sgrid.lf = Summon.lf;
+		sgrid.maxlf = Summon.maxlf;
+		sgrid.status = Summon.status;
+		sgrid.statime = (Summon.status != "") ? 99 : 0;
+		break;
+	case "territory":
+		sgrid.st = Card[Summon.cno].st;
+		sgrid.lf = Card[Summon.cno].lf;
+		sgrid.maxlf = Card[Summon.cno].lf;
+		sgrid.status = "";
+		sgrid.statime = 0;
+		break;
+	case "copy":
+		sgrid.st = Summon.st;
+		sgrid.lf = Summon.lf;
+		sgrid.maxlf = Summon.maxlf;
+		sgrid.status = "";
+		sgrid.statime = 0;
+		break;
+	}
+	//地形カラー
+	Grid.Img.set(Summon.gno);
+	Grid.Img.tax({gno:Summon.gno});
+	//再表示
+	DispPlayer();
+	//エフェクト
+	EffectBox({pattern:"summon", gno:Summon.gno, pno:Summon.pno, cno:Summon.cno});
+	EffectBox({pattern:"msgpop", gno:Summon.gno, msg:"Summon"});
+	//LogPrint
+	if(Summon.from != "change"){
+		CustomLog({type:"colorcnt", pno:Summon.pno, color:sgrid.color});
+		EffectBox({pattern:"lvlpop", level:sgrid.level, chain:Grid.count({owner:Summon.pno, color:sgrid.color})});
+	}
+	//back
+	if(["summon", "change", "battle"].indexOf(Summon.from) >= 0){
+		setTimeout(Summon.Step.end, 1000);
+	}
+	if(Summon.from == "territory"){
+		Territory.Step.end(1.0);
+	}
+}
+//End
+Summon.Step.end = function (){
+	//ステップ
+	StepSet(50);
+	if(Board.role == Board.turn){
+		//TurnEnd
+		TurnEnd();
+	}
+}
+//--------------------------
 //コストチェック
-function SummonCost(i_gno, i_cno){
+Summon.Tool.chkcost = function (i_gno, i_cno){
 	var ret = "NG";
 	var colorno = {N:1, F:2, W:3, E:4, D:5};
 	var nocolor = ["","N","F","W","E","D"];
@@ -55,14 +215,14 @@ function SummonCost(i_gno, i_cno){
 		//##### CardAbi #####
 		for(var i in Card[i_cno].opt){
 			switch(Card[i_cno].opt[i]){
-			case "@WALL@":
-				chk.invasion = false;
-				break;
-			case "@LEGEND@":
-				if(Board.grid[i_gno].level == 1){
-					chk.levelcap = false;
-				}
-				break;
+				case "@WALL@":
+					chk.invasion = false;
+					break;
+				case "@LEGEND@":
+					if(Board.grid[i_gno].level == 1){
+						chk.levelcap = false;
+					}
+					break;
 			}
 		}
 		//##### GridAbi #####
@@ -120,159 +280,4 @@ function SummonCost(i_gno, i_cno){
 	}
 	return ret;
 }
-//使用確認
-function SummonConfirm(arg){
-	//確認なし
-	StepSet(41);
-	Summon.from = arg.from;
-	Summon.pno = Board.role;
-	Summon.cno = Player[Board.role].hand[arg.hno];
-	Summon.gno = (arg.from == "summon") ? Player[Board.role].stand : Territory.gno;
-	Summon.status = "";
-	//ステップ
-	StepSet(42);
-	SummonReady();
-}
-//受信処理
-function SummonRecv(){
-	var arg = arguments;
-	var wkarr = arg[2].split(":");
-	//変数設定
-	Summon.from = arg[1];
-	Summon.pno = arg[0];
-	Summon.cno = wkarr[0];
-	Summon.gno = Number(wkarr[1]);
-	Summon.status = "";
-	//スクロール
-	BoardScroll(Summon.gno);
-	//矢印表示
-	DivImg("DIV_GCLICK"+Summon.gno, "arrow2");
-	//Step
-	StepSet(42);
-	//準備設定
-	SummonReady();
-}
-function SummonReady(){
-	//ダイアログ非表示
-	DispDialog("none");
 
-	//コスト消費
-	Player[Summon.pno].gold -= Card[Summon.cno].cost;
-	//カード消費
-	Player[Summon.pno].HandDel(Summon.cno);
-	//交換時手札追加
-	if(Summon.from == "change"){
-		Player[Summon.pno].hand.push(Board.grid[Summon.gno].cno);
-	}
-	//Analytics
-	Analytics.costsummon[Summon.pno] += Card[Summon.cno].cost;
-	
-	if(Board.turn == Board.role){
-		//コマンド送信
-		Net.send(Summon.from+":"+Summon.cno+":"+Summon.gno);
-		//手札再表示
-		Deck.Tool.sorthand();
-	}
-	//手札再表示
-	DispPlayer();
-
-	if(Summon.from == "summon" && Board.grid[Summon.gno].owner != 0){
-		//Log
-		Logprint({msg:"(侵略召喚)##"+Summon.cno+"##", pno:Summon.pno});
-		//戦闘
-		BattleInit("S", Summon.gno, Board.turn, Summon.cno);
-	}else{
-		//Log
-		var summoncomment = (Summon.from == "summon") ? "支配" : "交換";
-		Logprint({msg:"("+summoncomment+"召喚)##"+Summon.cno+"##", pno:Summon.pno});
-		//ステップ
-		StepSet(42);
-		//次処理
-		setTimeout(function(){SummonGrid();}, 400);			
-	}
-}
-//
-function SummonGrid(){
-	if(["summon", "change", "territory"].indexOf(Summon.from) >= 0){
-		//手札・矢印表示
-		if(Board.role == Board.turn){
-			//PHASEENDBUTTON
-			$("#BTN_PhaseEnd").html("-");
-		}else{
-			DivImg("DIV_GCLICK"+Summon.gno, "");
-		}
-	}
-	//グリッドセット
-	var sgrid = Board.grid[Summon.gno];
-	sgrid.owner = Summon.pno;
-	sgrid.cno = Summon.cno;
-	switch(Summon.from){
-	case "summon":
-	case "change":
-		sgrid.st = Card[Summon.cno].st;
-		sgrid.lf = Card[Summon.cno].lf;
-		sgrid.maxlf = Card[Summon.cno].lf;
-		sgrid.status = "";
-		sgrid.statime = 0;
-		break;
-	case "battle":
-		sgrid.st = Summon.st;
-		sgrid.lf = Summon.lf;
-		sgrid.maxlf = Summon.maxlf;
-		sgrid.status = Summon.status;
-		sgrid.statime = (Summon.status != "") ? 99 : 0;
-		break;
-	case "territory":
-		sgrid.st = Card[Summon.cno].st;
-		sgrid.lf = Card[Summon.cno].lf;
-		sgrid.maxlf = Card[Summon.cno].lf;
-		sgrid.status = "";
-		sgrid.statime = 0;
-		break;
-	case "copy":
-		sgrid.st = Summon.st;
-		sgrid.lf = Summon.lf;
-		sgrid.maxlf = Summon.maxlf;
-		sgrid.status = "";
-		sgrid.statime = 0;
-		break;
-	}
-	//地形カラー
-	Grid.Img.set(Summon.gno);
-	Grid.Img.tax({gno:Summon.gno});
-	//再表示
-	DispPlayer();
-	//エフェクト
-	//SummonEffect();
-	EffectBox({pattern:"summon", gno:Summon.gno, pno:Summon.pno, cno:Summon.cno});
-	EffectBox({pattern:"msgpop", gno:Summon.gno, msg:"Summon"});
-	//LogPrint
-	if(Summon.from != "change"){
-		CustomLog({type:"colorcnt", pno:Summon.pno, color:sgrid.color});
-		EffectBox({pattern:"lvlpop", level:sgrid.level, chain:Grid.count({owner:Summon.pno, color:sgrid.color})});
-	}
-	//back
-	if(["summon", "change", "battle"].indexOf(Summon.from) >= 0){
-		setTimeout(SummonEnd, 1000);
-	}
-	if(Summon.from == "territory"){
-		setTimeout(TerritoryEnd, 1000);
-	}
-}
-//End
-function SummonEnd(){
-	//ステップ
-	StepSet(50);
-	if(Board.role == Board.turn){
-		//TurnEnd
-		TurnEnd();
-	}
-}
-//#################################################################
-//aculoエフェクト
-function SummonEffect(){
-	//[Disp Animation]
-	$("#DIV_GICON"+Summon.gno).css({display:"none", backgroundImage: "url(img/icon/"+Card[Summon.cno].imgsrc.replace(".png", "")+".gif)"});
-	$("#DIV_GICON"+Summon.gno).fadeIn(1000);
-	
-}
