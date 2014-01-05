@@ -3,7 +3,7 @@
 function BattleInit(){
 	var arg = arguments;
 	//戦闘初期処理
-	StepSet(71);
+	Flow.step(71);
 
 	//変数設定
 	Battle.result = 0;
@@ -141,7 +141,7 @@ function BattleInit(){
 		setTimeout(ItemCheck, 500);
 	}else{
 		//結果待ち
-		StepSet(73);
+		Flow.step(73);
 	}
 }
 //アイテムチェック
@@ -149,7 +149,7 @@ function ItemCheck(){
 	var chkflg, handcno, opts;
 	var fig = (Battle.p[0].pno == Board.role) ? Battle.p[0] : Battle.p[1];
 	//Item選択
-	StepSet(72);
+	Flow.step(72);
 	//CardCheck
 	for(var i in Player[Board.role].hand){
 		chkflg = "";
@@ -205,7 +205,7 @@ function BattleItem(arg){
 		if(Battle.p[i].pno == arg.pno && Battle.p[i].item == ""){
 			if(arg.pno == Board.role && Board.step == 72){
 				//結果待ち
-				StepSet(73);
+				Flow.step(73);
 				//PHASEENDBUTTON
 				$("#BTN_PhaseEnd").html("-");
 				//アイコン設定
@@ -241,7 +241,7 @@ function BattleItem(arg){
 //######################[ MAIN ]#######################
 function BattleFight(){
 	Battle.wait = 1000;
-	StepSet(74);
+	Flow.step(74);
 	//########## Item ##########
 	for(var i=0; i<=1; i++){
 		if(Battle.p[i].item == "FIST"){
@@ -782,10 +782,10 @@ function BattleClose(){
 		Summon.Step.setgrid();
 	}else{
 		//ターン終了
-		StepSet(80);
+		Flow.step(80);
 		if(Board.role == Board.turn){
 			//TurnEnd
-			TurnEnd();
+			Flow.Step.turnend();
 		}
 	}
 }
@@ -808,7 +808,7 @@ function BattleStPlus(i_bno){
 		if(gno != 0){
 			if(Battle.from == "M" && Battle.gno_atk == gno){
 			}else{
-				if(Team(Board.grid[gno].owner) == Team(Battle.p[i_bno].pno)){
+				if(Flow.Tool.team(Board.grid[gno].owner) == Flow.Tool.team(Battle.p[i_bno].pno)){
 					wkret += 10;
 				}
 			}

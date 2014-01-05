@@ -214,7 +214,7 @@ function BattleAbiAction(arg){
 				if(Battle.from == "M" && Battle.gno_atk == wkgno){
 					continue;
 				}
-				if(Team(Board.grid[wkgno].owner) == Team(atk.pno)){
+				if(Flow.Tool.team(Board.grid[wkgno].owner) == Flow.Tool.team(atk.pno)){
 					abiswitch[1] = true;
 				}
 				if(Board.grid[wkgno].color >= 10 && Board.grid[wkgno].color <= 14){
@@ -237,7 +237,7 @@ function BattleAbiAction(arg){
 				if(wkgno != 0){
 					if(Battle.from == "M" && Battle.gno_atk == wkgno){
 					}else{
-						if(Team(Board.grid[wkgno].owner) == Team(Battle.p[arg.bno].pno)){
+						if(Flow.Tool.team(Board.grid[wkgno].owner) == Flow.Tool.team(Battle.p[arg.bno].pno)){
 							atk.lfplus += 20;
 						}
 					}
@@ -689,7 +689,7 @@ function BtAbilityExNo(i_bno, i_str){
 		case /4CLR/.test(i_str): //4Color
 			var clrcnt = [0, 0, 0, 0, 0, 0];
 			for(var i=1; i<Board.grid.length; i++){
-				if(Team(Board.grid[i].owner) == Team(Battle.p[$r(i_bno)].pno)){
+				if(Flow.Tool.team(Board.grid[i].owner) == Flow.Tool.team(Battle.p[$r(i_bno)].pno)){
 					clrcnt[Board.grid[i].color]++;
 				}
 			}
@@ -737,7 +737,7 @@ function BtAbilityExNo(i_bno, i_str){
 		case /IFRIT/.test(i_str): //Fire Up Water Down
 			var clrcnt = [0, 0];
 			for(var i=1; i<Board.grid.length; i++){
-				if(Board.grid[i].color == 2 && Team(Board.grid[i].owner) == Team(Battle.p[i_bno].pno)){
+				if(Board.grid[i].color == 2 && Flow.Tool.team(Board.grid[i].owner) == Flow.Tool.team(Battle.p[i_bno].pno)){
 					clrcnt[0]++;
 				}
 			}
@@ -764,7 +764,7 @@ function BtAbilityExNo(i_bno, i_str){
 			var colorarr = ["", "N", "F", "W", "E", "D"];
 			for(var i=1; i<Board.grid.length; i++){
 				var colorno = Board.grid[i].color;
-				if(Team(Board.grid[i].owner) == Team(Battle.p[i_bno].pno) && terms[1].match(colorarr[colorno])){
+				if(Flow.Tool.team(Board.grid[i].owner) == Flow.Tool.team(Battle.p[i_bno].pno) && terms[1].match(colorarr[colorno])){
 					retno += Number(terms[2]);
 				}
 			}

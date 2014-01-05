@@ -42,14 +42,14 @@ Summon.Step.start = function (i_gno){
 //使用確認
 Summon.Step.confirm = function (arg){
 	//確認なし
-	StepSet(41);
+	Flow.step(41);
 	Summon.from = arg.from;
 	Summon.pno = Board.role;
 	Summon.cno = Player[Board.role].hand[arg.hno];
 	Summon.gno = (arg.from == "summon") ? Player[Board.role].stand : Territory.gno;
 	Summon.status = "";
 	//ステップ
-	StepSet(42);
+	Flow.step(42);
 	Summon.Step.ready();
 }
 //受信処理
@@ -63,11 +63,11 @@ Summon.Step.recv = function (){
 	Summon.gno = Number(wkarr[1]);
 	Summon.status = "";
 	//スクロール
-	BoardScroll(Summon.gno);
+	UI.Tool.scrollBoard(Summon.gno);
 	//矢印表示
 	DivImg("DIV_GCLICK"+Summon.gno, "arrow2");
 	//Step
-	StepSet(42);
+	Flow.step(42);
 	//準備設定
 	Summon.Step.ready();
 }
@@ -106,7 +106,7 @@ Summon.Step.ready = function (){
 		var summoncomment = (Summon.from == "summon") ? "支配" : "交換";
 		Logprint({msg:"("+summoncomment+"召喚)##"+Summon.cno+"##", pno:Summon.pno});
 		//ステップ
-		StepSet(42);
+		Flow.step(42);
 		//次処理
 		setTimeout(function(){Summon.Step.setgrid();}, 400);
 	}
@@ -181,10 +181,10 @@ Summon.Step.setgrid = function (){
 //End
 Summon.Step.end = function (){
 	//ステップ
-	StepSet(50);
+	Flow.step(50);
 	if(Board.role == Board.turn){
 		//TurnEnd
-		TurnEnd();
+		Flow.Step.turnend();
 	}
 }
 //--------------------------

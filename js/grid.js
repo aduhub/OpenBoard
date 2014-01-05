@@ -86,7 +86,7 @@ Grid.damage = function(arg){
 				}
 				//スクロール
 				if(arg.scroll){
-					BoardScroll(gno);
+					UI.Tool.scrollBoard(gno);
 				}
 			}
 			$T.stacktimer({fnc:fnc, msec:100});
@@ -127,7 +127,7 @@ Grid.setstatus = function (arg){
 				}
 				//スクロール
 				if(arg.scroll){
-					BoardScroll(gno);
+					UI.Tool.scrollBoard(gno);
 				}
 			}
 			$T.stacktimer({fnc:fnc, msec:100});
@@ -137,7 +137,7 @@ Grid.setstatus = function (arg){
 //Count ({owner, color, maxcnt})
 Grid.count = function (arg){
 	var retarr = Board.grid.filter(function(val, idx ,arr){
-		if(arg.owner && Team(val.owner) != Team(arg.owner)) return false;
+		if(arg.owner && Flow.Tool.team(val.owner) != Flow.Tool.team(arg.owner)) return false;
 		if(arg.color && val.color != arg.color) return false;
 		if(arg.cno_color && Card[val.cno].color != arg.cno_color) return false;
 		return true;
@@ -270,7 +270,7 @@ Grid.Img.set = function(gno){
 	//Canvas
 	var pos = {x:Number(Board.grid[gno].left), y:Number(Board.grid[gno].top)};
 	var img1 = "GRID" + Board.grid[gno].color;
-	var img2 = "img/border" + Team(Board.grid[gno].owner) + Board.grid[gno].level + ".gif";
+	var img2 = "img/border" + Flow.Tool.team(Board.grid[gno].owner) + Board.grid[gno].level + ".gif";
 	Canvas.draw({id:"CVS_BACK", src:[Canvas.srcs[img1], img2], x:pos.x, y:pos.y});
 	//
 	if(Board.grid[gno].owner >= 1){
@@ -404,12 +404,12 @@ Grid.grep = function(arg){
 				}
 				if(tg3[0] == "A" || (tg3[0] == "T" && protect == false)){
 					if(tg3[1] == "M"){
-						if(Team(tgtgrid.owner) != Team(arg.pno)){
+						if(Flow.Tool.team(tgtgrid.owner) != Flow.Tool.team(arg.pno)){
 							continue;
 						}
 					}
 					if(tg3[1] == "O"){
-						if(Team(tgtgrid.owner) == Team(arg.pno)){
+						if(Flow.Tool.team(tgtgrid.owner) == Flow.Tool.team(arg.pno)){
 							continue;
 						}
 					}
@@ -424,7 +424,7 @@ Grid.grep = function(arg){
 				if(Board.grid[i].owner == 0){
 					optflg = true;
 				}else{
-					if(Team(Board.grid[i].owner) != Team(arg.pno) && Board.grid[i].status != "_JAIL_"){
+					if(Flow.Tool.team(Board.grid[i].owner) != Flow.Tool.team(arg.pno) && Board.grid[i].status != "_JAIL_"){
 						optflg = true;
 					}
 				}
@@ -654,7 +654,7 @@ Grid.trans = function(gno){
 	if(arguments.length == 0){
 		//所持金マイナス
 		if(Player[Board.turn].gold < 0){
-			StepSet(92);
+			Flow.step(92);
 			//領地有無
 			if(Grid.count({owner:Board.turn}) >= 1){
 				//role
@@ -672,11 +672,11 @@ Grid.trans = function(gno){
 					PopBigMsg("枯渇終了", 8);
 				}else{
 					//【魔力枯渇】
-					Bankrupt();
+					Flow.Tool.bankrupt();
 					//ライト
 					Grid.light({clear:true});
 					//ターン終了
-					setTimeout(function(){TurnEndFlow(9);}, 4000);
+					setTimeout(function(){Flow.Step.endphase(9);}, 4000);
 				}
 			}
 		}else{
@@ -684,12 +684,12 @@ Grid.trans = function(gno){
 			//ライト
 			Grid.light({clear:true});
 			//ターン終了
-			setTimeout(function(){TurnEndFlow(9);}, 2000);
+			setTimeout(function(){Flow.Step.endphase(9);}, 2000);
 		}
 	}else{
 		//【領地売却】
-		if(Team(Board.grid[gno].owner) == Team(Board.turn)){
-			StepSet(93);
+		if(Flow.Tool.team(Board.grid[gno].owner) == Flow.Tool.team(Board.turn)){
+			Flow.step(93);
 			//Animation
 			EffectBox({pattern:"soldout", gno:i_no});
 			////コマンド送信
@@ -781,7 +781,7 @@ function GridAbility(arg){
 					}
 					break;
 				case /^@STEAL@/.test(ability[i]):
-					if(Team(Board.turn) != Team(tgtgrid.owner)){
+					if(Flow.Tool.team(Board.turn) != Flow.Tool.team(tgtgrid.owner)){
 						var gold = Math.floor(Player[Board.turn].gold / 10);
 						if(Player[Board.turn].gold <= gold){
 							gold = Player[Board.turn].gold;
@@ -850,7 +850,7 @@ function GridAbility(arg){
 				//種別分岐
 				switch(true){
 				case /^_LINKGATE_/.test(ability[i]):
-					if(Team(tgtgrid.owner) == Team(Board.turn)){
+					if(Flow.Tool.team(tgtgrid.owner) == Flow.Tool.team(Board.turn)){
 						var wkarr = [];
 						for(var igno=1; igno<Board.grid.length; igno++){
 							if(Board.grid[igno].owner >= 1 && Board.grid[igno].status == "_LINKGATE_"){

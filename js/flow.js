@@ -1,4 +1,7 @@
-function FlowSet(){
+var Flow = {};
+Flow.Step = {};
+Flow.Tool = {};
+Flow.set = function (){
 	var arg = arguments;
 	switch(arg[0]){
 	case "BOARD_START":
@@ -37,7 +40,7 @@ function FlowSet(){
 				PopBigMsg("期間終了", 8);
 				return;
 			}else{
-				FlowSet("ROUND_START");
+				Flow.set("ROUND_START");
 				Board.turn = 1;
 				if(LastRoundPop()){
 					wait = 2000;
@@ -47,9 +50,9 @@ function FlowSet(){
 			Board.turn++;
 		}
 		if(Board.sudden){
-			setTimeout(function(){FlowSet("TRUN_SUDDEN_CHECK")}, wait);
+			setTimeout(function(){Flow.set("TRUN_SUDDEN_CHECK")}, wait);
 		}else{
-			setTimeout(function(){FlowSet("TURN_SETUP")}, wait);
+			setTimeout(function(){Flow.set("TURN_SETUP")}, wait);
 		}
 		break;
 	case "TRUN_SUDDEN_CHECK":
@@ -69,22 +72,22 @@ function FlowSet(){
 				}
 			}
 		}
-		setTimeout(function(){FlowSet("TURN_SETUP")}, wait);
+		setTimeout(function(){Flow.set("TURN_SETUP")}, wait);
 		break;
 	case "TURN_SETUP":
 		if(Board.step != 100){
 			//ターン開始処理
-			StepSet(11);
+			Flow.step(11);
 			//Log
 			Logprint({msg:Board.turn+" プレイヤーターン", pno:Board.turn, ltype:"system"});
 			//BGM
 			Audie.bgmchk();
 			//.Z-INDEX セット
-			SortZIndex("player");
+			UI.Html.sortZindex("player");
 			//スクロール
-			BoardScroll(Player[Board.turn].stand);
+			UI.Tool.scrollBoard(Player[Board.turn].stand);
 			//呪いチェック
-			TurnStatusCheck();
+			Flow.Tool.chkstatus();
 			//FortLight
 			Grid.fortlight();
 			//ロールチェック
@@ -100,7 +103,7 @@ function FlowSet(){
 			//##### Debug #####
 			if(sessionStorage.Mode == "debug"){
 				if(Board.turn != Board.role){
-					setTimeout(function(){TurnEndFlow(0);}, 500);
+					setTimeout(function(){Flow.Step.endphase(0);}, 500);
 				}
 			}
 		}
@@ -111,7 +114,7 @@ function FlowSet(){
 	DispPlayer();
 }
 //
-function StepSet(stepno){
+Flow.step = function (stepno){
 	Board.step = stepno;
 	//Info
 	DispInfoPlus(stepno);
@@ -119,7 +122,7 @@ function StepSet(stepno){
 	Chessclock.stepchk();
 }
 //
-function PhaseEnd(){
+Flow.endPhase = function (){
 	if(Board.turn == Board.role){
 		switch(Board.step){
 			case 20: //Spell
@@ -134,7 +137,7 @@ function PhaseEnd(){
                 Dice.Step.start();
 				break;
 			case 40: //Summon
-				TurnEnd();
+				Flow.Step.turnend();
 				break;
 			case 52: //Trritory(Move)
 			case 53: //Trritory(Summon)
@@ -154,33 +157,223 @@ function PhaseEnd(){
 	//Sound Effect
 	Audie.seplay("click");
 }
-//####################################################
-//
-function Team(pno){
+//ターン終了
+Flow.Step.turnend = function (){
+	if(Board.turn == Board.role){
+		if(Board.step >= 40 && Board.step < 90 && Board.step % 10 == 0){
+			Flow.step(91);
+			//send
+			Net.send("turn");
+
+			//表示
+			DispInfo();
+			DispPlayer();
+			Deck.Tool.sorthand();
+			//PHASEENDBUTTON
+			$("#BTN_PhaseEnd").html("-");
+			//GridLightクリア
+			Grid.light({clear:true});
+
+			//Close
+			Flow.Step.endphase(0);
+		}
+	}
+}
+//ターン終了処理
+Flow.Step.endphase = function (step){
+	switch(step){
+	case 0: //Discard
+		//ハンドチェック
+		if(Player[Board.turn].hand.length >= 7){
+			//ディスカードステップ
+			Flow.step(98);
+			//ダイアログ
+			if(Board.role == Board.turn){
+				//step
+				Board.discardstep = 1;
+				//ダイアログ表示
+				DispDialog({msgs:["破棄するカード選択してください"]});
+			}else{
+				//step
+				Board.discardstep = 9;
+				//ダイアログ表示
+				DispDialog({msgs:["破棄カード選択中・・・"]});
+			}
+		}else{
+			Flow.Step.endphase(1);
+		}
+		break;
+	case 1: //Tax
+		Flow.step(91);
+		//##### GridAbi #####
+		var ret = GridAbility({gno:Player[Board.turn].stand, time:"TURNCLOSE"});
+		//通行料支払い
+		var wait = Flow.Tool.taxpay();
+		//再実行
+		setTimeout(function(){Flow.Step.endphase(2);}, wait);
+		break;
+	case 2: //Trans
+		//マイナスチェック
+		if(Player[Board.turn].gold < 0){
+			if(Board.role == Board.turn){
+				if(Grid.count({owner:Board.turn}) >= 1){
+					var msgs = ["売却する土地を選択して下さい"];
+					DispDialog({msgs:msgs, dtype:"ok"});
+				}
+			}
+			//トランス
+			Grid.trans();
+		}else{
+			Flow.Step.endphase(9);
+		}
+		break;
+	case 9: //Close
+		//アップキープ
+		Flow.Tool.upkeep();
+		//Log
+		Logprint({msg:"ターンエンド", pno:Board.turn, ltype:"system"});
+		//次ターン
+		Flow.set("TURN_START", Board.turn);
+		break;
+	}
+}
+//全体終了
+Flow.Step.endgame = function (i_flg){
+	var now = new Date();
+	var hh, mm;
+	var wkstr = "";
+	var goalpno = 0;
+	var prate = [null, [], [], [], []];
+	var prank = [0, 0, 0, 0, 0];
+
+	//非表示
+	$("#DIV_HANDFRAME").remove();
+	$("#DIV_TIMEKEEP ").remove();
+
+	//表示
+	DispPlayer();
+
+	//BGM Stop
+	Audie.stop("map");
+	Audie.play("goal");
+
+	//順位計算
+	wkstr = "<table border='0' cellspacing='0' cellpadding='2'>";
+	//目標達成時
+	if(i_flg == 9){
+		goalpno = Board.turn;
+		Graph.data[0] = Board.round;
+		for(var i=1; i<=Board.playcnt; i++){
+			Graph.data[i].push(TotalGold(i));
+		}
+	}
+	//rank order
+	for(var irank=1; irank<=Board.playcnt; irank++){
+		for(var ipno=1; ipno<=Board.playcnt; ipno++){
+			if(PlayerRank(ipno, goalpno) == irank){
+				//html
+				wkstr += RankLineEdit({no:irank, pno:ipno});
+				//Analytics
+				Analytics.rank.push({pno:ipno, rank:irank, g:TotalGold(ipno)});
+				//rate
+				prank[ipno] = irank;
+				prate[irank].push(Player[ipno].rate);
+			}
+		}
+	}
+	//Rate
+	var chgpoint = RateCalc(prank, prate);
+	//時間取得
+	hh = (now.getHours() < 10) ? "0"+now.getHours() : now.getHours();
+	mm = (now.getMinutes() < 10) ? "0"+now.getMinutes() : now.getMinutes();
+	Analytics.hhmm[1] = hh+":"+mm;
+	//footer
+	wkstr += "<tr><td colspan='3'>終了ラウンド "+Board.round+" R</td></tr>";
+	wkstr += "<tr><td colspan='3'>経過時間 "+Analytics.hhmm[0]+" ～ "+Analytics.hhmm[1]+"</td></tr>";
+	wkstr += "</table>";
+	//表示
+	$("#DIV_RESULT_DETAIL").html(wkstr);
+	Graph.target = Board.target;
+	Graph.BaseInit();
+	Graph.Draw();
+	$("#DIV_RESULT").css("display", "block");
+	$("#DIV_RESULTBTN").css("display", "block");
+
+	//終了確認送信
+	if(Board.role >= 1 && Board.role <= 4){
+		//result send
+		$T.search(Analytics.rank, "pno", Board.role);
+		Net.send("gameend:"+$T.result.rank+":"+$T.result.g);
+
+		//rate update
+		if((Board.playcnt == 4 && !Board.alliance) || sessionStorage.Mode == "debug"){
+			var newrate;
+			if(prank[Board.role] == 1){
+				newrate = Player[Board.role].rate + chgpoint[Board.role];
+			}else{
+				newrate = Player[Board.role].rate - chgpoint[Board.role];
+			}
+			if(Analytics.rankmode == "YOSEN"){
+				sessionStorage.USERRATE2 = newrate;
+				var pars = "LOGCMD=UPDATE&USERID=" + sessionStorage.USERID + "&RATE2=" + newrate;
+			}else{
+				sessionStorage.USERRATE = newrate;
+				var pars = "LOGCMD=UPDATE&USERID=" + sessionStorage.USERID + "&RATE=" + newrate;
+			}
+			if(sessionStorage.Mode == "join"){
+				$.ajax({url:'perl/oclogin.cgi', data:pars, timeout:5000});
+			}
+			//
+			EffectBox({pattern:"ratepop", rate:newrate});
+		}
+	}
+}
+//######################################
+//チーム番号
+Flow.Tool.team = function (pno){
 	var teamno = 0;
 	if(Board.alliance){
 		switch(Number(pno)){
-		case 1:
-			teamno = 1;
-			break;
-		case 2:
-			teamno = 2;
-			break;
-		case 3:
-			teamno = 1;
-			break;
-		case 4:
-			teamno = 2;
-			break;
+			case 1:
+				teamno = 1;
+				break;
+			case 2:
+				teamno = 2;
+				break;
+			case 3:
+				teamno = 1;
+				break;
+			case 4:
+				teamno = 2;
+				break;
 		}
 	}else{
 		teamno = pno;
 	}
 	return teamno;
 }
-//####################################################
-//
-function TurnStatusCheck(){
+//アップキープ
+Flow.Tool.upkeep = function (){
+	if(Board.turn >= 1){
+		//呪い経過(プレイヤー)
+		if(Player[Board.turn].status != ""){
+			//9以下は時間判定
+			if(Player[Board.turn].statime <= 9){
+				Player[Board.turn].statime--;
+			}
+		}
+		for(var i=1; i<Board.grid.length; i++){
+			if(Board.grid[i].status != ""){
+				//9以下は時間判定
+				if(Board.grid[i].statime <= (9 * Board.playcnt)){
+					Board.grid[i].statime--;
+				}
+			}
+		}
+	}
+}
+//呪い継続
+Flow.Tool.chkstatus = function (){
 	var tgtcno, tgtpno;
 	//初期化
 	Player[Board.turn].dicepass = false;
@@ -220,113 +413,12 @@ function TurnStatusCheck(){
 		}
 	}
 }
-//
-function TurnEnd(){
-	if(Board.turn == Board.role){
-		if(Board.step >= 40 && Board.step < 90 && Board.step % 10 == 0){
-			StepSet(91);
-			//send
-			Net.send("turn");
-
-			//表示
-			DispInfo();
-			DispPlayer();
-			Deck.Tool.sorthand();
-			//PHASEENDBUTTON
-			$("#BTN_PhaseEnd").html("-");
-			//GridLightクリア
-			Grid.light({clear:true});
-
-			//Close
-			TurnEndFlow(0);
-		}
-	}
-}
-//終了処理
-function TurnEndFlow(step){
-	switch(step){
-	case 0: //Discard
-		//ハンドチェック
-		if(Player[Board.turn].hand.length >= 7){
-			//ディスカードステップ
-			StepSet(98);
-			//ダイアログ
-			if(Board.role == Board.turn){
-				//step
-				Board.discardstep = 1;
-				//ダイアログ表示
-				DispDialog({msgs:["破棄するカード選択してください"]});
-			}else{
-				//step
-				Board.discardstep = 9;
-				//ダイアログ表示
-				DispDialog({msgs:["破棄カード選択中・・・"]});
-			}
-		}else{
-			TurnEndFlow(1);
-		}
-		break;
-	case 1: //Tax
-		StepSet(91);
-		//##### GridAbi #####
-		var ret = GridAbility({gno:Player[Board.turn].stand, time:"TURNCLOSE"});
-		//通行料支払い
-		var wait = TaxPayment();
-		//再実行
-		setTimeout(function(){TurnEndFlow(2);}, wait);
-		break;
-	case 2: //Trans
-		//マイナスチェック
-		if(Player[Board.turn].gold < 0){
-			if(Board.role == Board.turn){
-				if(Grid.count({owner:Board.turn}) >= 1){
-					var msgs = ["売却する土地を選択して下さい"];
-					DispDialog({msgs:msgs, dtype:"ok"});
-				}
-			}
-			//トランス
-			Grid.trans();
-		}else{
-			TurnEndFlow(9);
-		}
-		break;
-	case 9: //Close
-		//アップキープ
-		TurnUpkeep();
-		//Log
-		Logprint({msg:"ターンエンド", pno:Board.turn, ltype:"system"});
-		//次ターン
-		FlowSet("TURN_START", Board.turn);
-		break;
-	}
-}
-//アップキープ
-function TurnUpkeep(){
-	if(Board.turn >= 1){
-		//呪い経過(プレイヤー)
-		if(Player[Board.turn].status != ""){
-			//9以下は時間判定
-			if(Player[Board.turn].statime <= 9){
-				Player[Board.turn].statime--;
-			}
-		}
-		for(var i=1; i<Board.grid.length; i++){
-			if(Board.grid[i].status != ""){
-				//9以下は時間判定
-				if(Board.grid[i].statime <= (9 * Board.playcnt)){
-					Board.grid[i].statime--;
-				}
-			}
-		}
-	}
-}
-//##########################################################
 //通行料支払い
-function TaxPayment(){
+Flow.Tool.taxpay = function (){
 	var wkstand = Player[Board.turn].stand;
 	var tgtgrid = Board.grid[wkstand];
 	var reciptpno = tgtgrid.owner;
-	if(Team(tgtgrid.owner) >= 1 && Team(tgtgrid.owner) != Team(Board.turn)){
+	if(Flow.Tool.team(tgtgrid.owner) >= 1 && Flow.Tool.team(tgtgrid.owner) != Flow.Tool.team(Board.turn)){
 		//##### Enchat #####
 		var encarr = [];
 		for(var i=1; i<=Board.playcnt; i++){
@@ -388,7 +480,7 @@ function TaxPayment(){
 	}
 }
 //魔力枯渇
-function Bankrupt(){
+Flow.Tool.bankrupt = function (){
 	//Mssage Pop
 	PopBigMsg("魔力枯渇", 1);
 	//ReStart
@@ -408,7 +500,7 @@ function Bankrupt(){
 	//Log
 	Logprint({msg:"枯渇救済 "+wkgold+"G", pno:Board.turn});
 }
-//####################################################
+//######################################
 function PopBigMsg(i_msg, i_flg){
 	$("#DIV_MSG").html("<B>"+i_msg+"</B>");
 	//Effect
@@ -418,13 +510,13 @@ function PopBigMsg(i_msg, i_flg){
 	//Delay Next
 	switch(i_flg){
 	case 0:
-		setTimeout(function(){FlowSet("TURN_START", 0);}, 4000);
+		setTimeout(function(){Flow.set("TURN_START", 0);}, 4000);
 		break;
 	case 8:
-		setTimeout(function(){EndGame(8);}, 3000);
+		setTimeout(function(){Flow.Step.endgame(8);}, 3000);
 		break;
 	case 9:
-		setTimeout(function(){EndGame(9);}, 3000);
+		setTimeout(function(){Flow.Step.endgame(9);}, 3000);
 		break;
 	}
 }
@@ -523,97 +615,6 @@ function CustomLog(arg){
 	}
 }
 //#################################################################
-// 全体終了
-function EndGame(i_flg){
-	var now = new Date();
-	var hh, mm;
-	var wkstr = "";
-	var goalpno = 0;
-	var prate = [null, [], [], [], []];
-	var prank = [0, 0, 0, 0, 0];
-
-	//非表示
-	$("#DIV_HANDFRAME").remove();
-	$("#DIV_TIMEKEEP ").remove();
-
-	//表示
-	DispPlayer();
-
-	//BGM Stop
-	Audie.stop("map");
-	Audie.play("goal");
-
-	//順位計算
-	wkstr = "<table border='0' cellspacing='0' cellpadding='2'>";
-	//目標達成時
-	if(i_flg == 9){
-		goalpno = Board.turn;
-		Graph.data[0] = Board.round;
-		for(var i=1; i<=Board.playcnt; i++){
-			Graph.data[i].push(TotalGold(i));
-		}
-	}
-	//rank order
-	for(var irank=1; irank<=Board.playcnt; irank++){
-		for(var ipno=1; ipno<=Board.playcnt; ipno++){
-			if(PlayerRank(ipno, goalpno) == irank){
-				//html
-				wkstr += RankLineEdit({no:irank, pno:ipno});
-				//Analytics
-				Analytics.rank.push({pno:ipno, rank:irank, g:TotalGold(ipno)});
-				//rate
-				prank[ipno] = irank;
-				prate[irank].push(Player[ipno].rate);
-			}
-		}
-	}
-	//Rate
-	var chgpoint = RateCalc(prank, prate);
-	//時間取得
-	hh = (now.getHours() < 10) ? "0"+now.getHours() : now.getHours();
-	mm = (now.getMinutes() < 10) ? "0"+now.getMinutes() : now.getMinutes();
-	Analytics.hhmm[1] = hh+":"+mm;
-	//footer
-	wkstr += "<tr><td colspan='3'>終了ラウンド "+Board.round+" R</td></tr>";
-	wkstr += "<tr><td colspan='3'>経過時間 "+Analytics.hhmm[0]+" ～ "+Analytics.hhmm[1]+"</td></tr>";
-	wkstr += "</table>";
-	//表示
-	$("#DIV_RESULT_DETAIL").html(wkstr);
-	Graph.target = Board.target;
-	Graph.BaseInit();
-	Graph.Draw();
-	$("#DIV_RESULT").css("display", "block");
-	$("#DIV_RESULTBTN").css("display", "block");
-
-	//終了確認送信
-	if(Board.role >= 1 && Board.role <= 4){
-		//result send
-		$T.search(Analytics.rank, "pno", Board.role);
-		Net.send("gameend:"+$T.result.rank+":"+$T.result.g);
-		
-		//rate update
-		if((Board.playcnt == 4 && !Board.alliance) || sessionStorage.Mode == "debug"){
-			var newrate;
-			if(prank[Board.role] == 1){
-				newrate = Player[Board.role].rate + chgpoint[Board.role];
-			}else{
-				newrate = Player[Board.role].rate - chgpoint[Board.role];
-			}
-			if(Analytics.rankmode == "YOSEN"){
-				sessionStorage.USERRATE2 = newrate;
-				var pars = "LOGCMD=UPDATE&USERID=" + sessionStorage.USERID + "&RATE2=" + newrate;
-			}else{
-				sessionStorage.USERRATE = newrate;
-				var pars = "LOGCMD=UPDATE&USERID=" + sessionStorage.USERID + "&RATE=" + newrate;
-			}
-			if(sessionStorage.Mode == "join"){
-				$.ajax({url:'perl/oclogin.cgi', data:pars, timeout:5000});
-			}
-			//
-			EffectBox({pattern:"ratepop", rate:newrate});
-		}
-	}
-}
 function RateCalc(rankarr, ratearr){
 	var winpoint = 0;
 	var winnum = 0;

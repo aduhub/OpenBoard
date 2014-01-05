@@ -9,7 +9,7 @@ Draw.Step.start = function (){
 	//ターンプレイヤー
 	if(Board.turn == Board.role){
 		//ドロー・クリック待ち
-		StepSet(12);
+		Flow.step(12);
 		//dialog off
 		DispDialog("none");
 		//draw
@@ -26,7 +26,7 @@ Draw.Step.start = function (){
 Draw.Step.hand = function (){
 	var encret, nlog = false;
 	//ドロー
-	StepSet(13);
+	Flow.step(13);
 	if(Board.turn == Board.role){
 		//コマンド
 		Net.send("draw");
@@ -57,7 +57,7 @@ Draw.Step.hand = function (){
 //ドロー終了
 Draw.Step.end = function (){
 	//ドロー終了
-	StepSet(20);
+	Flow.step(20);
 	if(Board.role == Board.turn){
 		//スペルチェック
 		Spell.Tool.chkHand();
@@ -201,7 +201,7 @@ Deck.Tool.discard = function (arg){
 		Deck.Tool.sorthand();
 	}
 	//Step 処理
-	TurnEndFlow(1);
+	Flow.Step.endphase(1);
 }
 //リスト表示
 Deck.Tool.decklist = function (){

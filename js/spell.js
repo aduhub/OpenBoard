@@ -41,7 +41,7 @@ Spell.Step.chkTarget = function (hno){
 			$("#BTN_PhaseEnd").addClass(Chessclock.set(21));
 		}
 		//ターゲット設定
-		StepSet(21);
+		Flow.step(21);
 	}
 	//ターゲット・全体の～
 	if(tgt.match(/^A.*$/)){
@@ -58,7 +58,7 @@ Spell.Step.chkTarget = function (hno){
 			Spell.target = Grid.grep({pno:Board.turn, tgt:tgt});
 		}
 		//ターゲット確定
-		StepSet(22);
+		Flow.step(22);
 		//使用確認
 		Spell.Step.confirm();
 	}
@@ -85,7 +85,7 @@ Spell.Step.TargetOk = function (){
 		//ターゲット追加
 		Spell.target.push(arg[0]);
 		//ターゲット確定
-		StepSet(22);
+		Flow.step(22);
 		//使用確認
 		Spell.Step.confirm();
 		break;
@@ -99,7 +99,7 @@ Spell.Step.chkGrid = function (gno){
 		var tgtarr = Card[Spell.cno].tgt.split(",");
 		if(tgtarr.length == Spell.target.length){
 			//ターゲット確定
-			StepSet(22);
+			Flow.step(22);
 			//使用確認
 			Spell.Step.confirm();
 		}else{
@@ -131,7 +131,7 @@ Spell.Step.confirm = function (flg){
 			//送信
 			Net.send(wkcmd);
 			//Spell aculo
-			StepSet(23);
+			Flow.step(23);
 			//Animation
 			EffectBox({pattern:"spellpuff"});
 			//効果実行
@@ -145,7 +145,7 @@ Spell.Step.confirm = function (flg){
 			//PHASEENDBUTTON
 			$("#BTN_PhaseEnd").html("ダイス");
 			//巻き戻し
-			StepSet(20);
+			Flow.step(20);
 			break;
 		}
 	}
@@ -158,7 +158,7 @@ Spell.Step.recv = function (arg){
 		Spell.cno = wkarr[0];
 		Spell.target = wkarr[1].split("_");
 		//Spell aculo
-		StepSet(23);
+		Flow.step(23);
 		//エフェクト
 		EffectBox({pattern:"spellpuff"});
 		//効果実行
@@ -302,13 +302,13 @@ Spell.Step.fire = function (){
 		Player[Board.turn].gold += wkgold;
 		Player[tgtpno].gold -= wkgold;
 		//スクロール
-		BoardScroll(Player[tgtpno].stand);
+		UI.Tool.scrollBoard(Player[tgtpno].stand);
 		//Animation
 		EffectBox({pattern:"piecejump",pno:tgtpno});
 		EffectBox({pattern:"msgpop", gno:Player[tgtpno].stand, msg:wkgold+"G", color:"#ff0000", player:true});
 		setTimeout(function(){
 			//スクロール
-			BoardScroll(Player[Board.turn].stand);
+			UI.Tool.scrollBoard(Player[Board.turn].stand);
 			//msgpop
 			EffectBox({pattern:"msgpop", gno:Player[Board.turn].stand, msg:wkgold+"G", color:"#ffcc00", player:true});
 		}, 1500);
@@ -361,7 +361,7 @@ Spell.Step.fire = function (){
 			//Log
 			Logprint({msg:Player[pno].name+"はテレポートした", pno:pno});
 		}else{
-			StepSet(25);
+			Flow.step(25);
 			//Role Player
 			if(Board.turn == Board.role){
 				Spell.check = mvto;
@@ -420,7 +420,7 @@ Spell.Step.fire = function (){
 	case "FLATLINE":
 		var rnd, cno, hand;
 		if(i_flg == 0){
-			StepSet(25);
+			Flow.step(25);
 			Spell.target = [];
 			if(Board.turn == Board.role){
 				for(var ipno=1; ipno<=Board.playcnt; ipno++){
@@ -476,7 +476,7 @@ Spell.Step.fire = function (){
 	case "FORESIGHT":
 		if(i_flg == 0){
 			if(Player[Board.turn].DeckCount() > 0){
-				StepSet(25);
+				Flow.step(25);
 				//Role Player
 				if(Board.turn == Board.role){
 					Spell.Step.second({step:0});
@@ -516,7 +516,7 @@ Spell.Step.fire = function (){
 		//地形表示
 		Grid.Img.set(tgtgno);
 		//スクロール
-		BoardScroll(tgtgno);
+		UI.Tool.scrollBoard(tgtgno);
 		//animation
 		EffectBox({pattern:"focusin", gno:tgtgno});
 		//矢印
@@ -529,7 +529,7 @@ Spell.Step.fire = function (){
 		break;
 	case "INFLUENCE":
 		if(i_flg == 0){
-			StepSet(25);
+			Flow.step(25);
 			if(Board.turn == Board.role){
 				var tgtpno = Board.grid[Number(Spell.target[0])].owner;
 				var maxcnt = 0;
@@ -565,7 +565,7 @@ Spell.Step.fire = function (){
 			//地形表示
 			Grid.Img.set(tgtgno);
 			//スクロール
-			BoardScroll(tgtgno);
+			UI.Tool.scrollBoard(tgtgno);
 			//animation
 			EffectBox({pattern:"focusin", gno:tgtgno});
 			//矢印
@@ -578,7 +578,7 @@ Spell.Step.fire = function (){
 		break;
 	case "FRACTURE":
 		if(i_flg == 0){
-			StepSet(25);
+			Flow.step(25);
 			if(Board.role == Board.turn){
 				var tgtgno = Number(Spell.target[0]);
 				var extarr = [];
@@ -621,7 +621,7 @@ Spell.Step.fire = function (){
 				DivImg("DIV_GCLICK"+tgtgno2, "arrow4");
 				
 				//スクロール
-				BoardScroll(tgtgno1);
+				UI.Tool.scrollBoard(tgtgno1);
 				//地形表示
 				Grid.Img.set(tgtgno1);
 				//animation
@@ -629,7 +629,7 @@ Spell.Step.fire = function (){
 				EffectBox({pattern:"msgpop", gno:tgtgno1, msg:"Lv" + baselevel + ">1"});
 				setTimeout(function(){
 					//スクロール
-					BoardScroll(tgtgno2);
+					UI.Tool.scrollBoard(tgtgno2);
 					//地形表示
 					Grid.Img.set(tgtgno2);
 					//animation
@@ -695,7 +695,7 @@ Spell.Step.fire = function (){
 		break;
 	case "DISTORTION":
 		if(i_flg == 0){
-			StepSet(25);
+			Flow.step(25);
 			if(Board.role == Board.turn){
 				var tgtgno = Number(Spell.target[0]);
 				var tgtpno = Board.grid[tgtgno].owner;
@@ -730,7 +730,7 @@ Spell.Step.fire = function (){
 			//ダメージあり
 			if(tgtdno != 0){
 				//スクロール
-				BoardScroll(tgtgno);
+				UI.Tool.scrollBoard(tgtgno);
 				//グリッドセット
 				var tgtgrid = Board.grid[tgtgno];
 				tgtgrid.owner = tgtpno;
@@ -762,7 +762,7 @@ Spell.Step.fire = function (){
 		//ダメージあり
 		if(Board.grid[tgtgno].lf < Board.grid[tgtgno].maxlf){
 			//スクロール
-			BoardScroll(tgtgno);
+			UI.Tool.scrollBoard(tgtgno);
 			//クリア
 			Grid.clear({gno:tgtgno});
 			//手札追加
@@ -796,7 +796,7 @@ Spell.Step.fire = function (){
 		//表示
 		Grid.Img.tax({gno:tgtgno});
 		//スクロール
-		BoardScroll(tgtgno);
+		UI.Tool.scrollBoard(tgtgno);
 		//矢印
 		DivImg("DIV_GCLICK"+tgtgno, "arrow4");
 		//msgpop
@@ -818,7 +818,7 @@ Spell.Step.fire = function (){
 			//矢印
 			DivImg("DIV_GCLICK"+nowgno, "arrow4");
 			//スクロール
-			BoardScroll(tgtgno);
+			UI.Tool.scrollBoard(tgtgno);
 			//ログ
 			Logprint({msg:"##"+wkcno+"##は移動した", pno:Board.turn});
 			wait = 2000;
@@ -847,7 +847,7 @@ Spell.Step.fire = function (){
 		//矢印
 		DivImg("DIV_GCLICK"+tgtgno, "arrow4");
 		//スクロール
-		BoardScroll(tgtgno);
+		UI.Tool.scrollBoard(tgtgno);
 		wait = 2000;
 		break;
 	case "RELIEF":
@@ -924,13 +924,13 @@ Spell.Step.fire = function (){
 		DivImg("DIV_GCLICK"+tgtgno1, "arrow4");
 		DivImg("DIV_GCLICK"+tgtgno2, "arrow4");
 		//スクロール
-		BoardScroll(tgtgno1);
+		UI.Tool.scrollBoard(tgtgno1);
 		//Animation
 		EffectBox({pattern:"impact",gno:tgtgno1});
 		EffectBox({pattern:"msgpop",gno:tgtgno1, msg:"ST>"+starr[1]});
 		setTimeout(function(){
 			//スクロール
-			BoardScroll(tgtgno2);
+			UI.Tool.scrollBoard(tgtgno2);
 			//Animation
 			EffectBox({pattern:"impact",gno:tgtgno2});
 			EffectBox({pattern:"msgpop",gno:tgtgno2, msg:"ST>"+starr[0]});
@@ -948,7 +948,7 @@ Spell.Step.fire = function (){
 		tgtgrid.maxlf = Math.max(0, tgtgrid.maxlf - 20);
 		tgtgrid.lf = Math.min(tgtgrid.lf, tgtgrid.maxlf);
 		//スクロール
-		BoardScroll(tgtgno);
+		UI.Tool.scrollBoard(tgtgno);
 		//msgpop
 		EffectBox({pattern:"msgpop",gno:tgtgno, msg:"MHP-20"});
 		if(Board.grid[tgtgno].lf > 0){
@@ -1000,7 +1000,7 @@ Spell.Step.fire = function (){
 		var gridgroup = [];
 		var tgtgno = Number(Spell.target[0]);
 		//スクロール
-		BoardScroll(tgtgno);
+		UI.Tool.scrollBoard(tgtgno);
 		//矢印
 		DivImg("DIV_GCLICK"+tgtgno, "arrow4");
 		//Search
@@ -1015,7 +1015,7 @@ Spell.Step.fire = function (){
 		break;
 	case "LINKGATE":
 		if(i_flg == 0){
-			StepSet(25);
+			Flow.step(25);
 			//Role Player
 			if(Board.turn == Board.role){
 				Spell.Step.second({step:0});
@@ -1060,10 +1060,10 @@ Spell.Step.fire = function (){
 		break;
 	case "SHUTTER":
 		if(i_flg == 0){
-			StepSet(25);
+			Flow.step(25);
 			var tgtpno = Spell.target[0];
 			//スクロール
-			BoardScroll(Player[tgtpno].stand);
+			UI.Tool.scrollBoard(Player[tgtpno].stand);
 			//Animation
 			EffectBox({pattern:"piecejump",pno:tgtpno});
 			//Role Player
@@ -1125,7 +1125,7 @@ Spell.Step.fire = function (){
 	case "MARKET":
 		var cardprice = 80;
 		if(i_flg == 0){
-			StepSet(25);
+			Flow.step(25);
 			//Role Player
 			if(Board.turn == Board.role){
 				Spell.Step.second({step:0});
@@ -1145,7 +1145,7 @@ Spell.Step.fire = function (){
 			if(tgtpno != "9"){
 				if(Player[Board.turn].gold >= cardprice){
 					//スクロール
-					BoardScroll(Player[tgtpno].stand);
+					UI.Tool.scrollBoard(Player[tgtpno].stand);
 					//Animation
 					EffectBox({pattern:"piecejump",pno:tgtpno});
 					//手札削除
@@ -1171,10 +1171,10 @@ Spell.Step.fire = function (){
 		break;
 	case "COMPRESSION":
 		if(i_flg == 0){
-			StepSet(25);
+			Flow.step(25);
 			var tgtpno = Spell.target[0];
 			//スクロール
-			BoardScroll(Player[tgtpno].stand);
+			UI.Tool.scrollBoard(Player[tgtpno].stand);
 			//Animation
 			EffectBox({pattern:"piecejump",pno:tgtpno});
 			//Role Player
@@ -1259,7 +1259,7 @@ Spell.Step.second = function (arg){
 			}else{
 				Spell.target.push("0");
 				//ターゲット確定
-				StepSet(24);
+				Flow.step(24);
 				//使用確認
 				Spell.Step.fire(true);
 			}
@@ -1270,7 +1270,7 @@ Spell.Step.second = function (arg){
 			//ターゲット追加
 			Spell.target.push(arg.cno);
 			//ターゲット確定
-			StepSet(24);
+			Flow.step(24);
 			//使用確認
 			Spell.Step.fire(true);
 			break;
@@ -1302,7 +1302,7 @@ Spell.Step.second = function (arg){
 			//ターゲット追加
 			Spell.target.push(arg.dno);
 			//ターゲット確定
-			StepSet(24);
+			Flow.step(24);
 			//使用確認
 			Spell.Step.fire(true);
 			break;
@@ -1342,7 +1342,7 @@ Spell.Step.second = function (arg){
 			//ターゲット追加
 			Spell.target = arg.cdat;
 			//ターゲット確定
-			StepSet(24);
+			Flow.step(24);
 			//使用確認
 			Spell.Step.fire(true);
 			break;
@@ -1368,7 +1368,7 @@ Spell.Step.second = function (arg){
 			//ダイアログ非表示
 			DispDialog("none");
 			//ターゲット確定
-			StepSet(24);
+			Flow.step(24);
 			//使用確認
 			Spell.Step.fire(true);
 			break;
@@ -1389,7 +1389,7 @@ Spell.Step.second = function (arg){
 			//ターゲット追加
 			Spell.target.push(arg.gno);
 			//ターゲット確定
-			StepSet(24);
+			Flow.step(24);
 			//使用確認
 			Spell.Step.fire(true);
 			break;
@@ -1416,7 +1416,7 @@ Spell.Step.second = function (arg){
 			//ダイアログ非表示
 			DispDialog("none");
 			//ターゲット確定
-			StepSet(24);
+			Flow.step(24);
 			//使用確認
 			Spell.Step.fire(true);
 			break;
@@ -1451,7 +1451,7 @@ Spell.Step.end = function (){
 	Analytics.spell[Board.turn]++;
 	Analytics.costspell[Board.turn] += Card[Spell.cno].cost;
 	//Spell終了
-	StepSet(30);
+	Flow.step(30);
 	//パス
 	if(Player[Board.turn].dicepass){
 		setTimeout(Dice.Step.rollskip, 100);
@@ -1487,7 +1487,7 @@ Spell.Tool.handback = function (){
 Spell.Tool.deckback = function (arg){
 	switch(arg.step){
 	case 0:
-		StepSet(26);
+		Flow.step(26);
 		if(Board.turn == Board.role){
 			var selectdno = Math.floor(Math.random() * Player[Board.turn].DeckCount()) + 1;
 			//コマンド送信

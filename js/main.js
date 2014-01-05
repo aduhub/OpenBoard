@@ -179,7 +179,7 @@ var Frame = {
 						//準備完了カウント
 						Board.readycnt++;
 						if (Board.readycnt == Board.playcnt){
-							FlowSet("BOARD_START");
+							Flow.set("BOARD_START");
 						}
 					}
 					break;
@@ -282,7 +282,7 @@ var Frame = {
 					if((Board.step >= 40 && Board.step <= 90 && Board.step % 10 == 0) || Board.round == 0){
 						runflg = 1;
 						//ターン終了
-						TurnEndFlow(0, logpno);
+						Flow.Step.endphase(0, logpno);
 					}
 					break;
 				case "trans":

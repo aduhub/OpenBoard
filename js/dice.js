@@ -11,11 +11,11 @@ Dice.Step.start = function (){
 	if(Board.turn == Board.role){
 		if(Board.step == 20 || (Board.step == 30 && Player[Board.turn].dicepass == false)){
 			//ステップ（移動開始）
-			StepSet(31);
+			Flow.step(31);
 			//PHASEENDBUTTON
 			$("#BTN_Phaseend").html("-");
 			//スクロール
-			BoardScroll(Player[Board.role].stand);
+			UI.Tool.scrollBoard(Player[Board.role].stand);
 			//初期値
 			var dicepow = Board.dice;
 			var rollflg = true;
@@ -59,9 +59,9 @@ Dice.Step.roll = function (arg){
 		Net.send(wkcmd);
 	}else{
 		//ステップ（移動開始）
-		StepSet(31);
+		Flow.step(31);
 		//スクロール
-		BoardScroll(Player[arg.pno].stand);
+		UI.Tool.scrollBoard(Player[arg.pno].stand);
 		//ロール
 		Dice.rest = arg.pow;
 		Dice.route = [];
@@ -78,13 +78,13 @@ Dice.Step.roll = function (arg){
 Dice.Step.rollskip = function (){
 	if(Board.step == 30){
 		//ステップ（移動開始）
-		StepSet(31);
+		Flow.step(31);
 		if(Board.turn == Board.role){
 			//PHASEENDBUTTON
 			$("#BTN_PhaseEnd").html("-");
 		}
 		//スクロール
-		BoardScroll(Player[Board.turn].stand);
+		UI.Tool.scrollBoard(Player[Board.turn].stand);
 		//ロール
 		Dice.route = [];
 		Dice.rest = 0;
@@ -148,7 +148,7 @@ Dice.Step.move = function (i_mvto){
 			var waitsec = (Frame.skipchk()) ? 50 : 150;
 			var msec = (Frame.skipchk()) ? 30 : 140;
 			//ステップ
-			StepSet(31);
+			Flow.step(31);
 			//歩数残--
 			Dice.rest--;
 			//セット
@@ -184,9 +184,9 @@ Dice.Step.move = function (i_mvto){
 			}, waitsec);
 		}else{
 			//ステップ
-			StepSet(32);
+			Flow.step(32);
 			//スクロール
-			BoardScroll(Player[Board.turn].stand);
+			UI.Tool.scrollBoard(Player[Board.turn].stand);
 			if(Board.turn == Board.role){
 				//現在情報
 				var standNow = Player[Board.turn].stand;
@@ -271,31 +271,31 @@ Dice.Step.next = function (){
 //end
 Dice.Step.end = function (){
     //ステップ（移動終了）
-    StepSet(40);
+	Flow.step(40);
     DisplaySet("DIV_DICE", 0);
     //ZIndex
-    SortZIndex("player");
+	UI.Html.sortZindex("player");
     //スクロール
-    BoardScroll(Player[Board.turn].stand);
+	UI.Tool.scrollBoard(Player[Board.turn].stand);
     //ターンプレイヤー
     if(Board.turn == Board.role){
         //領地指示可能カウント
         var wkarr = new Array();
         if($T.inarray(Board.grid[Player[Board.role].stand].color, [10,11,12,13,14]) || Player[Board.role].status == "_TELEGNOSIS_"){
             for(var i=1; i<Board.grid.length; i++){
-                if(Team(Board.grid[i].owner) == Team(Board.turn)){
+                if(Flow.Tool.team(Board.grid[i].owner) == Flow.Tool.team(Board.turn)){
                     wkarr.push(i);
                 }
             }
         }else{
             for(var i=0; i<Dice.route.length; i++){
-                if(Team(Board.grid[Dice.route[i]].owner) == Team(Board.turn)){
+                if(Flow.Tool.team(Board.grid[Dice.route[i]].owner) == Flow.Tool.team(Board.turn)){
                     wkarr.push(Dice.route[i]);
                 }
             }
             //TELEPATHY CHECK
             for(var igno=1; igno<Board.grid.length; igno++){
-                if(Team(Board.grid[igno].owner) == Team(Board.turn) && Board.grid[igno].status == "_TELEPATHY_"){
+                if(Flow.Tool.team(Board.grid[igno].owner) == Flow.Tool.team(Board.turn) && Board.grid[igno].status == "_TELEPATHY_"){
                     wkarr.push(igno);
                 }
             }
@@ -321,7 +321,7 @@ Dice.Step.teleport = function (arg){
     switch(arg.step){
         case 0:
             //ステップ
-            StepSet(36);
+	        Flow.step(36);
             if(Board.role == Board.turn){
                 Dice.teleport = arg.tgt;
                 //ライト
@@ -360,7 +360,7 @@ Dice.Step.teleport = function (arg){
 Dice.Step.draw = function (){
     if(arguments.length == 0){
         //ステップ
-        StepSet(34);
+	    Flow.step(34);
         if(Board.role == Board.turn){
             var typeflg = {C:0, I:0, S:0};
             var Plyr = Player[Board.turn];
@@ -468,7 +468,7 @@ Dice.Tool.chkGate = function (waitsec){
 		//Animation & ImageChange
 		setTimeout(function(){EffectBox({pattern:"piecemove", pno:Board.turn, gno:mvto, msec:msec})}, waitsec);
 		//Scroll
-		BoardScroll(Player[Board.turn].stand);
+		UI.Tool.scrollBoard(Player[Board.turn].stand);
 		//
 		ret = true;
 	}
@@ -545,7 +545,7 @@ Dice.Tool.chkCastle = function (){
 				//Light
 				Grid.fortlight();
 				//Scroll
-				BoardScroll(Player[Board.turn].stand);
+				UI.Tool.scrollBoard(Player[Board.turn].stand);
 				//Animation
 				EffectBox({pattern:"fortpuff", img:"gicon_cas", pno:Board.turn});
 				EffectBox({pattern:"msgpop",gno:Player[Board.turn].stand, msg:bonus9+"G", color:"#ffcc00", player:true});
@@ -555,7 +555,7 @@ Dice.Tool.chkCastle = function (){
 			//目標達成チェック
 			if(Board.target <= TotalGold(Board.turn)){
 				//ステップ（終了）
-				StepSet(100);
+				Flow.step(100);
 				//Icon
 				$("#DIV_PLAYER"+Board.turn).css("backgroundPosition", "0px 0px, 128px 0px, 128px 0px");
 				DisplaySet("DIV_DICE", 0);
@@ -585,7 +585,7 @@ Dice.Tool.chkCastle = function (){
 				//Light
 				Grid.fortlight();
 				//Scroll
-				BoardScroll(Player[Board.turn].stand);
+				UI.Tool.scrollBoard(Player[Board.turn].stand);
 				//Animation
 				EffectBox({pattern:"fortpuff", img:imgsrc, pno:Board.turn});
 				//msgpop

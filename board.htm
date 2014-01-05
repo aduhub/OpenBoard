@@ -19,14 +19,14 @@
 	<div id="DIV_FRAME">
 		<div id="DIV_BACK"><canvas id="CVS_BACK" width="1600" height="1200"></canvas></div>
 	</div>
-	<div id="DIV_INFO" onmouseover="InfoMouseover(1)" onmouseout="InfoMouseover(0)"></div>
+	<div id="DIV_INFO" onmouseover="UI.Event.mouseoverInfo(1)" onmouseout="UI.Event.mouseoverInfo(0)"></div>
 	<div id="DIV_INFOPLUS"></div>
 	<div id="DIV_INFOMAP"></div>
-	<div id="DIV_POINT1" class="class_Point" onclick="PlayerClick(1)"></div>
-	<div id="DIV_POINT2" class="class_Point" onclick="PlayerClick(2)"></div>
-	<div id="DIV_POINT3" class="class_Point" onclick="PlayerClick(3)"></div>
-	<div id="DIV_POINT4" class="class_Point" onclick="PlayerClick(4)"></div>
-	<div id="DIV_HANDFRAME"></div><div id="DIV_PHASEEND"><button id="BTN_PhaseEnd" onclick="PhaseEnd()">ダイスとか</button></div>
+	<div id="DIV_POINT1" class="class_Point" onclick="UI.Event.clickPlayer(1)"></div>
+	<div id="DIV_POINT2" class="class_Point" onclick="UI.Event.clickPlayer(2)"></div>
+	<div id="DIV_POINT3" class="class_Point" onclick="UI.Event.clickPlayer(3)"></div>
+	<div id="DIV_POINT4" class="class_Point" onclick="UI.Event.clickPlayer(4)"></div>
+	<div id="DIV_HANDFRAME"></div><div id="DIV_PHASEEND"><button id="BTN_PhaseEnd" onclick="Flow.endPhase()">ダイスとか</button></div>
 	<div id="DIV_TIMEKEEP"></div>
 	<div id="DIV_TIMEBAR_BACK"><img src="img/ctl_timer.png" height="26" width="26"><div id="DIV_TIMEBAR"><div id="DIV_TIMEBAR_BLACK"></div></div></div>
 	<div id="DIV_CONTROLBTN"><a href="javascript:ChangeBoardSize()" alt="拡大縮小"><img src="img/ctl_map.png" height="26" width="26"></a><a href="javascript:Grid.Img.chgnum()" alt="数字切替"><img src="img/ctl_gsh.png" height="26" width="26"></a><a href="javascript:ControlPanelDisp()" alt="背景・BGM"><img src="img/ctl_bg.png" height="26" width="26"></a></div>

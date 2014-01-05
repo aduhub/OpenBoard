@@ -9,7 +9,7 @@ Territory.cno  = "";
 Territory.ability = "";
 //########################################
 Territory.Step.start = function (i_gno){
-	if(Team(Board.grid[i_gno].owner) == Team(Board.turn)){
+	if(Flow.Tool.team(Board.grid[i_gno].owner) == Flow.Tool.team(Board.turn)){
 		//領地指示可能
 		if(Territory.target.indexOf(i_gno) >= 0){
 			var wkarr = [];
@@ -17,7 +17,7 @@ Territory.Step.start = function (i_gno){
 			wkarr.push(i_gno);
 			Grid.light({clear:true, arr:wkarr});
 			//領地INIT
-			StepSet(51);
+			Flow.step(51);
 			Territory.gno = i_gno;
 			Territory.gno2 = 0;
 			Territory.ability = "";
@@ -136,7 +136,7 @@ Territory.Step.dialog = function (i_mode){
 		for(var i=0; i<=3; i++){
 			if(tgtgrid.linkarr[i] >= 1){
 				linkgrid = Board.grid[tgtgrid.linkarr[i]];
-				if(linkgrid.color < 10 && Team(linkgrid.owner) != Team(tgtgrid.owner)){
+				if(linkgrid.color < 10 && Flow.Tool.team(linkgrid.owner) != Flow.Tool.team(tgtgrid.owner)){
 					var walk = Card[tgtgrid.cno].walk || "";
 					if(!walk.match(nocolor[linkgrid.color]) && !(walk.match("I") && linkgrid.owner >= 1)){
 						if(linkgrid.status != "_JAIL_"){
@@ -158,7 +158,7 @@ Territory.Step.dialog = function (i_mode){
 			//ライト
 			Grid.light({clear:true, arr:Territory.check});
 			//移動先入力
-			StepSet(52);
+			Flow.step(52);
 			//PHASEENDBUTTON
 			$("#BTN_PhaseEnd").html("キャンセル");
 			//timer cancel set
@@ -172,7 +172,7 @@ Territory.Step.dialog = function (i_mode){
 		//ライト
 		Grid.light({clear:true, arr:[Territory.gno]});
 		//交換カード選択
-		StepSet(53);
+		Flow.step(53);
 		//PHASEENDBUTTON
 		$("#BTN_PhaseEnd").html("キャンセル");
 		//timer cancel set
@@ -188,7 +188,7 @@ Territory.Step.dialog = function (i_mode){
 		//ライト
 		Grid.light({clear:true, load:true});
 		//キャンセル
-		StepSet(40);
+		Flow.step(40);
 		//PHASEENDBUTTON
 		$("#BTN_PhaseEnd").html("ターンエンド");
 		DisplaySet("DIV_INFOGRID", 0);
@@ -201,9 +201,9 @@ Territory.Step.recv = function (){
 	var wkarr = arg[1].split(":");
 	Territory.gno = wkarr[0];
 	//領地開始
-	StepSet(51);
+	Flow.step(51);
 	//スクロール
-	BoardScroll(Territory.gno);
+	UI.Tool.scrollBoard(Territory.gno);
 	//矢印表示
 	DivImg("DIV_GCLICK"+Territory.gno, "arrow2");
 	//領地コマンド
@@ -313,7 +313,7 @@ Territory.Step.move = function (i_gno, i_flg){
 		}
 	}
 	if(mvflg == 1){
-		StepSet(53);
+		Flow.step(53);
 		if(Board.turn == Board.role && i_flg == 0){
 			//コマンド送信
 			var wkcmd = "territory:"+Territory.gno+":move:"+i_gno;
@@ -497,7 +497,7 @@ Territory.Step.ability = function (i_flg){
 			//矢印
 			DivImg("DIV_GCLICK"+i_flg, "arrow4");
 			//スクロール
-			BoardScroll(i_flg);
+			UI.Tool.scrollBoard(i_flg);
 			//msgpop
 			EffectBox({pattern:"msgpop", gno:Territory.gno, msg:"Ability"});
 			//Log
@@ -605,7 +605,7 @@ Territory.Step.ability = function (i_flg){
 		break;
 	case "@DRAIN@":
 		if(i_flg == 0){
-			StepSet(54);
+			Flow.step(54);
 			var btnarr = [];
 			for(var i=1; i<=Board.playcnt; i++){
 				if(Board.role != i && !(Player[i].status.match(/_BARRIER_/))){
@@ -629,7 +629,7 @@ Territory.Step.ability = function (i_flg){
 				Player[Board.turn].gold += wkgold;
 				Player[tgtpno].gold -= wkgold;
 				//スクロール
-				BoardScroll(Player[tgtpno].stand);
+				UI.Tool.scrollBoard(Player[tgtpno].stand);
 				//Animation
 				EffectBox({pattern:"piecejump",pno:tgtpno});
 				EffectBox({pattern:"msgpop", gno:Player[tgtpno].stand, msg:wkgold+"G", color:"#ff0000", player:true});
@@ -641,7 +641,7 @@ Territory.Step.ability = function (i_flg){
 				Territory.Step.end(2.5);
 			}else{
 				//キャンセル
-				StepSet(40);
+				Flow.step(40);
 			}
 		}
 		break;
@@ -667,7 +667,7 @@ Territory.Step.ability = function (i_flg){
 		if(tgtgno >= 1){
 			var tgtcno = Board.grid[Territory.gno].cno;
 			//スクロール
-			BoardScroll(tgtgno);
+			UI.Tool.scrollBoard(tgtgno);
 			//変数設定
 			Summon.from = "territory";
 			Summon.pno = Board.turn;
@@ -703,7 +703,7 @@ Territory.Step.ability = function (i_flg){
 			//矢印表示
 			DivImg("DIV_GCLICK"+Territory.gno, "");
 			//スクロール
-			BoardScroll(i_flg);
+			UI.Tool.scrollBoard(i_flg);
 			//Log
 			Logprint({msg:"(能力召喚)##"+cno+"##", pno:Board.turn});
 			if(Board.grid[i_flg].owner != 0){
@@ -728,7 +728,7 @@ Territory.Step.ability = function (i_flg){
 		//コスト支払い
 		Territory.Tool.paycost();
 		//スクロール
-		BoardScroll(Territory.gno);
+		UI.Tool.scrollBoard(Territory.gno);
 		//msgpop
 		EffectBox({pattern:"msgpop", gno:Territory.gno, msg:"Ability"});
 		//効果
@@ -748,7 +748,7 @@ Territory.Step.ability = function (i_flg){
 		break;
 	case "@ALCHEMY_OLD@":
 		if(i_flg == 0){
-			StepSet(54);
+			Flow.step(54);
 			var cno;
 			var imgarr = [];
 			var btnarr = [];
@@ -762,7 +762,7 @@ Territory.Step.ability = function (i_flg){
 		}else{
 			if(i_flg == "Cancel"){
 				//キャンセル
-				StepSet(40);
+				Flow.step(40);
 				//ダイアログ非表示
 				DispDialog("none");
 			}else{
@@ -775,7 +775,7 @@ Territory.Step.ability = function (i_flg){
 				Player[Board.turn].HandDel(i_flg);
 				Logprint({msg:"##" + i_flg + "##を破棄", pno:Board.turn});
 				//スクロール
-				BoardScroll(Territory.gno);
+				UI.Tool.scrollBoard(Territory.gno);
 				//msgpop
 				EffectBox({pattern:"msgpop", gno:Territory.gno, msg:"Ability"});
 				//効果
@@ -871,12 +871,12 @@ Territory.Step.end = function (){
 		//再表示
 		DispPlayer();
 		//Territory終了
-		StepSet(60);
+		Flow.step(60);
 		if(Board.role == Board.turn){
 			//手札ソート
 			Deck.Tool.sorthand();
 			//TurnEnd
-			TurnEnd();
+			Flow.Step.turnend();
 		}
 	}
 }
@@ -944,7 +944,7 @@ Territory.Tool.chkcmd = function (arg){
 //
 Territory.Tool.targetGrid = function (){
 	//Step
-	StepSet(54);
+	Flow.step(54);
 	//ライト
 	Grid.light({clear:true, arr:Territory.check});
 	//PHASEENDBUTTON
