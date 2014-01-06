@@ -208,6 +208,14 @@ UI.Tool.setWalltpye = function (flg){
 			break;
 	}
 }
+// CONTROL PANEL
+UI.Tool.openControl = function (){
+	if($("#DIV_CONTROLPANEL").css("display") == "none"){
+		$("#DIV_CONTROLPANEL").css("display", "block");
+	}else{
+		$("#DIV_CONTROLPANEL").css("display", "none");
+	}
+}
 //-----[ Event ]-----
 //情報クリック判定
 UI.Event.mouseoverInfo = function (i_no){

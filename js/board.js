@@ -1,7 +1,7 @@
 var Game = {};
 Game.Rule = {};
 Game.Tool = {};
-//ボード生成
+//Start
 Game.init = function (){
 	//中断確認
 	window.onbeforeunload = function(event){
@@ -28,7 +28,7 @@ Game.init = function (){
     //main 10 frame/second
     Frame.init();
 }
-Game.createBoard = function createBoard(){
+Game.createBoard = function (){
 	//wait Info
 	$("#waitdiv").remove();
 	//マップデータ
@@ -227,7 +227,7 @@ function HandMulligan(hno){
 }
 //======================================================================
 //順位関数(pno, [pno(top)])
-function PlayerRank(pno, toppno){
+Game.Tool.calcRank = function PlayerRank(pno, toppno){
 	var arg = arguments;
 	var rank = 1;
 	var gold = TotalGold(arg[0]);
@@ -275,18 +275,6 @@ function TotalGold(pno){
 		}
 	}
 	return wktotal;
-}
-//################[ クリック判定 ]#################
-function OptionOpen(no){
-	if(no == 0){
-		$("#DIV_LOG1").css({top:"", height:""});
-		$("#DIV_CONTROLBTN").css("display", "");
-		$("#DIV_LOG1").scrollTop($("#DIV_LOG1").prop("scrollHeight"));
-	}else{
-		$("#DIV_LOG1").css({top:"0px", height:"835px"});
-		$("#DIV_CONTROLBTN").css("display", "block");
-	}
-	event.preventDefault();
 }
 //##########################################################
 function DispInfo(){
@@ -655,14 +643,6 @@ function DispDialog(param){
 				Card.Tool.imgset({cvs:"CVS_DIALOG"+i, cno:param.imgbtns[i][0], zoom:0.5});
 			}
 		}
-	}
-}
-// CONTROL PANEL
-function ControlPanelDisp(){
-	if($("#DIV_CONTROLPANEL").css("display") == "none"){
-		$("#DIV_CONTROLPANEL").css("display", "block");
-	}else{
-		$("#DIV_CONTROLPANEL").css("display", "none");
 	}
 }
 

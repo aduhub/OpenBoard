@@ -88,7 +88,7 @@ var Frame = {
 						Analytics.rankmode = mapinfo[8];
 					}
 					//Create Board
-					createBoard();
+					Game.createBoard();
 					break;
 				case "join": //プレイヤーid
 					var role, order1, order2;
