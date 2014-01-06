@@ -68,7 +68,7 @@ Territory.Step.dialog = function (i_mode){
 			}
 		}
 		//
-		DisplaySet("DIV_INFOGRID", 50);
+		UI.Html.setDiv({id:"DIV_INFOGRID", visible:true, zidx:50});
 		//innerHTML
 		$("#DIV_INFOGRID").html(panels);
 		break;
@@ -100,7 +100,7 @@ Territory.Step.dialog = function (i_mode){
 		}
 		panels += Infoblock.line({m:"キャンセル", b:"onclick='Territory.Step.dialog(9)'", cls:Chessclock.set(51)});
 		//
-		DisplaySet("DIV_INFOGRID", 50);
+		UI.Html.setDiv({id:"DIV_INFOGRID", visible:true, zidx:50});
 		//innerHTML
 		$("#DIV_INFOGRID").html(panels);
 		break;
@@ -123,7 +123,7 @@ Territory.Step.dialog = function (i_mode){
 		}
 		panels += Infoblock.line({m:"キャンセル", b:"onclick='Territory.Step.dialog(9)'", cls:Chessclock.set(51)});
 		//
-		DisplaySet("DIV_INFOGRID", 50);
+		UI.Html.setDiv({id:"DIV_INFOGRID", visible:true, zidx:50});
 		//innerHTML
 		$("#DIV_INFOGRID").html(panels);
 		break;
@@ -164,7 +164,7 @@ Territory.Step.dialog = function (i_mode){
 			//timer cancel set
 			$("#BTN_PhaseEnd").addClass(Chessclock.set(52));
 			//ウィンドウクローズ
-			DisplaySet("DIV_INFOGRID", 0);
+			UI.Html.setDiv({id:"DIV_INFOGRID", hidden:true});
 		}
 		break;
 	case 4:
@@ -178,7 +178,7 @@ Territory.Step.dialog = function (i_mode){
 		//timer cancel set
 		$("#BTN_PhaseEnd").addClass(Chessclock.set(53));
 		//ウィンドウクローズ
-		DisplaySet("DIV_INFOGRID", 0);
+		UI.Html.setDiv({id:"DIV_INFOGRID", hidden:true});
 		//カードチェック
 		Summon.Step.start(Territory.gno);
 		break;
@@ -191,7 +191,7 @@ Territory.Step.dialog = function (i_mode){
 		Flow.step(40);
 		//PHASEENDBUTTON
 		$("#BTN_PhaseEnd").html("ターンエンド");
-		DisplaySet("DIV_INFOGRID", 0);
+		UI.Html.setDiv({id:"DIV_INFOGRID", hidden:true});
 		break;
 	}
 }
@@ -205,7 +205,7 @@ Territory.Step.recv = function (){
 	//スクロール
 	UI.Tool.scrollBoard(Territory.gno);
 	//矢印表示
-	DivImg("DIV_GCLICK"+Territory.gno, "arrow2");
+	UI.Html.setDiv({id:"DIV_GCLICK"+Territory.gno, img:"arrow2.gif"});
 	//領地コマンド
 	switch(wkarr[1]){
 	case "level":
@@ -242,7 +242,7 @@ Territory.Step.level = function (i_level){
 	if(Player[Board.turn].gold >= wkvalue){
 		if(Board.turn == Board.role){
 			//ウィンドウ消去
-			DisplaySet("DIV_INFOGRID", 0);
+			UI.Html.setDiv({id:"DIV_INFOGRID", hidden:true});
 			//コマンド送信
 			var wkcmd = "territory:"+Territory.gno+":level:"+i_level;
 			//送信
@@ -274,7 +274,7 @@ Territory.Step.color = function (i_color){
 	if(Player[Board.turn].gold >= wkvalue){
 		if(Board.turn == Board.role){
 			//ウィンドウ消去
-			DisplaySet("DIV_INFOGRID", 0);
+			UI.Html.setDiv({id:"DIV_INFOGRID", hidden:true});
 			//コマンド送信
 			var wkcmd = "territory:"+Territory.gno+":color:"+i_color;
 			//送信
@@ -334,7 +334,7 @@ Territory.Step.move = function (i_gno, i_flg){
 			//Log
 			Logprint({msg:"(移動侵略)", pno:Board.turn});
 			//矢印表示
-			DivImg("DIV_GCLICK"+i_gno, "arrow3");
+			UI.Html.setDiv({id:"DIV_GCLICK"+i_gno, img:"arrow3.gif"});
 			//Annimation
 			EffectBox({pattern:"invasion", cno:wkcno, gno1:Territory.gno, gno2:i_gno});
 			EffectBox({pattern:"msgpop", gno:Territory.gno, msg:"Move"});
@@ -349,7 +349,7 @@ Territory.Step.move = function (i_gno, i_flg){
 Territory.Step.ability = function (i_flg){
 	if(Board.turn == Board.role){
 		//ウィンドウクローズ
-		DisplaySet("DIV_INFOGRID", 0);
+		UI.Html.setDiv({id:"DIV_INFOGRID", hidden:true});
 	}
 	//abbilitys
 	switch(Territory.ability){
@@ -406,7 +406,7 @@ Territory.Step.ability = function (i_flg){
 		}else{
 			selectdno = i_flg;
 			//矢印表示
-			DivImg("DIV_GCLICK"+Territory.gno, "");
+			UI.Html.setDiv({id:"DIV_GCLICK"+Territory.gno, clear:true});
 		}
 		//コスト支払い・送信
 		Territory.Tool.paycost(selectdno);
@@ -495,7 +495,7 @@ Territory.Step.ability = function (i_flg){
 			//表示
 			Grid.Img.tax({gno:i_flg});
 			//矢印
-			DivImg("DIV_GCLICK"+i_flg, "arrow4");
+			UI.Html.setDiv({id:"DIV_GCLICK"+i_flg, img:"arrow4.gif"});
 			//スクロール
 			UI.Tool.scrollBoard(i_flg);
 			//msgpop
@@ -589,7 +589,7 @@ Territory.Step.ability = function (i_flg){
 				Player[i].status = "";
 				Player[i].statime = 0;
 				//Icon
-				SetPlayerIcon(i, "");
+				UI.Tool.playerIcon(i);
 				//msgpop
 				EffectBox({pattern:"msgpop", gno:Player[i].stand, msg:"Dispel", player:true});
 				//log
@@ -657,7 +657,7 @@ Territory.Step.ability = function (i_flg){
 		}else{
 			tgtgno = i_flg;
 			//矢印表示
-			DivImg("DIV_GCLICK"+Territory.gno, "");
+			UI.Html.setDiv({id:"DIV_GCLICK"+Territory.gno, clear:true});
 		}
 		//コスト支払い
 		Territory.Tool.paycost(tgtgno);
@@ -701,7 +701,7 @@ Territory.Step.ability = function (i_flg){
 			//msgpop
 			EffectBox({pattern:"msgpop", gno:Territory.gno, msg:"Ability"});
 			//矢印表示
-			DivImg("DIV_GCLICK"+Territory.gno, "");
+			UI.Html.setDiv({id:"DIV_GCLICK"+Territory.gno, clear:true});
 			//スクロール
 			UI.Tool.scrollBoard(i_flg);
 			//Log
@@ -864,9 +864,9 @@ Territory.Step.end = function (){
 		//### GridAbility ###
 		GridAbility({gno:Territory.gno, time:"TERRITORY_CLOSE"});
 		//矢印表示
-		DivImg("DIV_GCLICK"+Territory.gno, "");
+		UI.Html.setDiv({id:"DIV_GCLICK"+Territory.gno, clear:true});
 		if(Territory.gno2 >= 1){
-			DivImg("DIV_GCLICK"+Territory.gno2, "");
+			UI.Html.setDiv({id:"DIV_GCLICK"+Territory.gno2, clear:true});
 		}
 		//再表示
 		DispPlayer();

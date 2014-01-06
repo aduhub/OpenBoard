@@ -34,9 +34,9 @@ function BattleInit(){
 	$("#DIV_VSBACK").css("backgroundImage", "url(img/back/battle"+Board.grid[Battle.gno].color+".gif)");
 
 	//矢印クリア
-	DivImg("DIV_GCLICK"+Battle.gno, "");
+	UI.Html.setDiv({id:"DIV_GCLICK"+Battle.gno, clear:true});
 	if(Battle.from == "M"){
-		DivImg("DIV_GCLICK"+Territory.gno, "");
+		UI.Html.setDiv({id:"DIV_GCLICK"+Territory.gno, clear:true});
 	}
 	//表示
 	$("#DIV_VSLOG").html("");
@@ -51,7 +51,7 @@ function BattleInit(){
 	}
 	$("#DIV_VSNAME0").css("background-image", "url(img/bticon_sword"+Battle.p[0].pno+".gif)");
 	$("#DIV_VSNAME1").css("background-image", "url(img/bticon_shield"+Battle.p[1].pno+".gif)");
-	DisplaySet("DIV_VSBACK", 40);
+	UI.Html.setDiv({id:"DIV_VSBACK", visible:true, zidx:40});
 
 	//数値・取得
 	//【攻撃側】
@@ -748,7 +748,7 @@ function BattleResult(){
 }
 function BattleClose(){
 	//表示
-	DisplaySet("DIV_VSBACK", 0);
+	UI.Html.setDiv({id:"DIV_VSBACK", hidden:true});
 	//数値表示クリア
 	BattleBar("ST0", 0, 0);
 	BattleBar("LF0", 0, 0);

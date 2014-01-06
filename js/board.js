@@ -1,9 +1,8 @@
-//===================================
-// filename : board.js
-// update   : 2007-01-12 adu
-//===================================
+var Game = {};
+Game.Rule = {};
+Game.Tool = {};
 //ボード生成
-function initBoard(){
+Game.init = function (){
 	//中断確認
 	window.onbeforeunload = function(event){
 		event = event || window.event; 
@@ -13,39 +12,23 @@ function initBoard(){
 	var divwait = $("<div id='waitdiv'>wait...</div>");
 	divwait.css({position:"absolute", top:0, left:0, width:800, height:600, opacity:0.8, zIndex:40, backgroundColor:"black", color:"white", fontSize:"20px"});
 	$("body").append(divwait);
-
 	//Canvas取り込み
-	LoadImage();
-
+	UI.Tool.cacheImg();
 	//Volume設定
-	if(localStorage.ob_volume_bgm){
-		$("#bgmvolume").val(Number(localStorage.ob_volume_bgm));
-		Audie.volchg("bgm");
-	}
-	if(localStorage.ob_volume_se){
-		$("#sevolume").val(Number(localStorage.ob_volume_se));
-		Audie.volchg("se");
-	}
+	Audie.loadsetting();
 	//観戦
 	if($T.inarray(sessionStorage.Mode, ["gallery", "replay"])){
 		//削除
 		$("#DIV_DECK").remove();
 		$("#DIV_HANDFRAME").remove();
 	}
-	//リプレイコントロール
-	if(sessionStorage.Mode == "replay"){
-		$("#DIV_REPLAYCONTROL").css("display", "block");
-	}else{
-		$("#DIV_REPLAYCONTROL").remove();
-	}
-
 	//通信開始
 	Net.init();
     Net.getCGI("");
-    //main
+    //main 10 frame/second
     Frame.init();
 }
-function createBoard(){
+Game.createBoard = function createBoard(){
 	//wait Info
 	$("#waitdiv").remove();
 	//マップデータ
@@ -147,7 +130,7 @@ function createBoard(){
 	//役(観戦)
 	Board.role = 9;
 	//ドラッグ処理
-	DragInit();
+	UI.Tool.mapDragStart();
 }
 //プレイヤー初期化
 function PlayerSetup(){
@@ -163,7 +146,7 @@ function PlayerSetup(){
 		//ICON
 		UI.Html.createDiv({id:"DIV_PLAYER"+i, w:128, h:128, l:Number(Board.grid[1].left), t:Number(Board.grid[1].top) - 64, z:11});
 		//$("#DIV_PLAYER"+i).html("<div id='DIV_PNO"+i+"'>"+i+"P</div>");
-		PlayerImgSetup(i);
+		UI.Tool.playerCharactor(i);
 	}
 	//##### Alliance #####
 	if(Board.alliance){
@@ -190,15 +173,6 @@ function PlayerSetup(){
 		}
 	}
 	$T.stacktimer({fnc:fnc, msec:0});
-}
-function PlayerImgSetup(pno){
-	var imgsrc = [];
-	//ICON
-	for (var i2=0; i2<=2; i2++){
-		imgsrc.push("url("+GifURI(Player[pno].avatar, pno, i2)+")");
-	}
-	$("#DIV_PLAYER"+pno).css("backgroundImage", imgsrc.join(","));
-	$("#DIV_PLAYER"+pno).css("backgroundPosition", "0px 0px, 128px 0px, 128px 0px");
 }
 function PlayerHandSetup(i_flg){
 	var puttop = [];
@@ -303,120 +277,6 @@ function TotalGold(pno){
 	return wktotal;
 }
 //################[ クリック判定 ]#################
-//=====================================================================
-//ドラッグスクロール
-function DragInit(){
-	if(sessionStorage.iPhone != "Y"){
-		$("BODY").mouseup(DragMouseUp);
-		$("BODY").mousemove(DragMouseMove);
-		$("#DIV_BACK").mousedown(DragmouseDown);
-		$("#DIV_BACK").bind("mousewheel", MouseWheel);
-	}else{
-		$("BODY").bind("touchmove", function(){event.preventDefault();});
-		$("#DIV_BACK").bind("touchstart", DragTouchStart);
-		$("#DIV_BACK").bind("touchmove", DragTouchMove);
-		$("#DIV_BACK").bind("touchend", DragTouchEnd);
-	}
-}
-function DragmouseDown(e){
-	//縮小クリア
-	if($("#DIV_FRAME").hasClass("CLS_AREAMAP")){
-		$("#DIV_FRAME").removeClass("CLS_AREAMAP");
-		$("#DIV_FRAME").css({width:"", height:""});
-		$("#DIV_FRAME").scrollTop(300);
-		$("#DIV_FRAME").scrollLeft(400);
-	}
-	dragObject = this;
-	dragOffset = {x:e.clientX, y:e.clientY};
-	return false;
-}
-function DragMouseUp(e){
-	dragObject = null;
-}
-function DragMouseMove(e){
-	if(!dragObject) return;
-	var mousePos = {x:e.clientX, y:e.clientY};
-	if(mousePos.x < 0 || mousePos.x > 800 || mousePos.y < 0 || mousePos.y > 600){
-		dragObject = null;
-		return;
-	}
-	var y = $("#DIV_FRAME").scrollTop() - (mousePos.y - dragOffset.y);
-	var x = $("#DIV_FRAME").scrollLeft() - (mousePos.x - dragOffset.x);
-	$("#DIV_FRAME").scrollTop(y);
-	$("#DIV_FRAME").scrollLeft(x);
-	dragOffset = mousePos;
-}
-function DragTouchStart(){
-	event.preventDefault();
-	if(event.touches.length == 1){
-		dragOffset = {x:event.touches[0].clientX, y:event.touches[0].clientY};
-	}
-	return false;
-}
-function DragTouchMove(){
-	event.preventDefault();
-	if(event.touches.length == 1){
-		var touchpos = {x:event.touches[0].clientX, y:event.touches[0].clientY};
-		if(touchpos.x < 0 || touchpos.x > 640 || touchpos.y < 0 || touchpos.y > 480){
-			return;
-		}
-		var y = $("#DIV_FRAME").scrollTop() - (touchpos.y - dragOffset.y);
-		var x = $("#DIV_FRAME").scrollLeft() - (touchpos.x - dragOffset.x);
-		$("#DIV_FRAME").scrollTop(y);
-		$("#DIV_FRAME").scrollLeft(x);
-		dragOffset = touchpos;
-	}
-}
-function DragTouchEnd(){
-	event.preventDefault();
-}
-function ChangeBoardSize(sizeflg){
-	switch(sizeflg){
-	case 0:
-		//クリア
-		if($("#DIV_FRAME").hasClass("CLS_AREAMAP")){
-			$("#DIV_FRAME").removeClass("CLS_AREAMAP");
-			$("#DIV_FRAME").css({width:"", height:""});
-			$("#DIV_FRAME").scrollTop(300);
-			$("#DIV_FRAME").scrollLeft(400);
-		}
-		break;
-	case 1:
-		//縮小
-		if(!$("#DIV_FRAME").hasClass("CLS_AREAMAP")){
-			$("#DIV_FRAME").addClass("CLS_AREAMAP");
-			$("#DIV_FRAME").css({width:"1600px", height:"1200px"});
-		}
-		break;
-	default:
-		if($("#DIV_FRAME").hasClass("CLS_AREAMAP")){
-			$("#DIV_FRAME").removeClass("CLS_AREAMAP");
-			$("#DIV_FRAME").css({width:"", height:""});
-			$("#DIV_FRAME").scrollTop(300);
-			$("#DIV_FRAME").scrollLeft(400);
-		}else{
-			$("#DIV_FRAME").addClass("CLS_AREAMAP");
-			$("#DIV_FRAME").css({width:"1600px", height:"1200px"});
-		}
-		break;
-	}
-}
-function MouseWheel(e){
-	var e = e || window.event;
-	var delta = 0;
-	delta = e.wheelDelta;
-	if (delta){
-		if (delta < 0){
-			ChangeBoardSize(1);
-		}else{
-			ChangeBoardSize(0);
-		}
-	}
-	if (event.preventDefault) {
-		event.preventDefault();
-	}
-	event.returnValue = false;
-}
 function OptionOpen(no){
 	if(no == 0){
 		$("#DIV_LOG1").css({top:"", height:""});
@@ -427,11 +287,6 @@ function OptionOpen(no){
 		$("#DIV_CONTROLBTN").css("display", "block");
 	}
 	event.preventDefault();
-}
-function BrouserBack(){
-	if(confirm("戻ってよろしいですか？")){
-		window.location.href = "index_i.htm";
-	}
 }
 //##########################################################
 function DispInfo(){
@@ -652,32 +507,6 @@ function DispPlayer(i_pno){
 		}
 	}
 }
-//DIV表示設定
-function DisplaySet(){
-	var arg = arguments;
-	var divid = "#"+arg[0];
-	if(arg[1] == 0){
-		var cssObj = {backgrounImage:"", visibility:"hidden", zIndex:0}
-		$(divid).css(cssObj);
-	}else{
-		if(arg[2] != undefined){
-			if(arg[0].substr(0, 3) == "IMG"){
-				$(divid).attr("src", "img/"+arg[2]+".gif");
-			}else{
-				$(divid).css("backgroundImage", "url(img/"+arg[2]+".gif)");
-			}
-		}
-		$(divid).css({visibility:"visible", zIndex:arg[1]});
-	}
-}
-//DIVタグbackgroundImage変更の空状態をなくす。
-function DivImg(i_id, i_src){
-	if(i_src != ""){
-		$("#"+i_id).css("backgroundImage", "url(img/"+i_src+".gif)");
-	}else{
-		$("#"+i_id).css("backgroundImage", "");
-	}
-}
 function SetPlayerImg(pno){
 	var css = {};
 	var cssP = {};
@@ -828,64 +657,6 @@ function DispDialog(param){
 		}
 	}
 }
-//################[ エレメント作成 ]#################
-
-//
-function SetPlayerIcon(pno, file){
-	if(file == ""){
-		$("#DIV_PICON"+pno).remove();
-	}else{
-		$("#DIV_PICON"+pno).remove();
-		var img = "<img src='img/"+file+".gif' width='32' height='22'>";
-		var div = "<div id='DIV_PICON"+pno+"' style='position:absolute;top:-18px;left:48px;'>"+img+"</div>";
-		$("#DIV_PLAYER"+pno).append(div);
-		switch(Player[pno].direction){
-		case 1:
-		case 4:
-			if($T.browser() == "chrome"){
-				$("#DIV_PICON"+pno).css("-webkit-transform", "scale(-1,1)");
-			}else if($T.browser() == "firefox"){
-				$("#DIV_PICON"+pno).css("-moz-transform", "scale(-1,1)");
-			}
-			break;
-		}
-	}
-}
-//#############[ IMAGE DATA ]###############
-function LoadImage(){
-	Canvas.srcs["CARDFRAMEC1"] = "img/card/frame_glay.gif";
-	Canvas.srcs["CARDFRAMEC2"] = "img/card/frame_red.gif";
-	Canvas.srcs["CARDFRAMEC3"] = "img/card/frame_blue.gif";
-	Canvas.srcs["CARDFRAMEC4"] = "img/card/frame_green.gif";
-	Canvas.srcs["CARDFRAMEC5"] = "img/card/frame_yellow.gif";
-	Canvas.srcs["CARDFRAMEI"] = "img/card/frame_item.gif";
-	Canvas.srcs["CARDFRAMES"] = "img/card/frame_spell.gif";
-	Canvas.srcs["GRID0"] = "img/grid0.gif";
-	Canvas.srcs["GRID1"] = "img/grid1.gif";
-	Canvas.srcs["GRID2"] = "img/grid2.gif";
-	Canvas.srcs["GRID3"] = "img/grid3.gif";
-	Canvas.srcs["GRID4"] = "img/grid4.gif";
-	Canvas.srcs["GRID5"] = "img/grid5.gif";
-	Canvas.srcs["GRIDT"] = "img/gicon_tele.gif";
-	Canvas.srcs["GRIDF"] = "img/gicon_drop.gif";
-}
-//
-function GifURI(filename, pno, direction){
-	var returi = "";
-	var dirno = ["f","u","d"];
-	switch(filename){
-	case "piece1":
-	case "piece2":
-	case "piece3":
-	case "piece4":
-		returi = "img/avator/"+filename+pno+dirno[direction]+".gif";
-		break;
-	default:
-		returi = "img/avator/"+filename+dirno[direction]+".gif";
-		break;
-	}
-	return returi;
-}
 // CONTROL PANEL
 function ControlPanelDisp(){
 	if($("#DIV_CONTROLPANEL").css("display") == "none"){
@@ -894,37 +665,4 @@ function ControlPanelDisp(){
 		$("#DIV_CONTROLPANEL").css("display", "none");
 	}
 }
-function WallPaperLoad(imgelement){
-	if(window.File && window.FileList && window.FileReader){
-		var file = imgelement.files[0];
-		if(file.type.match(/image/)){
-			var reader = new FileReader();
-			reader.onload = function(){
-				$("#DIV_BACK").css("backgroundImage", "url("+this.result+")");
-			}
-			reader.readAsDataURL(file);
-		}
-	}else{
-		$("#DIV_BACK").css("backgroundImage", "");
-	}
-}
-function WallPaperSet(flg){
-	switch(flg){
-	case 1:
-		if($T.browser() == "chrome"){
-			$("#DIV_BACK").css("-webkit-background-size", "");
-		}else if($T.browser() == "firefox"){
-			$("#DIV_BACK").css("-moz-background-size", "");
-		}
-		$("#DIV_BACK").css("backgroundRepeat", "repeat");
-		break;
-	case 2:
-		if($T.browser() == "chrome"){
-			$("#DIV_BACK").css("-webkit-background-size", "100% auto");
-		}else if($T.browser() == "firefox"){
-			$("#DIV_BACK").css("-moz-background-size", "100% auto");
-		}
-		$("#DIV_BACK").css("backgroundRepeat", "no-repeat");
-		break;
-	}
-}
+

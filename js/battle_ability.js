@@ -615,7 +615,7 @@ function BattleAbiAction(arg){
 					Player[def.pno].statime = 1;
 				}
 				//Icon set
-				SetPlayerIcon(def.pno, "popp_dice");
+				UI.Tool.playerIcon(def.pno);
 				BattleLog(arg.bno, Dic("@DICE1@"));
 			}
 		}

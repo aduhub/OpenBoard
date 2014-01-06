@@ -1,20 +1,7 @@
-//average(arr)       平均
-//inarray(tgt, arr)  配列存在
-
 var $T = {
 	result:false,
 	_rndlog:[""],
 	_timecupcel:[],
-	browser:function(){
-		var ua = navigator.userAgent.toLowerCase();
-		if(ua.indexOf("chrome") != -1){
-			return "chrome";
-		}else if(ua.indexOf("firefox") != -1){
-			return "firefox";
-		}else{
-			return "";
-		}
-	},
 	//平均取得
 	average:function(arr){
 		var total = 0;

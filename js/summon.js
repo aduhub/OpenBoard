@@ -65,7 +65,7 @@ Summon.Step.recv = function (){
 	//スクロール
 	UI.Tool.scrollBoard(Summon.gno);
 	//矢印表示
-	DivImg("DIV_GCLICK"+Summon.gno, "arrow2");
+	UI.Html.setDiv({id:"DIV_GCLICK"+Summon.gno, img:"arrow2.gif"});
 	//Step
 	Flow.step(42);
 	//準備設定
@@ -119,7 +119,7 @@ Summon.Step.setgrid = function (){
 			//PHASEENDBUTTON
 			$("#BTN_PhaseEnd").html("-");
 		}else{
-			DivImg("DIV_GCLICK"+Summon.gno, "");
+			UI.Html.setDiv({id:"DIV_GCLICK"+Summon.gno, clear:true});
 		}
 	}
 	//グリッドセット

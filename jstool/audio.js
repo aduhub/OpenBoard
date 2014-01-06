@@ -6,6 +6,16 @@ var Audie = {
 	SEvol:0.8,
 	nowplay:"",
 	mapswt:"map1",
+	loadsetting:function(){
+		if(localStorage.ob_volume_bgm){
+			$("#bgmvolume").val(Number(localStorage.ob_volume_bgm));
+			Audie.volchg("bgm");
+		}
+		if(localStorage.ob_volume_se){
+			$("#sevolume").val(Number(localStorage.ob_volume_se));
+			Audie.volchg("se");
+		}
+	},
 	seload:function(arg){
 		Audie.bank[arg.id] = new Audio(arg.src);
 		Audie.bank[arg.id].autoplay = false;

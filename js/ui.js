@@ -2,6 +2,10 @@ var UI = {};
 UI.Html = {};
 UI.Event = {};
 UI.Tool = {};
+//Drag
+UI.dragObject = null;
+UI.dragOffset = null;
+//-----[ HTML ]-----
 //DIV レイヤー設置
 UI.Html.createDiv = function CreateLay(arg){
 	var Attr = {id:arg.id}
@@ -30,7 +34,29 @@ UI.Html.createDiv = function CreateLay(arg){
 		Css["backgroundRepeat"] = "no-repeat";
 	}
 	//ドキュメントに追加
-	Maker.addDiv({base:"#DIV_FRAME", attr:Attr, css:Css, class:Class})
+	Maker.addDiv({base:"#DIV_FRAME", attr:Attr, css:Css, class:Class});
+}
+//DIV表示設定
+UI.Html.setDiv = function (arg){
+	var css = {};
+	var divid = "#" + arg.id;
+	if(arg.visible){
+		css.visibility = "visible";
+	}
+	if(arg.hidden){
+		css.visibility = "hidden";
+		css.zIndex = 0;
+	}
+	if(arg.clear){
+		css.backgrounImage = "";
+	}
+	if(arg.img){
+		css.backgrounImage = "url(img/"+arg.img+")";
+	}
+	if(arg.zidx){
+		css.zIndex = arg.zidx;
+	}
+	$(divid).css(css);
 }
 //z-Index操作
 UI.Html.sortZindex = function (flg){
@@ -64,6 +90,125 @@ UI.Html.sortZindex = function (flg){
 		SetPlayerImg(0);
 	}
 }
+//-----[ Tool ]-----
+//キャラクター
+UI.Tool.playerCharactor = function (pno){
+	var imgsrc = [];
+	var dirtype = ["f","u","d"];
+	var baseavator = ["piece1","piece2","piece3","piece4"];
+	//ICON
+	for (var i in dirtype){
+		imgsrc.push("url(img/avator/"+Player[pno].avatar+dirtype[i]+".gif)");
+	}
+	$("#DIV_PLAYER"+pno).css("backgroundImage", imgsrc.join(","));
+	$("#DIV_PLAYER"+pno).css("backgroundPosition", "0px 0px, 128px 0px, 128px 0px");
+}
+//アイコン
+UI.Tool.playerIcon = function (pno){
+	var imgsrc;
+	$("#DIV_PICON"+pno).remove();
+	if(imgsrc = StatusIcon(Player[pno].status)){
+		var img = "<img src='img/"+imgsrc+".gif' width='32' height='22'>";
+		var div = "<div id='DIV_PICON"+pno+"' style='position:absolute;top:-18px;left:48px;'>"+img+"</div>";
+		$("#DIV_PLAYER"+pno).append(div);
+		if([1, 4].indexOf(Player[pno].direction) >= 0){
+			$("#DIV_PICON"+pno).css("-webkit-transform", "scale(-1, 1)");
+		}
+	}
+}
+//ウィンドウスクロール
+UI.Tool.scrollBoard = function (i_no){
+	//ドラッグストップ
+	UI.dragObject = null;
+	var def_t, def_x;
+	def_t = 300; //600
+	def_x = 340; //800
+	if(!$("#DIV_FRAME").hasClass("CLS_AREAMAP")){
+		//スクロール
+		var wk_y = Board.grid[i_no].top - def_t;
+		var wk_x = Board.grid[i_no].left - def_x;
+		$("#DIV_FRAME").animate({scrollTop:wk_y, scrollLeft:wk_x}, 400, 'swing');
+
+	}
+}
+//画面サイズ変更
+UI.Tool.chgBoardSize = function (sizeflg){
+	switch(sizeflg){
+		case 0:
+			//クリア
+			if($("#DIV_FRAME").hasClass("CLS_AREAMAP")){
+				$("#DIV_FRAME").removeClass("CLS_AREAMAP");
+				$("#DIV_FRAME").css({width:"", height:""});
+				$("#DIV_FRAME").scrollTop(300);
+				$("#DIV_FRAME").scrollLeft(400);
+			}
+			break;
+		case 1:
+			//縮小
+			if(!$("#DIV_FRAME").hasClass("CLS_AREAMAP")){
+				$("#DIV_FRAME").addClass("CLS_AREAMAP");
+				$("#DIV_FRAME").css({width:"1600px", height:"1200px"});
+			}
+			break;
+		default:
+			if($("#DIV_FRAME").hasClass("CLS_AREAMAP")){
+				$("#DIV_FRAME").removeClass("CLS_AREAMAP");
+				$("#DIV_FRAME").css({width:"", height:""});
+				$("#DIV_FRAME").scrollTop(300);
+				$("#DIV_FRAME").scrollLeft(400);
+			}else{
+				$("#DIV_FRAME").addClass("CLS_AREAMAP");
+				$("#DIV_FRAME").css({width:"1600px", height:"1200px"});
+			}
+			break;
+	}
+}
+//キャッシュ
+UI.Tool.cacheImg = function (){
+	Canvas.srcs["CARDFRAMEC1"] = "img/card/frame_glay.gif";
+	Canvas.srcs["CARDFRAMEC2"] = "img/card/frame_red.gif";
+	Canvas.srcs["CARDFRAMEC3"] = "img/card/frame_blue.gif";
+	Canvas.srcs["CARDFRAMEC4"] = "img/card/frame_green.gif";
+	Canvas.srcs["CARDFRAMEC5"] = "img/card/frame_yellow.gif";
+	Canvas.srcs["CARDFRAMEI"] = "img/card/frame_item.gif";
+	Canvas.srcs["CARDFRAMES"] = "img/card/frame_spell.gif";
+	Canvas.srcs["GRID0"] = "img/grid0.gif";
+	Canvas.srcs["GRID1"] = "img/grid1.gif";
+	Canvas.srcs["GRID2"] = "img/grid2.gif";
+	Canvas.srcs["GRID3"] = "img/grid3.gif";
+	Canvas.srcs["GRID4"] = "img/grid4.gif";
+	Canvas.srcs["GRID5"] = "img/grid5.gif";
+	Canvas.srcs["GRIDT"] = "img/gicon_tele.gif";
+	Canvas.srcs["GRIDF"] = "img/gicon_drop.gif";
+}
+//Wall Paper
+UI.Tool.loadWallpaper = function (imgelement){
+	if(window.File && window.FileList && window.FileReader){
+		var file = imgelement.files[0];
+		if(file.type.match(/image/)){
+			var reader = new FileReader();
+			reader.onload = function(){
+				$("#DIV_BACK").css("backgroundImage", "url("+this.result+")");
+			}
+			reader.readAsDataURL(file);
+		}
+	}else{
+		$("#DIV_BACK").css("backgroundImage", "");
+	}
+}
+UI.Tool.setWalltpye = function (flg){
+	switch(flg){
+		case 1:
+			$("#DIV_BACK").css("-webkit-background-size", "");
+			$("#DIV_BACK").css("backgroundRepeat", "repeat");
+			break;
+		case 2:
+			$("#DIV_BACK").css("-webkit-background-size", "100% auto");
+			$("#DIV_BACK").css("backgroundRepeat", "no-repeat");
+			break;
+	}
+}
+//-----[ Event ]-----
 //情報クリック判定
 UI.Event.mouseoverInfo = function (i_no){
 	if(Board.round >= 1){
@@ -209,18 +354,56 @@ UI.Event.clickHand = function (hno){
 	//Sound Effect
 	Audie.seplay("click");
 }
-//ウィンドウスクロール
-UI.Tool.scrollBoard = function (i_no){
-	//ドラッグストップ
-	dragObject = null;
-	var def_t, def_x;
-	def_t = 300; //600
-	def_x = 340; //800
-	if(!$("#DIV_FRAME").hasClass("CLS_AREAMAP")){
-		//スクロール
-		var wk_y = Board.grid[i_no].top - def_t;
-		var wk_x = Board.grid[i_no].left - def_x;
-		$("#DIV_FRAME").animate({scrollTop:wk_y, scrollLeft:wk_x}, 400, 'swing');
-
+//マウスホイール
+UI.Event.mouseWheel = function (e){
+	var e = e || window.event;
+	var delta = 0;
+	delta = e.wheelDelta;
+	if (delta){
+		if (delta < 0){
+			UI.Tool.chgBoardSize(1);
+		}else{
+			UI.Tool.chgBoardSize(0);
+		}
 	}
+	if (event.preventDefault) {
+		event.preventDefault();
+	}
+	event.returnValue = false;
 }
+//ドラッグスクロール
+UI.Tool.mapDragStart = function (){
+	$("BODY").mouseup(UI.Event.mouseupDrag);
+	$("BODY").mousemove(UI.Event.mousemoveDrag);
+	$("#DIV_BACK").mousedown(UI.Event.mousedownDrag);
+	$("#DIV_BACK").bind("mousewheel", UI.Event.mouseWheel);
+}
+UI.Event.mousedownDrag = function (e){
+	//縮小クリア
+	if($("#DIV_FRAME").hasClass("CLS_AREAMAP")){
+		$("#DIV_FRAME").removeClass("CLS_AREAMAP");
+		$("#DIV_FRAME").css({width:"", height:""});
+		$("#DIV_FRAME").scrollTop(300);
+		$("#DIV_FRAME").scrollLeft(400);
+	}
+	UI.dragObject = this;
+	UI.dragOffset = {x:e.clientX, y:e.clientY};
+	return false;
+}
+UI.Event.mouseupDrag = function (e){
+	UI.dragObject = null;
+}
+UI.Event.mousemoveDrag = function (e){
+	if(!UI.dragObject) return;
+	var mousePos = {x:e.clientX, y:e.clientY};
+	if(mousePos.x < 0 || mousePos.x > 800 || mousePos.y < 0 || mousePos.y > 600){
+		UI.dragObject = null;
+		return;
+	}
+	var y = $("#DIV_FRAME").scrollTop() - (mousePos.y - UI.dragOffset.y);
+	var x = $("#DIV_FRAME").scrollLeft() - (mousePos.x - UI.dragOffset.x);
+	$("#DIV_FRAME").scrollTop(y);
+	$("#DIV_FRAME").scrollLeft(x);
+	UI.dragOffset = mousePos;
+}
+

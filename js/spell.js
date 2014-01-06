@@ -246,7 +246,7 @@ Spell.Step.fire = function (){
 		Player[tgtpno].status = Card[Spell.cno].opt[0];
 		Player[tgtpno].statime = Card[Spell.cno].opt[1];
 		//icon set
-		SetPlayerIcon(tgtpno, StatusIcon(Card[Spell.cno].opt[0]));
+		UI.Tool.playerIcon(tgtpno);
 		//msgpop
 		EffectBox({pattern:"msgpop", gno:Player[tgtpno].stand, msg:"Cursed", color:"#F0D4FF", player:true});
 		//log
@@ -263,7 +263,7 @@ Spell.Step.fire = function (){
 				Player[i].status = "";
 				Player[i].statime = 0;
 				//Icon
-				SetPlayerIcon(i, "");
+				UI.Tool.playerIcon(i);
 				//msgpop
 				EffectBox({pattern:"msgpop", gno:Player[i].stand, msg:"Dispel", player:true});
 				//log
@@ -274,7 +274,7 @@ Spell.Step.fire = function (){
 		Player[tgtpno].status = Card[Spell.cno].opt[0];
 		Player[tgtpno].statime = Card[Spell.cno].opt[1];
 		//icon set
-		SetPlayerIcon(tgtpno, StatusIcon(Card[Spell.cno].opt[0]));
+		UI.Tool.playerIcon(tgtpno);
 		//msgpop
 		EffectBox({pattern:"msgpop", gno:Player[tgtpno].stand, msg:"Cursed", color:"#F0D4FF", player:true});
 		//log
@@ -288,7 +288,7 @@ Spell.Step.fire = function (){
 		Player[tgtpno].status = Card[Spell.cno].opt[0]+":"+Analytics.invasionwin[tgtpno];
 		Player[tgtpno].statime = Card[Spell.cno].opt[1];
 		//icon set
-		SetPlayerIcon(tgtpno, StatusIcon(Card[Spell.cno].opt[0]));
+		UI.Tool.playerIcon(tgtpno);
 		//msgpop
 		EffectBox({pattern:"msgpop", gno:Player[tgtpno].stand, msg:"Cursed", color:"#F0D4FF", player:true});
 		//log
@@ -521,7 +521,7 @@ Spell.Step.fire = function (){
 		EffectBox({pattern:"focusin", gno:tgtgno});
 		//矢印
 		wait = 1000;
-		DivImg("DIV_GCLICK"+tgtgno, "arrow4");
+		UI.Html.setDiv({id:"DIV_GCLICK"+tgtgno, img:"arrow4.gif"});
 		//Log
 		Logprint({msg:"地形変化 "+elestr[wkcolor[0]]+" > "+elestr[wkcolor[1]], pno:tgtpno});
 		CustomLog({type:"colorcnt", pno:tgtpno, color:wkcolor});
@@ -570,7 +570,7 @@ Spell.Step.fire = function (){
 			EffectBox({pattern:"focusin", gno:tgtgno});
 			//矢印
 			wait = 1000;
-			DivImg("DIV_GCLICK"+tgtgno, "arrow4");
+			UI.Html.setDiv({id:"DIV_GCLICK"+tgtgno, img:"arrow4.gif"});
 			//Log
 			Logprint({msg:"地形変化 "+elestr[wkcolor[0]]+" > "+elestr[wkcolor[1]], pno:Board.turn});
 			CustomLog({type:"colorcnt", pno:Board.turn, color:wkcolor});
@@ -608,18 +608,15 @@ Spell.Step.fire = function (){
 				Board.grid[tgtgno1].level = 1;
 				//Log
 				Logprint({msg:"レベルダウン "+baselevel+" > 1", pno:Board.grid[tgtgno1].owner});
-				
 				var baselevel2 = Board.grid[tgtgno2].level;
 				var upperlevel = baselevel2 + baselevel - 1;
 				upperlevel = (upperlevel >= 5) ? 5 : upperlevel;
 				Board.grid[tgtgno2].level = upperlevel;
 				//Log
 				Logprint({msg:"レベルアップ "+baselevel2+" > "+upperlevel, pno:Board.grid[tgtgno2].owner});
-				
 				//矢印
-				DivImg("DIV_GCLICK"+tgtgno1, "arrow4");
-				DivImg("DIV_GCLICK"+tgtgno2, "arrow4");
-				
+				UI.Html.setDiv({id:"DIV_GCLICK"+tgtgno1, img:"arrow4.gif"});
+				UI.Html.setDiv({id:"DIV_GCLICK"+tgtgno2, img:"arrow4.gif"});
 				//スクロール
 				UI.Tool.scrollBoard(tgtgno1);
 				//地形表示
@@ -798,7 +795,7 @@ Spell.Step.fire = function (){
 		//スクロール
 		UI.Tool.scrollBoard(tgtgno);
 		//矢印
-		DivImg("DIV_GCLICK"+tgtgno, "arrow4");
+		UI.Html.setDiv({id:"DIV_GCLICK"+tgtgno, img:"arrow4.gif"});
 		//msgpop
 		EffectBox({pattern:"msgpop", gno:tgtgno, msg:"Heal", color:"#ccff00"});
 		//ログ
@@ -816,7 +813,7 @@ Spell.Step.fire = function (){
 			//Move
 			Grid.move({gno1:nowgno, gno2:tgtgno, effect:true});
 			//矢印
-			DivImg("DIV_GCLICK"+nowgno, "arrow4");
+			UI.Html.setDiv({id:"DIV_GCLICK"+nowgno, img:"arrow4.gif"});
 			//スクロール
 			UI.Tool.scrollBoard(tgtgno);
 			//ログ
@@ -845,7 +842,7 @@ Spell.Step.fire = function (){
 			}
 		}
 		//矢印
-		DivImg("DIV_GCLICK"+tgtgno, "arrow4");
+		UI.Html.setDiv({id:"DIV_GCLICK"+tgtgno, img:"arrow4.gif"});
 		//スクロール
 		UI.Tool.scrollBoard(tgtgno);
 		wait = 2000;
@@ -874,8 +871,8 @@ Spell.Step.fire = function (){
 		Grid.Img.tax({gno:tgtgno1});
 		Grid.Img.tax({gno:tgtgno2});
 		//矢印
-		DivImg("DIV_GCLICK"+tgtgno1, "arrow4");
-		DivImg("DIV_GCLICK"+tgtgno2, "arrow4");
+		UI.Html.setDiv({id:"DIV_GCLICK"+tgtgno1, img:"arrow4.gif"});
+		UI.Html.setDiv({id:"DIV_GCLICK"+tgtgno2, img:"arrow4.gif"});
 		//Annimation
 		EffectBox({pattern:"invasion", cno:Board.grid[tgtgno2].cno, gno1:tgtgno1, gno2:tgtgno2});
 		EffectBox({pattern:"invasion", cno:Board.grid[tgtgno1].cno, gno1:tgtgno2, gno2:tgtgno1});
@@ -902,8 +899,8 @@ Spell.Step.fire = function (){
 		Grid.Img.tax({gno:tgtgno1});
 		Grid.Img.tax({gno:tgtgno2});
 		//矢印
-		DivImg("DIV_GCLICK"+tgtgno1, "arrow4");
-		DivImg("DIV_GCLICK"+tgtgno2, "arrow4");
+		UI.Html.setDiv({id:"DIV_GCLICK"+tgtgno1, img:"arrow4.gif"});
+		UI.Html.setDiv({id:"DIV_GCLICK"+tgtgno2, img:"arrow4.gif"});
 		//ログ
 		Logprint({msg:"##"+Board.grid[tgtgno2].cno+"##は交換された", pno:Board.grid[tgtgno2].owner});
 		Logprint({msg:"##"+Board.grid[tgtgno1].cno+"##は交換された", pno:Board.grid[tgtgno1].owner});
@@ -921,8 +918,8 @@ Spell.Step.fire = function (){
 		Grid.Img.tax({gno:tgtgno2});
 
 		//矢印
-		DivImg("DIV_GCLICK"+tgtgno1, "arrow4");
-		DivImg("DIV_GCLICK"+tgtgno2, "arrow4");
+		UI.Html.setDiv({id:"DIV_GCLICK"+tgtgno1, img:"arrow4.gif"});
+		UI.Html.setDiv({id:"DIV_GCLICK"+tgtgno2, img:"arrow4.gif"});
 		//スクロール
 		UI.Tool.scrollBoard(tgtgno1);
 		//Animation
@@ -1002,7 +999,7 @@ Spell.Step.fire = function (){
 		//スクロール
 		UI.Tool.scrollBoard(tgtgno);
 		//矢印
-		DivImg("DIV_GCLICK"+tgtgno, "arrow4");
+		UI.Html.setDiv({id:"DIV_GCLICK"+tgtgno, img:"arrow4.gif"});
 		//Search
 		for(var i=1; i<Board.grid.length; i++){
 			if(Board.grid[i].cno == Board.grid[tgtgno].cno){
@@ -1428,7 +1425,7 @@ Spell.Step.second = function (arg){
 Spell.Step.end = function (){
 	if(Card[Spell.cno].tgt.match(/^..G.*$/)){
 		for(var i=0; i<Spell.target.length; i++){
-			DivImg("DIV_GCLICK"+Spell.target[i], "");
+			UI.Html.setDiv({id:"DIV_GCLICK"+Spell.target[i], clear:true});
 		}
 	}
 	if(Board.role == Board.turn){
@@ -1603,7 +1600,7 @@ function Enchant(arg){
 					//Clear
 					Player[arg.pno].status = "";
 					Player[arg.pno].statime = 0;
-					SetPlayerIcon(tgtpno, "");
+					UI.Tool.playerIcon(tgtpno);
 					//log
 					Logprint({msg:Player[arg.pno].name+"は呪いが解けた", pno:arg.pno});
 				}else if(tgtgrid.color >= 11 && tgtgrid.color <= 14){
@@ -1628,7 +1625,7 @@ function Enchant(arg){
 					//Clear
 					Player[tgtpno].status = "";
 					Player[tgtpno].statime = 0;
-					SetPlayerIcon(tgtpno, "");
+					UI.Tool.playerIcon(tgtpno);
 					//log
 					Logprint({msg:Player[tgtpno].name+"は呪いが解けた", pno:tgtpno});
 				}else{

@@ -82,7 +82,7 @@ Grid.damage = function(arg){
 				}
 				//矢印
 				if(arg.arrow){
-					DivImg("DIV_GCLICK"+gno, "arrow4");	
+					UI.Html.setDiv({id:"DIV_GCLICK"+gno, img:"arrow4.gif"});
 				}
 				//スクロール
 				if(arg.scroll){
@@ -123,7 +123,7 @@ Grid.setstatus = function (arg){
 				}
 				//矢印
 				if(arg.arrow){
-					DivImg("DIV_GCLICK"+gno, "arrow4");	
+					UI.Html.setDiv({id:"DIV_GCLICK"+gno, img:"arrow4.gif"});
 				}
 				//スクロール
 				if(arg.scroll){
@@ -588,7 +588,7 @@ function GridTgtSearch(gene){
 function GridInfo(i_no){
 	if(Board.step % 10 == 0 || Board.step == 31 || Board.step == 32 || Board.step == 92){
 		if(i_no == 0){
-			DisplaySet('DIV_INFOGRID', 0);
+			UI.Html.setDiv({id:'DIV_INFOGRID', hidden:true});
 		}else{
 			var infoarg = [];
 			infoarg.push({type:"gridno", gno:i_no});
@@ -630,11 +630,11 @@ function GridInfo(i_no){
 			//innerHTML
 			$("#DIV_INFOGRID").html(Infoblock.block(infoarg));
 			//
-			DisplaySet("DIV_INFOGRID", 50);
+			UI.Html.setDiv({id:"DIV_INFOGRID", visible:true, zidx:50});
 		}
 	}else{
 		if(i_no == 0 && (Board.step < 51 || Board.step > 59)){
-			DisplaySet('DIV_INFOGRID', 0);
+			UI.Html.setDiv({id:'DIV_INFOGRID', hidden:true});
 		}
 	}
 }
@@ -768,7 +768,7 @@ function GridAbility(arg){
 						Logprint({msg:"##"+tgtcno+"##は破壊した", pno:tgtgrid.owner});
 						//Clear
 						tgtgrid.flush();
-						DivImg("DIV_GICON"+arg.gno, "");
+						UI.Html.setDiv({id:"DIV_GICON"+arg.gno, clear:true});
 						Grid.Img.set(arg.gno);
 						Grid.Img.tax({pno:tgtpno});
 						//Animation
@@ -803,7 +803,7 @@ function GridAbility(arg){
 						Player[Board.turn].status = "_TELEGNOSIS_";
 						Player[Board.turn].statime = 1;
 						//icon set
-						SetPlayerIcon(Board.turn, StatusIcon("_TELEGNOSIS_"));
+						UI.Tool.playerIcon(Board.turn);
 						//msgpop
 						EffectBox({pattern:"msgpop", gno:Player[Board.turn].stand, msg:"Cursed", color:"#F0D4FF", player:true});
 						//log
@@ -820,7 +820,7 @@ function GridAbility(arg){
 						Logprint({msg:"##"+tgtcno+"##は破壊した", pno:tgtpno});
 						//Clear
 						tgtgrid.flush();
-						DivImg("DIV_GICON"+arg.gno, "");
+						UI.Html.setDiv({id:"DIV_GICON"+arg.gno, clear:true});
 						Grid.Img.set(arg.gno);
 						Grid.Img.tax({pno:tgtpno});
 						//Animation

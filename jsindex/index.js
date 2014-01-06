@@ -53,22 +53,10 @@ function AlertPop(msg){
 	$("#div_alert").html(msg);
 	$("#div_alert").css("display", "block");
 	$("#div_alert").addClass("animeMsgpop");
-	switch($T.browser()){
-	case "chrome":
-		$("#div_alert").bind('webkitAnimationEnd', function(){
-			$(this).unbind('webkitAnimationEnd');
-			$(this).css("display", "none"); 
-		});
-		break;
-	case "firefox":
-		$("#div_alert").bind('animationend', function(){
-			$(this).unbind('animationend');
-			$(this).removeClass("animeMsgpop");
-			$(this).css("display", "none"); 
-			console.log("animationend");
-		});
-		break;
-	}
+	$("#div_alert").bind('webkitAnimationEnd', function(){
+		$(this).unbind('webkitAnimationEnd');
+		$(this).css("display", "none");
+	});
 }
 function PageOpen(i_page){
 	for(var i=0; i<=6; i++){

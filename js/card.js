@@ -205,7 +205,7 @@ Deck.Tool.discard = function (arg){
 }
 //リスト表示
 Deck.Tool.decklist = function (){
-	DisplaySet("DIV_DECK", 40);
+	UI.Html.setDiv({id:"DIV_DECK", visible:true, zidx:40});
     //IDクリア
     Player[Board.role].deckid = "";
 	//DECK LIST READ
@@ -388,7 +388,7 @@ Card.Tool.imgset = function (arg){
 Card.Tool.info = function (arg){
 	if(Board.step >= 1){
 		if(!arg){
-			DisplaySet('DIV_INFOCARD', 0);
+			UI.Html.setDiv({id:'DIV_INFOCARD', hidden:true});
 		}else{
 			var cno = arg.cno || Player[Board.role].hand[arg.hno];
 			if(cno != ""){
@@ -397,7 +397,7 @@ Card.Tool.info = function (arg){
 				//ifomation set
 				Card.Tool.createinfo({tgt:"#DIV_INFOCARD_RIGHT", cno:cno});
 				//display
-				DisplaySet("DIV_INFOCARD", 60);
+				UI.Html.setDiv({id:"DIV_INFOCARD", visible:true, zidx:60});
 			}
 		}
 	}

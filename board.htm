@@ -14,7 +14,7 @@
 	<script type="text/javascript" src="jstool/scriptload.js"></script>
 	<title>Openboard</title>
 </head>
-<body onload="initBoard()">
+<body onload="Game.init()">
 	<!-- MAIN -->
 	<div id="DIV_FRAME">
 		<div id="DIV_BACK"><canvas id="CVS_BACK" width="1600" height="1200"></canvas></div>
@@ -29,7 +29,7 @@
 	<div id="DIV_HANDFRAME"></div><div id="DIV_PHASEEND"><button id="BTN_PhaseEnd" onclick="Flow.endPhase()">ダイスとか</button></div>
 	<div id="DIV_TIMEKEEP"></div>
 	<div id="DIV_TIMEBAR_BACK"><img src="img/ctl_timer.png" height="26" width="26"><div id="DIV_TIMEBAR"><div id="DIV_TIMEBAR_BLACK"></div></div></div>
-	<div id="DIV_CONTROLBTN"><a href="javascript:ChangeBoardSize()" alt="拡大縮小"><img src="img/ctl_map.png" height="26" width="26"></a><a href="javascript:Grid.Img.chgnum()" alt="数字切替"><img src="img/ctl_gsh.png" height="26" width="26"></a><a href="javascript:ControlPanelDisp()" alt="背景・BGM"><img src="img/ctl_bg.png" height="26" width="26"></a></div>
+	<div id="DIV_CONTROLBTN"><a href="javascript:UI.Tool.chgBoardSize()" alt="拡大縮小"><img src="img/ctl_map.png" height="26" width="26"></a><a href="javascript:Grid.Img.chgnum()" alt="数字切替"><img src="img/ctl_gsh.png" height="26" width="26"></a><a href="javascript:ControlPanelDisp()" alt="背景・BGM"><img src="img/ctl_bg.png" height="26" width="26"></a></div>
 	<div id="DIV_RESULTBTN"><a href="javascript:EndResultOpen(0)" alt="マップ表示"><img src="img/ctl_map.png" height="26" width="26"></a><a href="javascript:EndResultOpen(1)" alt="グラフ"><img src="img/ctl_graph.png" height="26" width="26"></a><a href="javascript:EndResultOpen(2)" alt="終了時情報"><img src="img/ctl_analytics.png" height="26" width="26"></a></div>
 	<!-- DIALOG -->
 	<div id="DIV_DICE"></div>
@@ -93,9 +93,9 @@
 	<!-- CONTROL PANEL -->
 	<div id="DIV_CONTROLPANEL">
 		<div><h3>背景画像</h3></div>
-		<div><input type="file" accept="image/*" onchange="WallPaperLoad(this)"></div>
-		<div><label><input type="radio" name="imgtile" onchange="WallPaperSet(1)" checked><img src="img/imgtile.gif" height="16" width="25"></label>
-		   <label><input type="radio" name="imgtile" onchange="WallPaperSet(2)"><img src="img/imgstrech.gif" height="16" width="25"></label></div> 
+		<div><input type="file" accept="image/*" onchange="UI.Tool.loadWallpaper(this)"></div>
+		<div><label><input type="radio" name="imgtile" onchange="UI.Tool.setWalltpye(1)" checked><img src="img/imgtile.gif" height="16" width="25"></label>
+		   <label><input type="radio" name="imgtile" onchange="UI.Tool.setWalltpye(2)"><img src="img/imgstrech.gif" height="16" width="25"></label></div>
 		<div><h3>BGM(mp3)</h3></div>
 		<div>♪前半<span id="spanbgmmap1"></span></div>
 		<div><input type="file" accept="audio/*" onchange="Audie.load(this, 'map1')"></div>

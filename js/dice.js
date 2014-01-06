@@ -68,7 +68,7 @@ Dice.Step.roll = function (arg){
 	}
 	//表示
 	$("#DIV_DICE").html(Dice.rest);
-	DisplaySet("DIV_DICE", 21);
+	UI.Html.setDiv({id:"DIV_DICE", visible:true, zidx:21});
 	//ログ
 	Logprint({msg:"ダイス <span class='d'>"+Dice.rest+"</span>", pno:Board.turn});
 	//移動
@@ -272,7 +272,7 @@ Dice.Step.next = function (){
 Dice.Step.end = function (){
     //ステップ（移動終了）
 	Flow.step(40);
-    DisplaySet("DIV_DICE", 0);
+	UI.Html.setDiv({id:"DIV_DICE", hidden:true});
     //ZIndex
 	UI.Html.sortZindex("player");
     //スクロール
@@ -558,7 +558,7 @@ Dice.Tool.chkCastle = function (){
 				Flow.step(100);
 				//Icon
 				$("#DIV_PLAYER"+Board.turn).css("backgroundPosition", "0px 0px, 128px 0px, 128px 0px");
-				DisplaySet("DIV_DICE", 0);
+				UI.Html.setDiv({id:"DIV_DICE", hidden:true});
 				PopBigMsg("目標達成", 9);
 				//処理有
 				retcode = true;

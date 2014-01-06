@@ -387,7 +387,7 @@ Flow.Tool.chkstatus = function (){
 			Player[Board.turn].status = "";
 			Player[Board.turn].statime = 0;
 			//Icon
-			SetPlayerIcon(Board.turn, "");
+			UI.Tool.playerIcon(Board.turn);
 			//msgpop
 			EffectBox({pattern:"msgpop", gno:Player[Board.turn].stand, msg:"Dispel", player:true});
 			//log
@@ -492,7 +492,7 @@ Flow.Tool.bankrupt = function (){
 	Player[Board.turn].status = "";
 	Player[Board.turn].statime = 0;
 	//Icon
-	SetPlayerIcon(Board.turn, "");
+	UI.Tool.playerIcon(Board.turn);
 	//Info
 	DispPlayer();
 	//Animation

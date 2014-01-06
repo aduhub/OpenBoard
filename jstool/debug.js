@@ -45,7 +45,7 @@ function DebugGridInfo(i_gno){
 	if(sessionStorage.Mode == "debug"){
 		if(i_gno == 0){
 			Board.step = 20;
-			DisplaySet('DIV_INFOGRID', 0);
+			UI.Html.setDiv({id:"DIV_INFOGRID", hidden:true});
 		}else{
 			Board.step = 51;
 			var carddat = CardDataSet();
@@ -100,7 +100,7 @@ function DebugGridInfo(i_gno){
 				//innerHTML
 				$("#DIV_INFOGRID").html(panels);
 				//
-				DisplaySet("DIV_INFOGRID", 50);
+				UI.Html.setDiv({id:"DIV_INFOGRID", visible:true, zidx:50});
 			}
 		}
 	}
@@ -128,7 +128,7 @@ function DebugGridSetup(i_gno){
 		Grid.Img.tax({pno:i});
 	}
 	Board.step = 20;
-	DisplaySet('DIV_INFOGRID', 0);
+	UI.Html.setDiv({id:"DIV_INFOGRID", hidden:true});
 }
 //========[ Chat ]========
 function ChatSend(){
