@@ -36,7 +36,7 @@ function EffectBox(arg){
 		}
 		Player[arg.pno].direction = imgno;
 		//imgsrc
-		SetPlayerImg(arg.pno);
+		UI.Tool.setImgCharactor(arg.pno);
 		//Move
 		var char_mvy = Board.grid[arg.gno].top - 64;
 		var char_mvx = Board.grid[arg.gno].left - 0;

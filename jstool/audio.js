@@ -101,7 +101,7 @@ var Audie = {
 	bgmchk:function(){
 		var targethalf = 0;
 		for(var i=1; i<=4; i++){
-			if(TotalGold(i) >= Board.target / 2){
+			if(Game.Tool.calcTotalGold(i) >= Board.target / 2){
 				targethalf++;
 			}
 		}

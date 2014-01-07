@@ -707,7 +707,7 @@ Grid.trans = function(gno){
 			//log
 			Logprint({msg:"土地売却 <span class='g'>"+wkvalue+"G</span>", pno:Board.turn});
 			//総魔力表示
-			DispPlayer();
+			Game.Info.dispPlayerbox();
 			//再実行
 			Grid.trans();
 		}
@@ -790,7 +790,7 @@ function GridAbility(arg){
 						Player[tgtgrid.owner].gold += gold;
 						Player[Board.turn].gold -= gold;
 						//再表示
-						DispPlayer();
+						Game.Info.dispPlayerbox();
 						//Log
 						Logprint({msg:Player[Board.turn].name+"から<span class='g'>"+gold+"G</span>奪った", pno:Board.turn});
 						//msgpop

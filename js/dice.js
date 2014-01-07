@@ -35,7 +35,7 @@ Dice.Step.start = function (){
 				var msgarr = ["どちらの結果を使用しますか？"];
 				var btnarr = [["ダイス["+dice1+"]", "Dice.Step.roll({pow:"+dice1+", roll:false})"], ["ダイス["+dice2+"]", "Dice.Step.roll({pow:"+dice2+", roll:false})"]];
 				//ダイアログ
-				DispDialog({msgs:msgarr, btns:btnarr, dtype:"line2"});
+				UI.Dialog.show({msgs:msgarr, btns:btnarr, dtype:"line2"});
 				//中断
 				mvresult = false;
 			}
@@ -50,7 +50,7 @@ Dice.Step.roll = function (arg){
 	//自分のターン
 	if(Board.turn == Board.role){
 		//ダイアログ非表示
-		DispDialog("none");
+		UI.Dialog.close();
 		//ロール
 		Dice.route = [];
 		Dice.rest = (arg.roll) ? Math.floor(Math.random() * arg.pow) + 1 : arg.pow;
@@ -179,7 +179,7 @@ Dice.Step.move = function (i_mvto){
 			//Timeout Next
 			setTimeout(function(){
 				if(Dice.Tool.chkCastle() == false){
-                    Dice.Step.nextDice.Step.next();
+                    Dice.Step.next();
                 }
 			}, waitsec);
 		}else{
@@ -328,7 +328,7 @@ Dice.Step.teleport = function (arg){
                 Grid.light({arr:arg.tgt});
 
                 //Dialog
-                DispDialog({msgs:["テレポート先を選択してください"], dtype:"ok"});
+	            UI.Dialog.show({msgs:["テレポート先を選択してください"], dtype:"ok"});
             }
             break;
         case 1:
@@ -387,14 +387,14 @@ Dice.Step.draw = function (){
                 btnarr.push(["スペル", ""]);
             }
             //ダイアログ
-            DispDialog({msgs:mstarr, btns:btnarr});
+	        UI.Dialog.show({msgs:mstarr, btns:btnarr});
         }
     }else{
         var arg = arguments;
         //Role Player
         if(Board.turn == Board.role){
             //ダイアログ非表示
-            DispDialog("none");
+	        UI.Dialog.close();
             //コマンド送信
             var wkcmd = "dicedraw:"+arg[0];
             //送信
@@ -553,7 +553,7 @@ Dice.Tool.chkCastle = function (){
 				retcode = true;
 			}
 			//目標達成チェック
-			if(Board.target <= TotalGold(Board.turn)){
+			if(Board.target <= Game.Tool.calcTotalGold(Board.turn)){
 				//ステップ（終了）
 				Flow.step(100);
 				//Icon
@@ -567,9 +567,9 @@ Dice.Tool.chkCastle = function (){
 					//次の移動
 					setTimeout(function(){
 						//imgsrc
-						SetPlayerImg(Board.turn);
+						UI.Tool.setImgCharactor(Board.turn);
 						//next
-						DiceNextMove();
+						Dice.Step.next();
 					}, 1500);
 				}
 			}
@@ -591,13 +591,13 @@ Dice.Tool.chkCastle = function (){
 				//msgpop
 				EffectBox({pattern:"msgpop",gno:Player[Board.turn].stand, msg:Board.bonus_f+"G", color:"#ffcc00", player:true});
 				//次の移動
-				setTimeout(function(){DiceNextMove();}, 400);
+				setTimeout(function(){Dice.Step.next();}, 400);
 				//処理有
 				retcode = true;
 			}
 		}
 		//再表示
-		DispPlayer();
+		Game.Info.dispPlayerbox();
 	}
 	return retcode;
 }

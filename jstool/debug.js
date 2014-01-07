@@ -116,7 +116,7 @@ function DebugGridSetup(i_gno){
 	Board.grid[i_gno].status = $("#DEBUG_STATUS").val();
 	Board.grid[i_gno].statime = 99;
 	//再表示
-	DispPlayer();
+	Game.Info.dispPlayerbox();
 	Grid.Img.set(i_gno);
 	Grid.Img.tax({gno:i_gno})
 	if(Board.grid[i_gno].owner == 0){

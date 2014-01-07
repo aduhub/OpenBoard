@@ -1,6 +1,6 @@
 var Game = {};
-Game.Rule = {};
 Game.Tool = {};
+Game.Info = {};
 //Start
 Game.init = function (){
 	//中断確認
@@ -28,7 +28,7 @@ Game.init = function (){
     //main 10 frame/second
     Frame.init();
 }
-Game.createBoard = function (){
+Game.setupBoard = function (){
 	//wait Info
 	$("#waitdiv").remove();
 	//マップデータ
@@ -132,10 +132,9 @@ Game.createBoard = function (){
 	//ドラッグ処理
 	UI.Tool.mapDragStart();
 }
-//プレイヤー初期化
-function PlayerSetup(){
+Game.setupPlayer = function (){
 	//ダイアログ
-	DispDialog({msgs:["プレイヤー情報設定中・・・"]});
+	UI.Dialog.show({msgs:["プレイヤー情報設定中・・・"]});
 	//初期化
 	for(var i=1; i<=Board.playcnt; i++){
 		var imgsrc = [];
@@ -146,7 +145,7 @@ function PlayerSetup(){
 		//ICON
 		UI.Html.createDiv({id:"DIV_PLAYER"+i, w:128, h:128, l:Number(Board.grid[1].left), t:Number(Board.grid[1].top) - 64, z:11});
 		//$("#DIV_PLAYER"+i).html("<div id='DIV_PNO"+i+"'>"+i+"P</div>");
-		UI.Tool.playerCharactor(i);
+		UI.Tool.createCharactor(i);
 	}
 	//##### Alliance #####
 	if(Board.alliance){
@@ -156,7 +155,7 @@ function PlayerSetup(){
 		$("#DIV_PLAYER4").css("color", "#0000CC");
 	}
 	//魔力ウィンドウ
-	DispPlayer();
+	Game.Info.dispPlayerbox();
 	for(var i=1; i<=Board.playcnt; i++){
 		(function(i){
 			var fnc = function(){ $("#DIV_POINT" + i).addClass("animePointdrop").css("display", "block"); }
@@ -169,21 +168,21 @@ function PlayerSetup(){
 		}
 		//デッキ準備(参加者)
 		if($T.inarray(sessionStorage.Mode, ["join", "debug"])){
-			PlayerHandSetup(0);
+			Game.setupHand(0);
 		}
 	}
 	$T.stacktimer({fnc:fnc, msec:0});
 }
-function PlayerHandSetup(i_flg){
+Game.setupHand = function(flg){
 	var puttop = [];
 	//ハンドセット
 	Flow.step(1);
-	if(i_flg == 0){
+	if(flg == 0){
 		//マリガンクリア
-		Temp.mulligan = "11111";
+		Deck.handselect = "11111";
 	}else{
 		for(var i=0; i<=4; i++){
-			if(Temp.mulligan[i] == "1"){
+			if(Deck.handselect[i] == "1"){
 				puttop.push(Player[Board.role].hand[i]);
 			}
 		}
@@ -198,16 +197,16 @@ function PlayerHandSetup(i_flg){
 	//手札ソート
 	Deck.Tool.sorthand();
 	//引きなおしダイアログ
-	if(i_flg == 0){
+	if(flg == 0){
 		//ダイアログ
 		var msgarr = ["引きなおす手札を選択してください"];
-		var btnarr = [["選択終了", "PlayerHandSetup(1)"]];
-		DispDialog({msgs:msgarr, btns:btnarr});
+		var btnarr = [["選択終了", "Game.setupHand(1)"]];
+		UI.Dialog.show({msgs:msgarr, btns:btnarr});
 	}else{
 		//ハンドセット
 		Flow.step(2);
 		//ダイアログ
-		DispDialog({msgs:["準備完了", "他のプレイヤーを待っています・・・"]});
+		UI.Dialog.show({msgs:["準備完了", "他のプレイヤーを待っています・・・"]});
 		//送信
 		var deck = Player[Board.role].hand.join(":") + ":" + Player[Board.role].deck;
 		Net.send("ready:" + deck);
@@ -215,22 +214,12 @@ function PlayerHandSetup(i_flg){
 		Deck.Tool.shuffle({pno:Board.role, tgt:"next"});
 	}
 }
-//マリガン
-function HandMulligan(hno){
-	if(Temp.mulligan[hno] == "1"){
-		Temp.mulligan = $T.chgstr(Temp.mulligan, hno, "0");
-		$("#DIV_HAND"+hno).addClass("CLS_HAND_GLAY");
-	}else{
-		Temp.mulligan = $T.chgstr(Temp.mulligan, hno, "1");
-		$("#DIV_HAND"+hno).removeClass("CLS_HAND_GLAY");
-	}
-}
 //======================================================================
 //順位関数(pno, [pno(top)])
-Game.Tool.calcRank = function PlayerRank(pno, toppno){
+Game.Tool.calcRank = function (pno, toppno){
 	var arg = arguments;
 	var rank = 1;
-	var gold = TotalGold(arg[0]);
+	var gold = Game.Tool.calcTotalGold(arg[0]);
 	//pno = top
 	if(pno == toppno){
 		return 1;
@@ -240,7 +229,7 @@ Game.Tool.calcRank = function PlayerRank(pno, toppno){
 		var teamarr = [];
 		for(var i=1; i<=Board.playcnt; i++){
 			if(Flow.Tool.team(pno) != Flow.Tool.team(i) && teamarr.indexOf(Flow.Tool.team(i)) == -1){
-				if(Flow.Tool.team(toppno) == Flow.Tool.team(i) || gold < TotalGold(i)){
+				if(Flow.Tool.team(toppno) == Flow.Tool.team(i) || gold < Game.Tool.calcTotalGold(i)){
 					rank++;
 				}
 				teamarr.push(Flow.Tool.team(i));
@@ -248,7 +237,7 @@ Game.Tool.calcRank = function PlayerRank(pno, toppno){
 		}
 	}else{
 		for(var i=1; i<=Board.playcnt; i++){
-			if(toppno == i || gold < TotalGold(i)){
+			if(toppno == i || gold < Game.Tool.calcTotalGold(i)){
 				rank++;
 			}
 		}
@@ -256,7 +245,7 @@ Game.Tool.calcRank = function PlayerRank(pno, toppno){
 	return rank;
 }
 //総計
-function TotalGold(pno){
+Game.Tool.calcTotalGold = function (pno){
 	var wktotal = 0;
 	if(Board.alliance){
 		for(var i=1; i<=Board.playcnt; i++){
@@ -277,38 +266,7 @@ function TotalGold(pno){
 	return wktotal;
 }
 //##########################################################
-function DispInfo(){
-	if(Board.round >= 1){
-		$("#DIV_INFO").html(Board.round);
-		$("#DIV_INFO").css("color", pcolor[Board.turn]);
-	}
-}
-function DispInfoPlus(){
-	var msgstr = "";
-	if(Board.step >= 11 && Board.step <= 19){
-		msgstr = "カードドロー";
-	}
-	if(Board.step >= 20 && Board.step <= 29){
-		msgstr = "スペル・ダイス";
-	}
-	if(Board.step >= 30 && Board.step <= 39){
-		msgstr = "ダイス・移動";
-	}
-	if(Board.step >= 40 && Board.step <= 59){
-		msgstr = "召喚・領地指示";
-	}
-	if(Board.step >= 71 && Board.step <= 79){
-		msgstr = "戦闘";
-	}
-	if(Board.step >= 90 && Board.step <= 91){
-		msgstr = "ターン終了";
-	}
-	if(Board.step >= 92 && Board.step <= 93){
-		msgstr = "領地売却";
-	}
-	$("#DIV_INFOPLUS").html(msgstr);
-}
-function DispInfoMap(flg){
+Game.Info.dispAreaInfo = function (flg){
 	var html = "";
 	var colorimg = ["", "mark_n", "mark_r", "mark_b", "mark_g", "mark_y"];
 	if(flg){
@@ -328,8 +286,7 @@ function DispInfoMap(flg){
 		$("#DIV_INFOMAP").css({"display":"none"});
 	}
 }
-//
-function DispPlayer(i_pno){
+Game.Info.dispPlayerbox = function (i_pno){
 	//## Variable ##
 	var dispstr = "";
 	var cvsid = "";
@@ -356,15 +313,15 @@ function DispPlayer(i_pno){
 		//}else{
 		//	$("#DIV_POINT"+i).removeClass("TURNPLAYERPOP");
 		//}
-		//PlayerRank(i, 0), Player[i].name
+		//Game.Tool.calcRank(i, 0), Player[i].name
 
 		//##############################
 		//## PLAYER INFOMATION HEADER ##
 		//##############################
 		//## Total ##
 		parts.cls = "class_Point_Total";
-		parts.htm = TotalGold(i);
-		if(TotalGold(i) >= Board.target && i_pno != 9){
+		parts.htm = Game.Tool.calcTotalGold(i);
+		if(Game.Tool.calcTotalGold(i) >= Board.target && i_pno != 9){
 			parts.cls += " animeAlert";
 		}
 		fncDivMaker(parts);
@@ -495,154 +452,5 @@ function DispPlayer(i_pno){
 		}
 	}
 }
-function SetPlayerImg(pno){
-	var css = {};
-	var cssP = {};
-	var transform = "";
-	var transformP = "";
-	var stands = [];
-	var groups = [];
-	var mvx, mvpx, grpnum;
-	var cssbg = "";
 
-	//stand work
-	for(var i=1; i<=Board.playcnt; i++){
-		if(Board.turn != i){
-			stands.push(Player[i].stand);
-		}
-	}
-
-	for(var i=1; i<=Board.playcnt; i++){
-		css = {};
-		cssP = {};
-		transform = "";
-		transformP = "";
-
-		//image position
-		cssbg = "0px 0px, 128px 0px, 128px 0px";
-		if($T.inrange(Player[i].direction, 1, 2)){
-			cssbg = "128px 0px, 0px 0px, 128px 0px";
-		}
-		if($T.inrange(Player[i].direction, 3, 4)){
-			cssbg = "128px 0px, 128px 0px, 0px 0px";
-		}
-		css["background-position"] = cssbg;
-
-		//group
-		if(Board.turn == i){
-			if($T.inarray(Player[i].direction, [1, 4])){
-				transform = "scale(-1, 1)";
-				transformP = "scale(-1, 1)";
-			}else{
-				transform = "";
-				transformP = "";
-			}
-		}else{
-			grpnum = $T.countarray(Player[i].stand, stands);
-			//立ち位置重複
-			if(grpnum >= 2){
-				if($T.inarray(Player[i].direction, [1, 4])){
-					transform = "scale(-0.8, 0.8)";
-					transformP = "scale(-1, 1)";
-				}else{
-					transform = "scale(0.8, 0.8)";
-					transformP = "";
-				}
-				mvpx = (grpnum == 2) ? 24 : 12;
-				mvx = $T.countarray(Player[i].stand, groups) * mvpx - 12;
-				transform += " translate("+mvx+"px, 0px)";
-				groups.push(Player[i].stand);
-			}else{
-				if($T.inarray(Player[i].direction, [1, 4])){
-					transform = "scale(-1, 1)";
-					transformP = "scale(-1, 1)";
-				}else{
-					transform = "";
-					transformP = "";
-				}
-			}
-		}
-		if(pno == 0 || pno == i){
-			css["transform"] = transform;
-			cssP["transform"] = transformP;
-			$("#DIV_PLAYER"+i).css(css);
-			$("#DIV_PNO"+i+",#DIV_PICON"+i ).css(cssP);
-		}
-	}
-}
-//################## ダイアログ表示 ####################
-function DispDialog(param){
-	if(param == "none"){
-		$("#DIV_FRAME").css({webkitFilter:""});
-		$("#DIV_DIALOG_BACK").css({display:"none"});
-		$("#DIV_DIALOG").html("");
-	}else{
-		var html = "", action = "", cls = "";
-		var size = "390px";
-		if(param.cnos){
-			for(var i=0; i<param.cnos.length; i++){
-				html += "<canvas id='CVS_DIALOG"+i+"' width='100' height='130'></canvas>";
-			}
-		}
-		if(param.msgs){
-			for(var i=0; i<param.msgs.length; i++){
-				if(html != "") html += "<BR>";
-				html += param.msgs[i];
-			}
-		}
-		if(param.imgbtns){
-			if(param.imgbtns.length >= 4){
-				size = "640px";
-			}
-			for(var i=0; i<param.imgbtns.length; i++){
-				html += "<a href=\"javascript:"+param.imgbtns[i][1]+"\" oncontextmenu=\"Card.Tool.info({cno:'"+param.imgbtns[i][0]+"'});return false;\">";
-				html += "<canvas id='CVS_DIALOG"+i+"' width='100' height='130'></canvas></a>";
-			}
-		}
-		if(param.btns){
-			if(param.dtype && param.dtype == "yesno"){
-				if(html != "") html += "<br>";
-				for(var i=0; i<=1; i++){
-					cls = (i == 1 && param.timer) ? " class='"+Chessclock.set()+"'" : "";
-					html += "<button onclick=\""+param.btns[i]+"\" style='width:120px' "+cls+">"+["はい","いいえ"][i]+"</button>";
-				}
-			}else{
-				for(var i=0; i<param.btns.length; i++){
-					if(html != "") html += "<BR>";
-					html += "<button style='width:160px'";
-					if(param.btns[i][1] == ""){
-						html += " disabled";
-					}else{
-						html += " onclick=\""+param.btns[i][1]+"\"";
-					}
-					if(param.btns[i][2]){
-						html += " class='"+Chessclock.set(param.btns[i][2])+"'";
-					}
-					html += ">" + param.btns[i][0] + "</button>";
-				}
-			}
-		}else{
-			if(param.dtype == "ok"){
-				html += "<br><button onclick=\"DispDialog('none')\" style='width:160px'>閉じる</button>";
-			}
-		}
-		$("#DIV_DIALOG").css({width:size});
-		$("#DIV_DIALOG").html(html);
-		$("#DIV_DIALOG_BACK").css({display:"block"});
-		$("#DIV_FRAME").css({webkitFilter:"blur(3px)"});
-		//インフォ非表示
-		GridInfo(0);
-		//canvas
-		if(param.cnos != undefined){
-			for(var i=0; i<param.cnos.length; i++){
-				Card.Tool.imgset({cvs:"CVS_DIALOG"+i, cno:param.cnos[i], zoom:0.5});
-			}
-		}
-		if(param.imgbtns != undefined){
-			for(var i=0; i<param.imgbtns.length; i++){
-				Card.Tool.imgset({cvs:"CVS_DIALOG"+i, cno:param.imgbtns[i][0], zoom:0.5});
-			}
-		}
-	}
-}
 

@@ -25,7 +25,7 @@ function BattleInit(){
 	Battle.log = [];
 
 	//再表示
-	DispPlayer();
+	Game.Info.dispPlayerbox();
 	GridInfo(0);
 	//BGM CHANGE
 	Audie.stop("map");
@@ -257,7 +257,7 @@ function BattleFight(){
 			EffectBox({pattern:"itemopen", bno:i})
 		}
 	}
-	DispPlayer();
+	Game.Info.dispPlayerbox();
 	//Next
 	setTimeout(BattleFightReady1, Battle.wait);
 }
@@ -713,7 +713,7 @@ function BattleResult(){
 					Player[Battle.p[0].pno].hand.push(Battle.p[0].cno);
 					//手札枚数再表示
 					if(Battle.p[0].pno == Board.role) Deck.Tool.sorthand();
-					DispPlayer();
+					Game.Info.dispPlayerbox();
 				}
 			}
 			//移動侵略

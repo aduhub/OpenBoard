@@ -79,7 +79,7 @@ Spell.Step.TargetOk = function (){
 		}
 		btnarr.push(["キャンセル", "Spell.Step.confirm(9)", 21]);
 		//表示
-		DispDialog({btns:btnarr});
+		UI.Dialog.show({btns:btnarr});
 		break;
 	default: //OK
 		//ターゲット追加
@@ -107,7 +107,7 @@ Spell.Step.chkGrid = function (gno){
 			//ライト
 			Grid.light({clear:true, arr:Spell.check});
 			//
-			DispDialog({msgs:["次のターゲットを選択してください"], dtype:"ok"});
+			UI.Dialog.show({msgs:["次のターゲットを選択してください"], dtype:"ok"});
 		}
 	}
 }
@@ -120,12 +120,12 @@ Spell.Step.confirm = function (flg){
 		var msgarr = ["["+Card[Spell.cno].name+"]を使用しますか？"];
 		var btnarr = ["Spell.Step.confirm(1)", "Spell.Step.confirm(9)"];
 		//ダイアログ
-		DispDialog({msgs:msgarr, btns:btnarr, dtype:"yesno" ,timer:true});
+		UI.Dialog.show({msgs:msgarr, btns:btnarr, dtype:"yesno" ,timer:true});
 	}else{
 		switch(flg){
 		case 1: //OK
 			//ダイアログ非表示
-			DispDialog("none");
+			UI.Dialog.close();
 			//コマンド送信
 			var wkcmd = "spell:"+Spell.cno+":"+Spell.target.join("_");
 			//送信
@@ -139,7 +139,7 @@ Spell.Step.confirm = function (flg){
 			break;
 		case 9: //NO、ターゲットキャンセル
 			//ダイアログ非表示
-			DispDialog("none");
+			UI.Dialog.close();
 			//アイコン再表示
 			Spell.Tool.chkHand();
 			//PHASEENDBUTTON
@@ -171,7 +171,7 @@ Spell.Step.recv = function (arg){
 	}
 }
 //Fire
-Spell.Step.fire = function (){
+Spell.Step.fire = function(i_flg){
 	var wait = 0;
 	var second = false;
 	var cardback = "";
@@ -219,7 +219,7 @@ Spell.Step.fire = function (){
 		var wkgold = 0;
 		for(var i=0; i<Spell.target.length; i++){
 			var tgtpno = Spell.target[i];
-			wkgold = PlayerRank(tgtpno, 0) * Grid.count({owner:tgtpno}) * 20;
+			wkgold = Game.Tool.calcRank(tgtpno, 0) * Grid.count({owner:tgtpno}) * 20;
 			Player[tgtpno].gold += wkgold;
 			//msgpop
 			EffectBox({pattern:"msgpop", gno:Player[tgtpno].stand, msg:wkgold+"G", color:"#ffcc00", player:true});
@@ -383,14 +383,14 @@ Spell.Step.fire = function (){
 		}
 		if(Board.turn == Board.role){
 			//ダイアログ
-			DispDialog({dtype:"ok", cnos:diagimg});
+			UI.Dialog.show({dtype:"ok", cnos:diagimg});
 		}
 		//msgpop
 		EffectBox({pattern:"msgpop", gno:Player[Board.turn].stand, msg:"Draw", player:true});
 		//hand
 		if(Board.turn == Board.role) Deck.Tool.sorthand();
 		//ReDisp
-		DispPlayer();
+		Game.Info.dispPlayerbox();
 		//復帰
 		if(Card[Spell.cno].opt[1] == "hand"){
 			cardback = "hand";
@@ -413,7 +413,7 @@ Spell.Step.fire = function (){
 		//hand
 		if(Board.turn == Board.role) Deck.Tool.sorthand();
 		//ReDisp
-		DispPlayer();
+		Game.Info.dispPlayerbox();
 		//WAIT
 		wait = 200;
 		break;
@@ -468,7 +468,7 @@ Spell.Step.fire = function (){
 				if(ipno == Board.role) Deck.Tool.sorthand();
 			}
 			//ReDisp
-			DispPlayer();
+			Game.Info.dispPlayerbox();
 			//WAIT
 			wait = 500;
 		}
@@ -974,14 +974,14 @@ Spell.Step.fire = function (){
 			diagimg.push(cno);
 			if(Board.turn == Board.role){
 				//ダイアログ
-				setTimeout(function(){DispDialog({dtype:"ok", cnos:diagimg});}, 1000);
+				setTimeout(function(){UI.Dialog.show({dtype:"ok", cnos:diagimg});}, 1000);
 			}
 			//msgpop
 			EffectBox({pattern:"msgpop", gno:Player[Board.turn].stand, msg:"Draw", player:true});
 			//hand
 			if(Board.turn == Board.role) Deck.Tool.sorthand();
 			//ReDisp
-			DispPlayer();
+			Game.Info.dispPlayerbox();
 		}
 		//WAIT
 		wait = 1500;
@@ -1252,7 +1252,7 @@ Spell.Step.second = function (arg){
 			if(imgarr.length >= 1){
 				imgarr.sort();
 				//ダイアログ
-				DispDialog({imgbtns:imgarr});
+				UI.Dialog.show({imgbtns:imgarr});
 			}else{
 				Spell.target.push("0");
 				//ターゲット確定
@@ -1263,7 +1263,7 @@ Spell.Step.second = function (arg){
 			break;
 		default: //OK
 			//ダイアログ非表示
-			DispDialog("none");
+			UI.Dialog.close();
 			//ターゲット追加
 			Spell.target.push(arg.cno);
 			//ターゲット確定
@@ -1291,11 +1291,11 @@ Spell.Step.second = function (arg){
 				}
 			}
 			//ダイアログ
-			DispDialog({imgbtns:imgarr});
+			UI.Dialog.show({imgbtns:imgarr});
 			break;
 		default: //OK
 			//ダイアログ非表示
-			DispDialog("none");
+			UI.Dialog.close();
 			//ターゲット追加
 			Spell.target.push(arg.dno);
 			//ターゲット確定
@@ -1331,11 +1331,11 @@ Spell.Step.second = function (arg){
 			}
 			var btnarr = [["キャンセル", "Spell.Step.second({step:1, cdat:[9, '']})"]];
 			//ダイアログ
-			DispDialog({imgbtns:imgarr, btns:btnarr});
+			UI.Dialog.show({imgbtns:imgarr, btns:btnarr});
 			break;
 		default: //OK
 			//ダイアログ非表示
-			DispDialog("none");
+			UI.Dialog.close();
 			//ターゲット追加
 			Spell.target = arg.cdat;
 			//ターゲット確定
@@ -1357,13 +1357,13 @@ Spell.Step.second = function (arg){
 			}
 			var btnarr = [["キャンセル", "Spell.Step.second({step:1, dno:0})"]];
 			//ダイアログ
-			DispDialog({btns:btnarr, imgbtns:imgarr});
+			UI.Dialog.show({btns:btnarr, imgbtns:imgarr});
 			break;
 		case 1: //OK
 			//ターゲット追加
 			Spell.target.push(arg.dno);
 			//ダイアログ非表示
-			DispDialog("none");
+			UI.Dialog.close();
 			//ターゲット確定
 			Flow.step(24);
 			//使用確認
@@ -1403,7 +1403,7 @@ Spell.Step.second = function (arg){
 				btnarr.push([imgtag, "Spell.Step.second({step:1, colorno:"+i+"})"]);
 			}
 			//ダイアログ
-			DispDialog({btns:btnarr});
+			UI.Dialog.show({btns:btnarr});
 			//PHASEENDBUTTON
 			$("#BTN_PhaseEnd").html("-");
 			break;
@@ -1411,7 +1411,7 @@ Spell.Step.second = function (arg){
 			//ターゲット追加
 			Spell.target = arg.colorno;
 			//ダイアログ非表示
-			DispDialog("none");
+			UI.Dialog.close();
 			//ターゲット確定
 			Flow.step(24);
 			//使用確認
@@ -1440,7 +1440,7 @@ Spell.Step.end = function (){
 		}
 	}
 	//再表示
-	DispPlayer();
+	Game.Info.dispPlayerbox();
 
 	//Stack Trash
 	Board.spelled.unshift(Spell.cno);

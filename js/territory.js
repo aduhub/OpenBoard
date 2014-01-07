@@ -439,7 +439,7 @@ Territory.Step.ability = function (i_flg){
 		Logprint({msg:"デッキ復帰", pno:Board.turn});
 
 		//総魔力表示
-		DispPlayer();
+		Game.Info.dispPlayerbox();
 		//領地終了
 		Territory.Step.end(2.5);
 		break;
@@ -568,14 +568,14 @@ Territory.Step.ability = function (i_flg){
 		if(Board.turn == Board.role){
 			diagimg.push(cno);
 			//ダイアログ
-			DispDialog({dtype:"ok", cnos:diagimg});
+			UI.Dialog.show({dtype:"ok", cnos:diagimg});
 			Deck.Tool.sorthand();
 		}
 		//msgpop
 		EffectBox({pattern:"msgpop", gno:Territory.gno, msg:"Ability"});
 		EffectBox({pattern:"msgpop", gno:Player[Board.turn].stand, msg:"Draw", player:true});
 		//ReDisp
-		DispPlayer();
+		Game.Info.dispPlayerbox();
 		//領地終了
 		Territory.Step.end(2.0);
 		break;
@@ -599,7 +599,7 @@ Territory.Step.ability = function (i_flg){
 		//msgpop
 		EffectBox({pattern:"msgpop", gno:Territory.gno, msg:"Ability"});
 		//ReDisp
-		DispPlayer();
+		Game.Info.dispPlayerbox();
 		//領地終了
 		Territory.Step.end(2.0);
 		break;
@@ -614,11 +614,11 @@ Territory.Step.ability = function (i_flg){
 			}
 			btnarr.push(["キャンセル", "Territory.Step.ability(9)"]);
 			//表示
-			DispDialog({btns:btnarr});
+			UI.Dialog.show({btns:btnarr});
 		}else{
 			if(Board.role == Board.turn){
 				//ダイアログ非表示
-				DispDialog("none");
+				UI.Dialog.close();
 			}
 			if(i_flg <= 4){
 				var tgtpno = i_flg;
@@ -680,7 +680,7 @@ Territory.Step.ability = function (i_flg){
 		}else{
 			Logprint({msg:"空き土地がなかった", pno:Board.turn});
 			//再表示
-			DispPlayer();
+			Game.Info.dispPlayerbox();
 			//領地終了
 			Territory.Step.end(1.5);
 		}
@@ -758,17 +758,17 @@ Territory.Step.ability = function (i_flg){
 			}
 			btnarr.push(["キャンセル", "Territory.Step.ability('Cancel')"]);
 			//表示
-			DispDialog({imgbtns:imgarr, btns:btnarr});
+			UI.Dialog.show({imgbtns:imgarr, btns:btnarr});
 		}else{
 			if(i_flg == "Cancel"){
 				//キャンセル
 				Flow.step(40);
 				//ダイアログ非表示
-				DispDialog("none");
+				UI.Dialog.close();
 			}else{
 				if(Board.role == Board.turn){
 					//ダイアログ非表示
-					DispDialog("none");
+					UI.Dialog.close();
 				}
 				//コスト支払い
 				Territory.Tool.paycost(i_flg);
@@ -869,7 +869,7 @@ Territory.Step.end = function (){
 			UI.Html.setDiv({id:"DIV_GCLICK"+Territory.gno2, clear:true});
 		}
 		//再表示
-		DispPlayer();
+		Game.Info.dispPlayerbox();
 		//Territory終了
 		Flow.step(60);
 		if(Board.role == Board.turn){

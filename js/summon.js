@@ -74,8 +74,7 @@ Summon.Step.recv = function (){
 //
 Summon.Step.ready = function (){
 	//ダイアログ非表示
-	DispDialog("none");
-
+	UI.Dialog.close();
 	//コスト消費
 	Player[Summon.pno].gold -= Card[Summon.cno].cost;
 	//カード消費
@@ -94,7 +93,7 @@ Summon.Step.ready = function (){
 		Deck.Tool.sorthand();
 	}
 	//手札再表示
-	DispPlayer();
+	Game.Info.dispPlayerbox();
 
 	if(Summon.from == "summon" && Board.grid[Summon.gno].owner != 0){
 		//Log
@@ -161,7 +160,7 @@ Summon.Step.setgrid = function (){
 	Grid.Img.set(Summon.gno);
 	Grid.Img.tax({gno:Summon.gno});
 	//再表示
-	DispPlayer();
+	Game.Info.dispPlayerbox();
 	//エフェクト
 	EffectBox({pattern:"summon", gno:Summon.gno, pno:Summon.pno, cno:Summon.cno});
 	EffectBox({pattern:"msgpop", gno:Summon.gno, msg:"Summon"});

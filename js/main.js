@@ -88,7 +88,7 @@ var Frame = {
 						Analytics.rankmode = mapinfo[8];
 					}
 					//Create Board
-					Game.createBoard();
+					Game.setupBoard();
 					break;
 				case "join": //プレイヤーid
 					var role, order1, order2;
@@ -162,7 +162,7 @@ var Frame = {
 					Board.deckcnt += 1;
 					//プレイヤーデータセット
 					if(Board.playcnt == Board.deckcnt){
-					    PlayerSetup();
+						Game.setupPlayer();
 					}
 					break;
 				case "ready":

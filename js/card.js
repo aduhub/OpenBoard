@@ -1,8 +1,9 @@
-var Draw = {};
-var Deck = {};
-Draw.Step = {};
 Card.Tool = {};
+var Draw = {};
+Draw.Step = {};
+var Deck = {};
 Deck.Tool = {};
+Deck.handselect = "00000";
 //####################################
 //カードドロー
 Draw.Step.start = function (){
@@ -11,7 +12,7 @@ Draw.Step.start = function (){
 		//ドロー・クリック待ち
 		Flow.step(12);
 		//dialog off
-		DispDialog("none");
+		UI.Dialog.close();
 		//draw
 		var cno = Player[Board.turn].DeckCard(1);
 		var termfnc = function(){
@@ -50,7 +51,7 @@ Draw.Step.hand = function (){
 	//##### Enchant #####
 	encret = Enchant({time:"DRAWCARD_AFTER", cno:cno, pno:Board.turn});
 	//手札枚数再表示
-	DispPlayer();
+	Game.Info.dispPlayerbox();
 	//ドロー終了
 	Draw.Step.end();
 }
@@ -88,49 +89,6 @@ Deck.Tool.shuffle = function (arg){
 			Net.send("shuffle:"+deckstr);
 			break;
 		}
-	}
-}
-//手札並び替え
-Deck.Tool.sorthand = function (){
-	var handcnt = Player[Board.role].hand.length;
-
-	//Clear
-	$(".CLS_HAND").remove();
-	// Hand Frame Check
-	for(var i=1; i<=handcnt; i++){
-		Maker.addHand();
-	}
-
-	//Hand Image
-	if(handcnt >= 1){
-		var marginpix = "2px";
-		//Sort
-		Player[Board.role].hand.sort();
-		//Margin
-		switch(handcnt){
-		case 6:
-			marginpix = "-2px";
-			break;
-		case 7:
-			marginpix = "-8px";
-			break;
-		case 8:
-			marginpix = "-13px";
-			break;
-		case 9:
-			marginpix = "-17px";
-			break;
-		case 10:
-			marginpix = "-20px";
-			break;
-		}
-		$(".CLS_HAND").css({marginLeft:marginpix, marginRight:marginpix});
-		//再表示
-		for(var i=0; i<handcnt; i++){
-			Card.Tool.imgset({hno:i});
-		}
-		//グレイ戻し
-		$(".CLS_HAND").removeClass("CLS_HAND_GLAY");
 	}
 }
 //Hand add {pno:, from:, [dno:], [nlog:]}
@@ -179,7 +137,7 @@ Deck.Tool.draw = function (arg){
 Deck.Tool.discard = function (arg){
 	var tgtcno;
 	//ダイアログ非表示
-	DispDialog("none");
+	UI.Dialog.close();
 	//ターンプレイヤー
 	if(Board.role == arg.pno){
 		tgtcno = Player[Board.role].hand[arg.hno];
@@ -195,7 +153,7 @@ Deck.Tool.discard = function (arg){
 	//ログ
 	Logprint({msg:"##" + tgtcno + "##を破棄", pno:arg.pno});
 	//手札枚数再表示
-	DispPlayer();
+	Game.Info.dispPlayerbox();
 	if(Board.role == arg.pno){
 		//手札ソート
 		Deck.Tool.sorthand();
@@ -253,21 +211,61 @@ Deck.Tool.deckok = function (){
 		Board.deckcnt += 1;
 		//プレイヤーデータセット
 		if(Board.playcnt == Board.deckcnt){
-			PlayerSetup();
+			Game.setupPlayer();
 		}
-		//##### Debug #####
-		if(sessionStorage.Mode == "debug"){
-			for(var i=1; i<=4; i++){
-			    //全員同データ
-			    Player[i].deckid = Player[Board.role].deckid;
-			    Player[i].deckname = Player[Board.role].deckname;
-			    Player[i].deckdata = Player[Board.role].deckdata;
-			}
-			//デッキセレクトカウント
-			Board.deckcnt = 4;
-			//プレイヤーデータセット
-			PlayerSetup();
+	}
+}
+//手札並び替え
+Deck.Tool.sorthand = function (){
+	var handcnt = Player[Board.role].hand.length;
+
+	//Clear
+	$(".CLS_HAND").remove();
+	// Hand Frame Check
+	for(var i=1; i<=handcnt; i++){
+		Maker.addHand();
+	}
+
+	//Hand Image
+	if(handcnt >= 1){
+		var marginpix = "2px";
+		//Sort
+		Player[Board.role].hand.sort();
+		//Margin
+		switch(handcnt){
+			case 6:
+				marginpix = "-2px";
+				break;
+			case 7:
+				marginpix = "-8px";
+				break;
+			case 8:
+				marginpix = "-13px";
+				break;
+			case 9:
+				marginpix = "-17px";
+				break;
+			case 10:
+				marginpix = "-20px";
+				break;
 		}
+		$(".CLS_HAND").css({marginLeft:marginpix, marginRight:marginpix});
+		//再表示
+		for(var i=0; i<handcnt; i++){
+			Card.Tool.imgset({hno:i});
+		}
+		//グレイ戻し
+		$(".CLS_HAND").removeClass("CLS_HAND_GLAY");
+	}
+}
+//マリガン
+Deck.Tool.mulligan = function(hno){
+	if(Deck.handselect[hno] == "1"){
+		Deck.handselect = $T.chgstr(Deck.handselect, hno, "0");
+		$("#DIV_HAND"+hno).addClass("CLS_HAND_GLAY");
+	}else{
+		Deck.handselect = $T.chgstr(Deck.handselect, hno, "1");
+		$("#DIV_HAND"+hno).removeClass("CLS_HAND_GLAY");
 	}
 }
 //------------------------------------
@@ -304,7 +302,7 @@ Deck.onRecv = function (recvstr){
 			Player[Number(recvcmd[1])].deckdata = deckinfo.join(":");
 			if(Board.deckcnt == 4){
 				//プレイヤーデータセット
-				PlayerSetup()
+				Game.setupPlayer()
 			}
 			//【Log】
 			Logprint("DeckRecv:"+recvcmd[1], "debug");
@@ -327,7 +325,7 @@ function DeckImport(deckno){
 	}
 }
 function onDeckImport(recvstr){
-	DispDialog({dtype:"ok", msgs:["インポートしました。"]});
+	UI.Dialog.show({dtype:"ok", msgs:["インポートしました。"]});
 }
 //####################################
 //Option Check

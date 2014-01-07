@@ -1,27 +1,16 @@
 var d = new Date().getTime();
-document.write('<script type="text/javascript" src="jstool/canvas.js?'+d+'"></script>');
-document.write('<script type="text/javascript" src="jstool/audio.js?'+d+'"></script>');
-document.write('<script type="text/javascript" src="jstool/debug.js?'+d+'"></script>');
-document.write('<script type="text/javascript" src="jstool/effect.js?'+d+'"></script>');
-document.write('<script type="text/javascript" src="jstool/graph.js?'+d+'"></script>');
-document.write('<script type="text/javascript" src="jstool/tool.js?'+d+'"></script>');
-document.write('<script type="text/javascript" src="jsdata/data_card.js?'+d+'"></script>');
-document.write('<script type="text/javascript" src="jsdata/data_map.js?'+d+'"></script>');
-document.write('<script type="text/javascript" src="jsdata/data_ability.js?'+d+'"></script>');
-document.write('<script type="text/javascript" src="js/class.js?'+d+'"></script>');
-document.write('<script type="text/javascript" src="js/var.js?'+d+'"></script>');
-document.write('<script type="text/javascript" src="js/infoblock.js?'+d+'"></script>');
-document.write('<script type="text/javascript" src="js/card.js?'+d+'"></script>');
-document.write('<script type="text/javascript" src="js/board.js?'+d+'"></script>');
-document.write('<script type="text/javascript" src="js/grid.js?'+d+'"></script>');
-document.write('<script type="text/javascript" src="js/territory.js?'+d+'"></script>');
-document.write('<script type="text/javascript" src="js/dice.js?'+d+'"></script>');
-document.write('<script type="text/javascript" src="js/flow.js?'+d+'"></script>');
-document.write('<script type="text/javascript" src="js/net.js?'+d+'"></script>');
-document.write('<script type="text/javascript" src="js/main.js?'+d+'"></script>');
-document.write('<script type="text/javascript" src="js/maker.js?'+d+'"></script>');
-document.write('<script type="text/javascript" src="js/spell.js?'+d+'"></script>');
-document.write('<script type="text/javascript" src="js/summon.js?'+d+'"></script>');
-document.write('<script type="text/javascript" src="js/battle.js?'+d+'"></script>');
-document.write('<script type="text/javascript" src="js/battle_ability.js?'+d+'"></script>');
-document.write('<script type="text/javascript" src="js/chessclock.js?'+d+'"></script>');
+var scripts1 = ["chessclock","canvas","audio","debug","effect","graph","tool"];
+var scripts2 = ["data_card","data_map","data_ability","dictionary"];
+var scripts3 = ["var","battle","battle_ability","board","card","dice","flow","grid","infoblock","main","maker","net","spell","summon","territory","ui"];
+//jstool
+for(var i in scripts1){
+	document.write("<script type='text/javascript' src='jstool/"+scripts1[i]+".js?"+d+"'></script>");
+}
+//data
+for(var i in scripts2){
+	document.write("<script type='text/javascript' src='jsdata/"+scripts2[i]+".js?"+d+"'></script>");
+}
+//js
+for(var i in scripts3){
+	document.write("<script type='text/javascript' src='js/"+scripts3[i]+".js?"+d+"'></script>");
+}

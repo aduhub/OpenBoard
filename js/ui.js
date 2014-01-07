@@ -2,6 +2,7 @@ var UI = {};
 UI.Html = {};
 UI.Event = {};
 UI.Tool = {};
+UI.Dialog = {};
 //Drag
 UI.dragObject = null;
 UI.dragOffset = null;
@@ -87,18 +88,19 @@ UI.Html.sortZindex = function (flg){
 			}
 			$("#DIV_PLAYER"+i).css({zIndex:zidx});
 		}
-		SetPlayerImg(0);
+		UI.Tool.setImgCharactor(0);
 	}
 }
 //-----[ Tool ]-----
 //キャラクター
-UI.Tool.playerCharactor = function (pno){
+UI.Tool.createCharactor = function (pno){
 	var imgsrc = [];
 	var dirtype = ["f","u","d"];
 	var baseavator = ["piece1","piece2","piece3","piece4"];
+	var plus = (baseavator.indexOf(Player[pno].avatar) >= 0) ? pno : "";
 	//ICON
 	for (var i in dirtype){
-		imgsrc.push("url(img/avator/"+Player[pno].avatar+dirtype[i]+".gif)");
+		imgsrc.push("url(img/avator/"+Player[pno].avatar+plus+dirtype[i]+".gif)");
 	}
 	$("#DIV_PLAYER"+pno).css("backgroundImage", imgsrc.join(","));
 	$("#DIV_PLAYER"+pno).css("backgroundPosition", "0px 0px, 128px 0px, 128px 0px");
@@ -116,8 +118,84 @@ UI.Tool.playerIcon = function (pno){
 		}
 	}
 }
+//
+UI.Tool.setImgCharactor = function (pno){
+	var css = {};
+	var cssP = {};
+	var transform = "";
+	var transformP = "";
+	var stands = [];
+	var groups = [];
+	var mvx, mvpx, grpnum;
+	var cssbg = "";
+
+	//stand work
+	for(var i=1; i<=Board.playcnt; i++){
+		if(Board.turn != i){
+			stands.push(Player[i].stand);
+		}
+	}
+
+	for(var i=1; i<=Board.playcnt; i++){
+		css = {};
+		cssP = {};
+		transform = "";
+		transformP = "";
+
+		//image position
+		cssbg = "0px 0px, 128px 0px, 128px 0px";
+		if($T.inrange(Player[i].direction, 1, 2)){
+			cssbg = "128px 0px, 0px 0px, 128px 0px";
+		}
+		if($T.inrange(Player[i].direction, 3, 4)){
+			cssbg = "128px 0px, 128px 0px, 0px 0px";
+		}
+		css["background-position"] = cssbg;
+
+		//group
+		if(Board.turn == i){
+			if($T.inarray(Player[i].direction, [1, 4])){
+				transform = "scale(-1, 1)";
+				transformP = "scale(-1, 1)";
+			}else{
+				transform = "";
+				transformP = "";
+			}
+		}else{
+			grpnum = $T.countarray(Player[i].stand, stands);
+			//立ち位置重複
+			if(grpnum >= 2){
+				if($T.inarray(Player[i].direction, [1, 4])){
+					transform = "scale(-0.8, 0.8)";
+					transformP = "scale(-1, 1)";
+				}else{
+					transform = "scale(0.8, 0.8)";
+					transformP = "";
+				}
+				mvpx = (grpnum == 2) ? 24 : 12;
+				mvx = $T.countarray(Player[i].stand, groups) * mvpx - 12;
+				transform += " translate("+mvx+"px, 0px)";
+				groups.push(Player[i].stand);
+			}else{
+				if($T.inarray(Player[i].direction, [1, 4])){
+					transform = "scale(-1, 1)";
+					transformP = "scale(-1, 1)";
+				}else{
+					transform = "";
+					transformP = "";
+				}
+			}
+		}
+		if(pno == 0 || pno == i){
+			css["transform"] = transform;
+			cssP["transform"] = transformP;
+			$("#DIV_PLAYER"+i).css(css);
+			$("#DIV_PNO"+i+",#DIV_PICON"+i ).css(cssP);
+		}
+	}
+}
 //ウィンドウスクロール
-UI.Tool.scrollBoard = function (i_no){
+UI.Tool.scrollBoard = function (gno){
 	//ドラッグストップ
 	UI.dragObject = null;
 	var def_t, def_x;
@@ -125,15 +203,15 @@ UI.Tool.scrollBoard = function (i_no){
 	def_x = 340; //800
 	if(!$("#DIV_FRAME").hasClass("CLS_AREAMAP")){
 		//スクロール
-		var wk_y = Board.grid[i_no].top - def_t;
-		var wk_x = Board.grid[i_no].left - def_x;
+		var wk_y = Board.grid[gno].top - def_t;
+		var wk_x = Board.grid[gno].left - def_x;
 		$("#DIV_FRAME").animate({scrollTop:wk_y, scrollLeft:wk_x}, 400, 'swing');
 
 	}
 }
 //画面サイズ変更
-UI.Tool.chgBoardSize = function (sizeflg){
-	switch(sizeflg){
+UI.Tool.chgBoardSize = function (flg){
+	switch(flg){
 		case 0:
 			//クリア
 			if($("#DIV_FRAME").hasClass("CLS_AREAMAP")){
@@ -218,29 +296,29 @@ UI.Tool.openControl = function (){
 }
 //-----[ Event ]-----
 //情報クリック判定
-UI.Event.mouseoverInfo = function (i_no){
+UI.Event.mouseoverInfo = function (flg){
 	if(Board.round >= 1){
-		if(i_no == 0){
-			DispInfoMap(false);
+		if(flg == 0){
+			Game.Info.dispAreaInfo(false);
 		}else{
 			//non battle
 			if(Board.step <= 70 || (Board.step >= 80 && Board.step < 100)){
 				//情報表示
-				DispInfoMap(true);
+				Game.Info.dispAreaInfo(true);
 			}
 		}
 	}
 }
 //Player
-UI.Event.clickPlayer = function (i_no){
+UI.Event.clickPlayer = function (pno){
 	if(Board.round >= 1){
-		if(i_no >= 0){
+		if(pno >= 0){
 			//non battle
 			if(Board.step <= 70 || (Board.step >= 80 && Board.step < 100)){
 				//スクロール
-				UI.Tool.scrollBoard(Player[i_no].stand);
+				UI.Tool.scrollBoard(Player[pno].stand);
 				//情報表示
-				DispPlayer(i_no);
+				Game.Info.dispPlayerbox(pno);
 			}
 		}
 	}
@@ -315,7 +393,7 @@ UI.Event.clickGrid = function (gno){
 UI.Event.clickHand = function (hno){
 	if(Board.step == 1){
 		if(Board.role >= 1){
-			HandMulligan(hno);
+			Deck.Tool.mulligan(hno);
 			return;
 		}
 	}
@@ -414,4 +492,77 @@ UI.Event.mousemoveDrag = function (e){
 	$("#DIV_FRAME").scrollLeft(x);
 	UI.dragOffset = mousePos;
 }
-
+//################## ダイアログ表示 ####################
+UI.Dialog.show = function (arg){
+	var html = "", action = "", cls = "";
+	var size = "390px";
+	//インフォ非表示
+	GridInfo(0);
+	if(arg.cnos){
+		for(var i in arg.cnos){
+			html += "<canvas id='CVS_DIALOG"+i+"' width='100' height='130'></canvas>";
+		}
+	}
+	if(arg.msgs){
+		for(var i in arg.msgs){
+			if(html != "") html += "<BR>";
+			html += arg.msgs[i];
+		}
+	}
+	if(arg.imgbtns){
+		if(arg.imgbtns.length >= 4){
+			size = "640px";
+		}
+		for(var i=0; i<arg.imgbtns.length; i++){
+			html += "<a href=\"javascript:"+arg.imgbtns[i][1]+"\" oncontextmenu=\"Card.Tool.info({cno:'"+arg.imgbtns[i][0]+"'});return false;\">";
+			html += "<canvas id='CVS_DIALOG"+i+"' width='100' height='130'></canvas></a>";
+		}
+	}
+	if(arg.btns){
+		if(arg.dtype && arg.dtype == "yesno"){
+			if(html != "") html += "<br>";
+			for(var i=0; i<=1; i++){
+				cls = (i == 1 && arg.timer) ? " class='"+Chessclock.set()+"'" : "";
+				html += "<button onclick=\""+arg.btns[i]+"\" style='width:120px' "+cls+">"+["はい","いいえ"][i]+"</button>";
+			}
+		}else{
+			for(var i=0; i<arg.btns.length; i++){
+				if(html != "") html += "<BR>";
+				html += "<button style='width:160px'";
+				if(arg.btns[i][1] == ""){
+					html += " disabled";
+				}else{
+					html += " onclick=\""+arg.btns[i][1]+"\"";
+				}
+				if(arg.btns[i][2]){
+					html += " class='"+Chessclock.set(arg.btns[i][2])+"'";
+				}
+				html += ">" + arg.btns[i][0] + "</button>";
+			}
+		}
+	}else{
+		if(arg.dtype == "ok"){
+			html += "<br><button onclick='UI.Dialog.close()' style='width:160px'>閉じる</button>";
+		}
+	}
+	$("#DIV_DIALOG").css({width:size});
+	$("#DIV_DIALOG").html(html);
+	$("#DIV_DIALOG_BACK").css({display:"block"});
+	$("#DIV_FRAME").css({webkitFilter:"blur(3px)"});
+	//canvas
+	if(arg.cnos){
+		for(var i in arg.cnos){
+			Card.Tool.imgset({cvs:"CVS_DIALOG"+i, cno:arg.cnos[i], zoom:0.5});
+		}
+	}
+	if(arg.imgbtns){
+		for(var i in arg.imgbtns){
+			Card.Tool.imgset({cvs:"CVS_DIALOG"+i, cno:arg.imgbtns[i][0], zoom:0.5});
+		}
+	}
+}
+UI.Dialog.close = function(){
+	$("#DIV_FRAME").css({webkitFilter:""});
+	$("#DIV_DIALOG_BACK").css({display:"none"});
+	$("#DIV_DIALOG").html("");
+}

@@ -14,7 +14,7 @@ Flow.set = function (){
 		Board.round = 0;
 		Board.turn = 0;
 		//ダイアログ
-		DispDialog("none");
+		UI.Dialog.close();
 		//メッセージダイアログ
 		PopBigMsg("対戦開始", 0);
 		//BGM
@@ -32,7 +32,7 @@ Flow.set = function (){
 			//集計
 			Graph.data[0] = Board.round;
 			for(var i=1; i<=Board.playcnt; i++){
-				Graph.data[i].push(TotalGold(i));
+				Graph.data[i].push(Game.Tool.calcTotalGold(i));
 			}
 			//End check
 			if(Board.round == Board.endround){
@@ -60,7 +60,7 @@ Flow.set = function (){
 		//サドンデスチェック
 		if(Board.suddenon == false){
 			for(var i=1; i<=Board.playcnt; i++){
-				if(TotalGold(i) >= Math.floor(Board.target / 2)){
+				if(Game.Tool.calcTotalGold(i) >= Math.floor(Board.target / 2)){
 					//Mssage Pop
 					$("#DIV_MSG2").html("サドンデス");
 					EffectBox({pattern:"roundmsgpop"});
@@ -96,7 +96,7 @@ Flow.set = function (){
 				var btns = [];
 				msgs.push("あなたのターンです");
 				btns.push(["ＯＫ", "Draw.Step.start()"]);
-				DispDialog({msgs:msgs, btns:btns});
+				UI.Dialog.show({msgs:msgs, btns:btns});
 				//Sound Effect
 				Audie.seplay("info");
 			}
@@ -110,14 +110,39 @@ Flow.set = function (){
 		break;
 	}
 	//インフォメーション再表示
-	DispInfo();
-	DispPlayer();
+	if(Board.round >= 1){
+		$("#DIV_INFO").html(Board.round);
+		$("#DIV_INFO").css("color", pcolor[Board.turn]);
+	}
+	Game.Info.dispPlayerbox();
 }
 //
 Flow.step = function (stepno){
+	var msgstr = "";
 	Board.step = stepno;
 	//Info
-	DispInfoPlus(stepno);
+	if(Board.step >= 11 && Board.step <= 19){
+		msgstr = "カードドロー";
+	}
+	if(Board.step >= 20 && Board.step <= 29){
+		msgstr = "スペル・ダイス";
+	}
+	if(Board.step >= 30 && Board.step <= 39){
+		msgstr = "ダイス・移動";
+	}
+	if(Board.step >= 40 && Board.step <= 59){
+		msgstr = "召喚・領地指示";
+	}
+	if(Board.step >= 71 && Board.step <= 79){
+		msgstr = "戦闘";
+	}
+	if(Board.step >= 90 && Board.step <= 91){
+		msgstr = "ターン終了";
+	}
+	if(Board.step >= 92 && Board.step <= 93){
+		msgstr = "領地売却";
+	}
+	$("#DIV_INFOPLUS").html(msgstr);
 	//timer
 	Chessclock.stepchk();
 }
@@ -166,8 +191,7 @@ Flow.Step.turnend = function (){
 			Net.send("turn");
 
 			//表示
-			DispInfo();
-			DispPlayer();
+			Game.Info.dispPlayerbox();
 			Deck.Tool.sorthand();
 			//PHASEENDBUTTON
 			$("#BTN_PhaseEnd").html("-");
@@ -192,12 +216,12 @@ Flow.Step.endphase = function (step){
 				//step
 				Board.discardstep = 1;
 				//ダイアログ表示
-				DispDialog({msgs:["破棄するカード選択してください"]});
+				UI.Dialog.show({msgs:["破棄するカード選択してください"]});
 			}else{
 				//step
 				Board.discardstep = 9;
 				//ダイアログ表示
-				DispDialog({msgs:["破棄カード選択中・・・"]});
+				UI.Dialog.show({msgs:["破棄カード選択中・・・"]});
 			}
 		}else{
 			Flow.Step.endphase(1);
@@ -218,7 +242,7 @@ Flow.Step.endphase = function (step){
 			if(Board.role == Board.turn){
 				if(Grid.count({owner:Board.turn}) >= 1){
 					var msgs = ["売却する土地を選択して下さい"];
-					DispDialog({msgs:msgs, dtype:"ok"});
+					UI.Dialog.show({msgs:msgs, dtype:"ok"});
 				}
 			}
 			//トランス
@@ -251,7 +275,7 @@ Flow.Step.endgame = function (i_flg){
 	$("#DIV_TIMEKEEP ").remove();
 
 	//表示
-	DispPlayer();
+	Game.Info.dispPlayerbox();
 
 	//BGM Stop
 	Audie.stop("map");
@@ -264,17 +288,17 @@ Flow.Step.endgame = function (i_flg){
 		goalpno = Board.turn;
 		Graph.data[0] = Board.round;
 		for(var i=1; i<=Board.playcnt; i++){
-			Graph.data[i].push(TotalGold(i));
+			Graph.data[i].push(Game.Tool.calcTotalGold(i));
 		}
 	}
 	//rank order
 	for(var irank=1; irank<=Board.playcnt; irank++){
 		for(var ipno=1; ipno<=Board.playcnt; ipno++){
-			if(PlayerRank(ipno, goalpno) == irank){
+			if(Game.Tool.calcRank(ipno, goalpno) == irank){
 				//html
 				wkstr += RankLineEdit({no:irank, pno:ipno});
 				//Analytics
-				Analytics.rank.push({pno:ipno, rank:irank, g:TotalGold(ipno)});
+				Analytics.rank.push({pno:ipno, rank:irank, g:Game.Tool.calcTotalGold(ipno)});
 				//rate
 				prank[ipno] = irank;
 				prate[irank].push(Player[ipno].rate);
@@ -464,7 +488,7 @@ Flow.Tool.taxpay = function (){
 		//Effect
 		EffectBox({pattern:"taxjump", pno:Board.turn, tax:wktax});
 		//Info再表示
-		DispPlayer();
+		Game.Info.dispPlayerbox();
 		//ret wait
 		var retcnt = 0;
 		if(wktax <= 480){
@@ -494,7 +518,7 @@ Flow.Tool.bankrupt = function (){
 	//Icon
 	UI.Tool.playerIcon(Board.turn);
 	//Info
-	DispPlayer();
+	Game.Info.dispPlayerbox();
 	//Animation
 	EffectBox({pattern:"piecemove", pno:Board.turn, gno:1});
 	//Log
@@ -644,7 +668,7 @@ function RankLineEdit(arg){
 	}else{
 		rethtm += "<td class='n0'>"+numstr[arg.no]+"</td>";
 	}
-	rethtm += "<td class='nm'>"+Player[arg.pno].name+"</td><td class='g'>"+TotalGold(arg.pno)+" G</td></tr>";
+	rethtm += "<td class='nm'>"+Player[arg.pno].name+"</td><td class='g'>"+Game.Tool.calcTotalGold(arg.pno)+" G</td></tr>";
 	return rethtm;
 }
 function EndResultOpen(no){
@@ -654,8 +678,8 @@ function EndResultOpen(no){
 		$("#DIV_RESULT").css("display", "none");
 	}
 	if(no == 2){
-		DispPlayer(9);
+		Game.Info.dispPlayerbox(9);
 	}else{
-		DispPlayer();
+		Game.Info.dispPlayerbox();
 	}
 }
