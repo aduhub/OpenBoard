@@ -1,5 +1,5 @@
-var Maker = {
-	addDiv:function(arg){
+var Maker = {};
+Maker.addDiv = function(arg){
 		var jQ_Div;
 		var id = arg["id"] || "DIV_MAKER_" + $T.rndstr(8);
 		var baseframe = arg["base"] || "#DIV_FRAME";
@@ -23,8 +23,8 @@ var Maker = {
 		}
 		//ドキュメントに追加
 		$(baseframe).append(jQ_Div);
-	},
-	addCanvas:function(arg){
+}
+Maker.addCanvas = function(arg){
 		var jQ_Canvas;
 		var cvs_id = arg["id"] || "CVS_MAKER_" + $T.rndstr(8);
 		var div_id = arg["div"];
@@ -45,8 +45,8 @@ var Maker = {
 		}
 		//ドキュメントに追加
 		$(div_id).append(jQ_Canvas);
-	},
-	addHand:function(){
+}
+Maker.addHand = function(){
 		var hno = $(".CLS_HAND").length;
 		var div_id = "DIV_HAND" + hno;
 		var cvs_id = "CVS_HAND" + hno;
@@ -54,5 +54,4 @@ var Maker = {
 		divitem["attr"] = {"onclick":"UI.Event.clickHand("+hno+")", "oncontextmenu":"Card.Tool.info({hno:"+hno+"});return false;", "onmouseout":"Card.Tool.info()"}
 		this.addDiv(divitem);
 		this.addCanvas({div:div_id, id:cvs_id, h:"130", w:"100"});
-	}
 }

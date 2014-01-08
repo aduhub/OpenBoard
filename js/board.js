@@ -70,10 +70,6 @@ Game.setupBoard = function (){
 	//MAP背景
 	$("#DIV_BACK").css("backgroundImage", "url(img/mapdefault.gif)");
 
-	//easeljs
-	//var stage = new createjs.Stage("CVS_BACK");
-	//var imgname = {GRID0:"img/grid0.gif",GRID1:"img/grid1.gif",GRID2:"img/grid2.gif",GRID3:"img/grid3.gif",GRID4:"img/grid4.gif",GRID5:"img/grid5.gif",GRIDT:"img/gicon_tele.gif",GRIDF:"img/gicon_drop.gif"}
-
 	//グリッド生成
 	for(var i in Board.grid){
 		if(Board.grid[i].color != 0){
@@ -106,21 +102,15 @@ Game.setupBoard = function (){
 			}
 			//CANVAS
 			var pos = {x:Number(Board.grid[i].left), y:Number(Board.grid[i].top)};
-			Canvas.draw({id:"CVS_BACK", src:wkimgid, x:pos.x, y:pos.y, composite:wkcomposite});
-
-			//easeljs
-			//var bitmap = new createjs.Bitmap(imgname[wkimgid]);
-			//bitmap.x = pos.x;
-			//bitmap.y = pos.y;
-			//stage.addChild(bitmap);
+			//Canvas.draw({id:"CVS_BACK", src:wkimgid, x:pos.x, y:pos.y, composite:wkcomposite});
 
 			//GRID
-			UI.Html.createDiv({id:"DIV_GICON"+i, w:128, h:90, l:pos.x, t:pos.y - 26, z:10, opt:"img", imgsrc:wkicon});
+			//UI.Html.createDiv({id:"DIV_GICON"+i, w:128, h:90, l:pos.x, t:pos.y - 26, z:10, opt:"img", imgsrc:wkicon});
 			UI.Html.createDiv({id:"DIV_GCLICK"+i, w:64, h:64, l:pos.x + 32, t:pos.y, z:150, opt:"click", gno:i});
 		}
 	}
-	//easeljs
-	//stage.update();
+	//CreateJS
+	UI.CreateJS.Board();
 
 	//ソート
 	UI.Html.sortZindex("map");

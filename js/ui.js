@@ -3,12 +3,59 @@ UI.Html = {};
 UI.Event = {};
 UI.Tool = {};
 UI.Dialog = {};
+UI.CreateJS = {};
 //Drag
 UI.dragObject = null;
 UI.dragOffset = null;
+//-----[ CreateJS ]-----
+UI.CreateJS.Board = function(){
+	//easeljs
+	var stage = new createjs.Stage("CVS_BACK");
+	var imglist = {G0:"img/grid0.gif",G1:"img/grid1.gif",G2:"img/grid2.gif",G3:"img/grid3.gif",G4:"img/grid4.gif",G5:"img/grid5.gif",GT:"img/gicon_tele.gif",GF:"img/gicon_drop.gif"}
+	var icolist = {"10":"img/gicon_cas.gif","11":'img/gicon_n.gif',"12":'img/gicon_s.gif',"13":'img/gicon_w.gif',"14":'img/gicon_e.gif'};
+	for(var i in Board.grid){
+		if(Board.grid[i].color != 0){
+			var backsrc = "G0";
+			var iconsrc = "";
+			var pos = {x:Number(Board.grid[i].left), y:Number(Board.grid[i].top)};
+			//image select
+			if(Board.grid[i].color >= 10 && Board.grid[i].color <= 14){
+				iconsrc = icolist[Board.grid[i].color];
+			}else if(Board.grid[i].color == 21){
+				backsrc = "GT";
+			}else if(Board.grid[i].color == 22){
+				iconsrc = "img/gicon_brd.gif";
+			}else if(Board.grid[i].color == 23){
+				iconsrc = "img/gicon_alt.gif";
+			}else if(Board.grid[i].color == 24){
+				backsrc = "GF";
+			}else{
+				backsrc = "G"+Board.grid[i].color;
+			}
+			//back
+			var bmBack = new createjs.Bitmap(imglist[backsrc]);
+			bmBack.name = "Grid_"+i;
+			bmBack.x = pos.x;
+			bmBack.y = pos.y;
+			bmBack.compositeOperation = "destination-over";
+			stage.addChild(bmBack);
+			//icon
+			if(iconsrc){
+				var bmIcon = new createjs.Bitmap(iconsrc);
+				bmIcon.name = "Gicon_"+i;
+				bmIcon.x = pos.x;
+				bmIcon.y = pos.y - 26;
+				bmIcon.compositeOperation = "source-over";
+				stage.addChild(bmIcon);
+			}
+		}
+	}
+	//easeljs
+	stage.update();
+}
 //-----[ HTML ]-----
 //DIV レイヤー設置
-UI.Html.createDiv = function CreateLay(arg){
+UI.Html.createDiv = function (arg){
 	var Attr = {id:arg.id}
 	var Class = "";
 	//Div生成
