@@ -103,8 +103,8 @@ function BattleInit(){
 	var fnc1 = function(){
 		$("#DIV_VSCARD1").animate({height:260}, 2000);
 	}
-	Card.Tool.imgset({cvs:"CVS_VSCARD0", cno:Battle.p[0].cno, fnc:fnc0});
-	Card.Tool.imgset({cvs:"CVS_VSCARD1", cno:Battle.p[1].cno, fnc:fnc1});
+	UI.CreateJS.Card({cvs:"CVS_VSCARD0", cno:Battle.p[0].cno, fnc:fnc0});
+	UI.CreateJS.Card({cvs:"CVS_VSCARD1", cno:Battle.p[1].cno, fnc:fnc1});
 	//数値表示
 	BattleBar("ST0", Battle.p[0].st, Battle.p[0].stplus);
 	BattleBar("LF0", Battle.p[0].lf, Battle.p[0].lfplus);
@@ -252,7 +252,7 @@ function BattleFight(){
 			Player[Battle.p[i].pno].gold -= Card[wkcno].cost;
 			//カード消費
 			Player[Battle.p[i].pno].HandDel(wkcno);
-			Card.Tool.imgset({cvs:"CVS_VSITEM"+i, cno:wkcno, zoom:0.5});
+			UI.CreateJS.Card({cvs:"CVS_VSITEM"+i, cno:wkcno, zoom:0.5});
 			//Effect
 			EffectBox({pattern:"itemopen", bno:i})
 		}

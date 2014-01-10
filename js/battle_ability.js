@@ -178,7 +178,7 @@ function BattleAbiAction(arg){
 				atk.item = cno;
 				def.item = "FIST";
 				//imgsrc
-				Card.Tool.imgset({cvs:"CVS_VSITEM"+arg.bno, cno:cno, zoom:0.5});
+				UI.CreateJS.Card({cvs:"CVS_VSITEM"+arg.bno, cno:cno, zoom:0.5});
 				$("#DIV_VSITEM"+$r(arg.bno)).css("display", "none");
 				EffectBox({pattern:"itemdestroy", bno:$r(arg.bno), cno:cno});
 				//Log
@@ -632,7 +632,7 @@ function BattleAbiAction(arg){
 					atk.status = "";
 					//Creature表示
 					$("#DIV_VSCARD"+arg.bno).css({height:0});
-					Card.Tool.imgset({cvs:"CVS_VSCARD"+arg.bno, cno:atk.cno});
+					UI.CreateJS.Card({cvs:"CVS_VSCARD"+arg.bno, cno:atk.cno});
 					$("#DIV_VSCARD"+arg.bno).animate({height:260}, 2000);
 					//Log
 					BattleLog(arg.bno, Dic("@UROBOROS@"));

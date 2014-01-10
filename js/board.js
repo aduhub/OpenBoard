@@ -69,7 +69,6 @@ Game.setupBoard = function (){
 	Logprint({msg:msgarr, ltype:"block"});
 	//MAP背景
 	$("#DIV_BACK").css("backgroundImage", "url(img/mapdefault.gif)");
-
 	//グリッド生成
 	for(var i in Board.grid){
 		if(Board.grid[i].color != 0){
@@ -110,11 +109,9 @@ Game.setupBoard = function (){
 		}
 	}
 	//CreateJS
-	UI.CreateJS.Board();
-
+	UI.CreateJS.setup();
 	//ソート
 	UI.Html.sortZindex("map");
-
 	//スクロール
 	UI.Tool.scrollBoard(1);
 	//役(観戦)

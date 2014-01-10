@@ -15,7 +15,7 @@ function DebugHandDisp(i_pno){
 		handwork.sort();
 		for(var ihno=1; ihno<=7; ihno++){
 			if(handwork[ihno - 1] != undefined && handwork[ihno - 1] != ""){
-				Card.Tool.imgset({cvs:"CVS_DH"+i_pno+ihno, cno:handwork[ihno - 1], zoom:0.25});
+				UI.CreateJS.Card({cvs:"CVS_DH"+i_pno+ihno, cno:handwork[ihno - 1], zoom:0.25});
 			}else{
 				Canvas.clear({id:"CVS_DH"+i_pno+ihno});
 			}

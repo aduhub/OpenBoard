@@ -8,50 +8,97 @@ UI.CreateJS = {};
 UI.dragObject = null;
 UI.dragOffset = null;
 //-----[ CreateJS ]-----
+UI.stgBack = null;
+UI.mapchip = null;
+UI.CreateJS.setup = function(){
+	var manifest = [];
+	var layer;
+	var layerarr = ["layBack","layMap","layIcon"];
+	UI.stgBack = new createjs.Stage("CVS_BACK");
+	for(var i in layerarr){
+		layer = new createjs.Container();
+		layer.name = layerarr[i];
+		UI.stgBack.addChild(layer);
+	}
+	manifest.push({id:'grid0',src:'img/grid0.gif'});
+	manifest.push({id:'grid1',src:'img/grid1.gif'});
+	manifest.push({id:'grid2',src:'img/grid2.gif'});
+	manifest.push({id:'grid3',src:'img/grid3.gif'});
+	manifest.push({id:'grid4',src:'img/grid4.gif'});
+	manifest.push({id:'grid5',src:'img/grid5.gif'});
+	manifest.push({id:'gicon10',src:'img/gicon_cas.gif'});
+	manifest.push({id:'gicon11',src:'img/gicon_n.gif'});
+	manifest.push({id:'gicon12',src:'img/gicon_s.gif'});
+	manifest.push({id:'gicon13',src:'img/gicon_w.gif'});
+	manifest.push({id:'gicon14',src:'img/gicon_e.gif'});
+	manifest.push({id:'gicon21',src:'img/gicon_tele.gif'});
+	manifest.push({id:'gicon22',src:'img/gicon_brd.gif'});
+	manifest.push({id:'gicon23',src:'img/gicon_alt.gif'});
+	manifest.push({id:'gicon24',src:'img/gicon_drop.gif'});
+	UI.mapchip = new createjs.LoadQueue();
+	UI.mapchip.addEventListener("complete", UI.CreateJS.Board);
+	UI.mapchip.loadManifest(manifest);
+}
 UI.CreateJS.Board = function(){
+	var layer = UI.stgBack.getChildByName("layMap");
 	//easeljs
-	var stage = new createjs.Stage("CVS_BACK");
-	var imglist = {G0:"img/grid0.gif",G1:"img/grid1.gif",G2:"img/grid2.gif",G3:"img/grid3.gif",G4:"img/grid4.gif",G5:"img/grid5.gif",GT:"img/gicon_tele.gif",GF:"img/gicon_drop.gif"}
-	var icolist = {"10":"img/gicon_cas.gif","11":'img/gicon_n.gif',"12":'img/gicon_s.gif',"13":'img/gicon_w.gif',"14":'img/gicon_e.gif'};
 	for(var i in Board.grid){
 		if(Board.grid[i].color != 0){
-			var backsrc = "G0";
+			var backsrc = "";
 			var iconsrc = "";
 			var pos = {x:Number(Board.grid[i].left), y:Number(Board.grid[i].top)};
 			//image select
-			if(Board.grid[i].color >= 10 && Board.grid[i].color <= 14){
-				iconsrc = icolist[Board.grid[i].color];
-			}else if(Board.grid[i].color == 21){
-				backsrc = "GT";
-			}else if(Board.grid[i].color == 22){
-				iconsrc = "img/gicon_brd.gif";
-			}else if(Board.grid[i].color == 23){
-				iconsrc = "img/gicon_alt.gif";
-			}else if(Board.grid[i].color == 24){
-				backsrc = "GF";
+			if([10,11,12,13,14,15,21,24].indexOf(Board.grid[i].color) >= 0){
+				iconsrc = "gicon"+Board.grid[i].color;
+				backsrc = "grid0";
 			}else{
-				backsrc = "G"+Board.grid[i].color;
+				backsrc = "grid"+Board.grid[i].color;
 			}
 			//back
-			var bmBack = new createjs.Bitmap(imglist[backsrc]);
+			var bmBack = new createjs.Bitmap(UI.mapchip.getResult(backsrc));
 			bmBack.name = "Grid_"+i;
 			bmBack.x = pos.x;
 			bmBack.y = pos.y;
 			bmBack.compositeOperation = "destination-over";
-			stage.addChild(bmBack);
+			layer.addChild(bmBack);
 			//icon
 			if(iconsrc){
-				var bmIcon = new createjs.Bitmap(iconsrc);
+				var bmIcon = new createjs.Bitmap(UI.mapchip.getResult(iconsrc));
 				bmIcon.name = "Gicon_"+i;
 				bmIcon.x = pos.x;
 				bmIcon.y = pos.y - 26;
 				bmIcon.compositeOperation = "source-over";
-				stage.addChild(bmIcon);
+				layer.addChild(bmIcon);
 			}
 		}
 	}
 	//easeljs
-	stage.update();
+	UI.stgBack.update();
+}
+UI.CreateJS.Card = function (arg){
+	var cvs = arg.cvs;
+	var zoom = arg.zoom || 1.0;
+	var fnc = arg.fnc || false;
+	var card_src = "img/card/"+Card[arg.cno].imgsrc;
+	var frame_src = "img/card/frame_"+Card[arg.cno].type;
+	frame_src += (Card[arg.cno].type == "C") ? Card[arg.cno].color + ".gif" : ".gif";
+	(function(){
+		var queue = new createjs.LoadQueue();
+		queue.addEventListener('complete', function(e){
+			var stage = createjs.Stage(cvs);
+			var img1 = queue.getResult('img1');
+			img1.scaleX = zoom;
+			img1.scaleY = zoom;
+			stage.addChild(img1);
+			var img2 = queue.getResult('img2');
+			img2.scaleX = zoom;
+			img2.scaleY = zoom;
+			stage.addChild(img2);
+			stage.update;
+			if(fnc)fnc();
+		});
+		queue.loadFile([{img1:card_src},{img2:frame_src}]);
+	})();
 }
 //-----[ HTML ]-----
 //DIV レイヤー設置
@@ -297,14 +344,6 @@ UI.Tool.cacheImg = function (){
 	Canvas.srcs["CARDFRAMEC5"] = "img/card/frame_yellow.gif";
 	Canvas.srcs["CARDFRAMEI"] = "img/card/frame_item.gif";
 	Canvas.srcs["CARDFRAMES"] = "img/card/frame_spell.gif";
-	Canvas.srcs["GRID0"] = "img/grid0.gif";
-	Canvas.srcs["GRID1"] = "img/grid1.gif";
-	Canvas.srcs["GRID2"] = "img/grid2.gif";
-	Canvas.srcs["GRID3"] = "img/grid3.gif";
-	Canvas.srcs["GRID4"] = "img/grid4.gif";
-	Canvas.srcs["GRID5"] = "img/grid5.gif";
-	Canvas.srcs["GRIDT"] = "img/gicon_tele.gif";
-	Canvas.srcs["GRIDF"] = "img/gicon_drop.gif";
 }
 //Wall Paper
 UI.Tool.loadWallpaper = function (imgelement){
@@ -599,12 +638,12 @@ UI.Dialog.show = function (arg){
 	//canvas
 	if(arg.cnos){
 		for(var i in arg.cnos){
-			Card.Tool.imgset({cvs:"CVS_DIALOG"+i, cno:arg.cnos[i], zoom:0.5});
+			UI.CreateJS.Card({cvs:"CVS_DIALOG"+i, cno:arg.cnos[i], zoom:0.5});
 		}
 	}
 	if(arg.imgbtns){
 		for(var i in arg.imgbtns){
-			Card.Tool.imgset({cvs:"CVS_DIALOG"+i, cno:arg.imgbtns[i][0], zoom:0.5});
+			UI.CreateJS.Card({cvs:"CVS_DIALOG"+i, cno:arg.imgbtns[i][0], zoom:0.5});
 		}
 	}
 }

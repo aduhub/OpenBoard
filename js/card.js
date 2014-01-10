@@ -20,7 +20,7 @@ Draw.Step.start = function (){
 			//timer
 			$("#DIV_DRAW").addClass(Chessclock.set());
 		}
-		Card.Tool.imgset({cvs:"CVS_DRAW", cno:cno, fnc:termfnc});
+		UI.CreateJS.Card({cvs:"CVS_DRAW", cno:cno, fnc:termfnc});
 	}
 }
 //手札追加
@@ -251,8 +251,8 @@ Deck.Tool.sorthand = function (){
 		}
 		$(".CLS_HAND").css({marginLeft:marginpix, marginRight:marginpix});
 		//再表示
-		for(var i=0; i<handcnt; i++){
-			Card.Tool.imgset({hno:i});
+		for(var i in Player[Board.role].hand){
+			UI.CreateJS.Card({cvs:"CVS_HAND"+i, cno:Player[Board.role].hand[i], zoom:0.5});
 		}
 		//グレイ戻し
 		$(".CLS_HAND").removeClass("CLS_HAND_GLAY");
@@ -357,31 +357,6 @@ Card.Tool.chkopt = function (arg){
 	}
 	return false;
 }
-//Card表示
-Card.Tool.imgset = function (arg){
-	var cno, cvs;
-	var card_src, frame_src, imgtype;
-	if(arg.cno){
-		cno = arg.cno;
-		cvs = arg.cvs || arg.id;
-	}else{
-		cno = Player[Board.role].hand[arg.hno];
-		cvs = "CVS_HAND" + arg.hno;
-		arg.zoom = 0.5;
-	}
-	imgtype = (Card[cno].imgsrc.match(/.png$/)) ? "" : ".gif";
-	card_src = "img/card/"+Card[cno].imgsrc+imgtype;
-	frame_src = "CARDFRAME"+Card[cno].type;
-	frame_src += (Card[cno].type == "C") ? Card[cno].color : "";
-	var para = {id:cvs, src:[card_src, frame_src]}
-	if(arg.zoom){
-		para.zoom = arg.zoom;
-	}
-	if(arg.fnc){
-		para.fnc = arg.fnc;
-	}
-	Canvas.draw(para);
-}
 //
 Card.Tool.info = function (arg){
 	if(Board.step >= 1){
@@ -391,7 +366,7 @@ Card.Tool.info = function (arg){
 			var cno = arg.cno || Player[Board.role].hand[arg.hno];
 			if(cno != ""){
 				//image set
-				Card.Tool.imgset({cvs:"CVS_INFOCARD", cno:cno});
+				UI.CreateJS.Card({cvs:"CVS_INFOCARD", cno:cno});
 				//ifomation set
 				Card.Tool.createinfo({tgt:"#DIV_INFOCARD_RIGHT", cno:cno});
 				//display
