@@ -35,6 +35,16 @@ UI.CreateJS.setup = function(){
 	manifest.push({id:'gicon22',src:'img/gicon_brd.gif'});
 	manifest.push({id:'gicon23',src:'img/gicon_alt.gif'});
 	manifest.push({id:'gicon24',src:'img/gicon_drop.gif'});
+	manifest.push({id:'border01',src:'img/border01.gif'});
+	manifest.push({id:'border02',src:'img/border02.gif'});
+	manifest.push({id:'border03',src:'img/border03.gif'});
+	manifest.push({id:'border04',src:'img/border04.gif'});
+	manifest.push({id:'border05',src:'img/border05.gif'});
+	manifest.push({id:'border11',src:'img/border11.gif'});
+	manifest.push({id:'border12',src:'img/border12.gif'});
+	manifest.push({id:'border13',src:'img/border13.gif'});
+	manifest.push({id:'border14',src:'img/border14.gif'});
+	manifest.push({id:'border15',src:'img/border15.gif'});
 	UI.mapchip = new createjs.LoadQueue();
 	UI.mapchip.addEventListener("complete", UI.CreateJS.Board);
 	UI.mapchip.loadManifest(manifest);
@@ -44,34 +54,49 @@ UI.CreateJS.Board = function(){
 	//easeljs
 	for(var i in Board.grid){
 		if(Board.grid[i].color != 0){
-			var backsrc = "";
-			var iconsrc = "";
-			var pos = {x:Number(Board.grid[i].left), y:Number(Board.grid[i].top)};
-			//image select
-			if([10,11,12,13,14,15,21,24].indexOf(Board.grid[i].color) >= 0){
-				iconsrc = "gicon"+Board.grid[i].color;
-				backsrc = "grid0";
-			}else{
-				backsrc = "grid"+Board.grid[i].color;
-			}
-			//back
-			var bmBack = new createjs.Bitmap(UI.mapchip.getResult(backsrc));
-			bmBack.name = "Grid_"+i;
-			bmBack.x = pos.x;
-			bmBack.y = pos.y;
-			bmBack.compositeOperation = "destination-over";
-			layer.addChild(bmBack);
-			//icon
-			if(iconsrc){
-				var bmIcon = new createjs.Bitmap(UI.mapchip.getResult(iconsrc));
-				bmIcon.name = "Gicon_"+i;
-				bmIcon.x = pos.x;
-				bmIcon.y = pos.y - 26;
-				bmIcon.compositeOperation = "source-over";
-				layer.addChild(bmIcon);
-			}
+			UI.CreateJS.Grid(i);
 		}
 	}
+	//easeljs
+	UI.stgBack.update();
+}
+UI.CreateJS.Grid = function (gno){
+	var iconsrc = "";
+	var backsrc = "";
+	var src = "";
+	var layer = UI.stgBack.getChildByName("layMap");
+	//remove
+	layer.removeChild(layer.getChildByName("Grid_"+gno));
+	//add
+	var grid = new createjs.Container();
+	grid.name = "Grid_"+gno;
+	grid.y = Number(Board.grid[gno].top);
+	grid.x = Number(Board.grid[gno].left);
+	//border
+	if(Board.grid[gno].color >= 1 && Board.grid[gno].color <= 5){
+		src = "border" + Flow.Tool.team(Board.grid[gno].owner) + Board.grid[gno].level;
+		var bmBorder = new createjs.Bitmap(UI.mapchip.getResult(src));
+		bmBorder.compositeOperation = "destination-over";
+		grid.addChild(bmBorder);
+	}
+	if([10,11,12,13,14,15,21,24].indexOf(Board.grid[gno].color) >= 0){
+		iconsrc = "gicon"+Board.grid[gno].color;
+		backsrc = "grid0";
+	}else{
+		backsrc = "grid"+Board.grid[gno].color;
+	}
+	//back
+	var bmBack = new createjs.Bitmap(UI.mapchip.getResult(backsrc));
+	bmBack.compositeOperation = "destination-over";
+	grid.addChild(bmBack);
+	//icon
+	if(iconsrc){
+		var bmIcon = new createjs.Bitmap(UI.mapchip.getResult(iconsrc));
+		bmIcon.y = -26;
+		bmIcon.compositeOperation = "source-over";
+		grid.addChild(bmIcon);
+	}
+	layer.addChild(grid);
 	//easeljs
 	UI.stgBack.update();
 }
