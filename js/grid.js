@@ -8,8 +8,7 @@ Grid.clear = function(arg){
 		if(arg.all){
 			Board.grid[arg.gno].level = 1;
 		}
-		$("#DIV_GICON"+arg.gno).css("backgroundImage", "");
-		$("#DIV_GICON"+arg.gno).html("");
+		UI.CreateJS.GridIcon(arg.gno);
 		Grid.Img.set(arg.gno);
 		Grid.Img.tax({pno:pno});
 	}
@@ -26,7 +25,7 @@ Grid.move = function(arg){
 	Board.grid[arg.gno2].status = "";
 	Board.grid[arg.gno2].statime = 0;
 	//Icon
-	$("#DIV_GICON"+arg.gno2).css("backgroundImage", "url(img/icon/"+Card[cno].imgsrc.replace(".png", "")+".gif)");
+	UI.CreateJS.GridIcon(arg.gno2);
 	Grid.Img.set(arg.gno2);
 	//Clear From
 	Grid.clear({gno:arg.gno1});
@@ -268,63 +267,12 @@ Grid.Img = {};
 Grid.Img.tax_gsh = 0;
 Grid.Img.set = function(gno){
 	//Canvas
-	var pos = {x:Number(Board.grid[gno].left), y:Number(Board.grid[gno].top)};
-	var img1 = "GRID" + Board.grid[gno].color;
-	var img2 = "img/border" + Flow.Tool.team(Board.grid[gno].owner) + Board.grid[gno].level + ".gif";
-	Canvas.draw({id:"CVS_BACK", src:[Canvas.srcs[img1], img2], x:pos.x, y:pos.y});
+	UI.CreateJS.Grid(gno);
 	//
 	if(Board.grid[gno].owner >= 1){
 		Grid.Img.tax({pno:Board.grid[gno].owner});
 	}else{
 		$("#DIV_GCLICK"+gno).html("");
-	}
-}
-Grid.Img.tax = function(arg){
-	var html = "";
-	var tgt = [];
-	if(arg.gno){
-		tgt = [].concat(arg.gno);
-	}else{
-		tgt = Grid.grep({pno:arg.pno, tgt:"AMG"});
-	}
-	for(var i in tgt){
-		html = "";
-		if(Board.grid[tgt[i]].owner >= 1){
-			//Status
-			if(Board.grid[tgt[i]].status != ""){
-				var imgsrc = StatusIcon(Board.grid[tgt[i]].status);
-				html = "<img src='img/"+imgsrc+".gif' width='32' height='22' style='margin-top:28px;'><br>";
-			}else{
-				html = "<div style='height:50px;'></div>";
-			}
-			switch(Grid.Img.tax_gsh){
-			case 0: //Tax
-				var wktax = String(Grid.tax(tgt[i]));
-				for(var i2=1; i2<=wktax.length; i2++){
-					html += "<IMG src='img/num"+wktax.substr(i2 - 1, 1)+".gif' width='11' height='14'>";
-				}
-				break;
-			case 1: //ST
-				var wkst = String(Board.grid[tgt[i]].st);
-				for(var i2=1; i2<=wkst.length; i2++){
-					html += "<IMG src='img/numr"+wkst.substr(i2 - 1, 1)+".gif' width='11' height='14'>";
-				}
-				break;
-			case 2: //HP/MHP
-				var wkhp = String(Board.grid[tgt[i]].lf);
-				var wkmhp = String(Board.grid[tgt[i]].maxlf);
-				var clrstr = (wkhp == wkmhp) ? "b" : "";
-				for(var i2=1; i2<=wkhp.length; i2++){
-					html += "<IMG src='img/num"+clrstr+wkhp.substr(i2 - 1, 1)+".gif' width='11' height='14'>";
-				}
-				html += "<IMG src='img/numbs.gif' width='10' height='14'>";
-				for(var i2=1; i2<=wkmhp.length; i2++){
-					html += "<IMG src='img/numb"+wkmhp.substr(i2 - 1, 1)+".gif' width='11' height='14'>";
-				}
-				break;
-			}
-		}
-		$("#DIV_GCLICK"+tgt[i]).html(html);
 	}
 }
 Grid.Img.chgnum = function (){
@@ -768,7 +716,7 @@ function GridAbility(arg){
 						Logprint({msg:"##"+tgtcno+"##は破壊した", pno:tgtgrid.owner});
 						//Clear
 						tgtgrid.flush();
-						UI.Html.setDiv({id:"DIV_GICON"+arg.gno, clear:true});
+						UI.CreateJS.GridIcon(arg.gno);
 						Grid.Img.set(arg.gno);
 						Grid.Img.tax({pno:tgtpno});
 						//Animation
@@ -820,7 +768,7 @@ function GridAbility(arg){
 						Logprint({msg:"##"+tgtcno+"##は破壊した", pno:tgtpno});
 						//Clear
 						tgtgrid.flush();
-						UI.Html.setDiv({id:"DIV_GICON"+arg.gno, clear:true});
+						UI.CreateJS.GridIcon(arg.gno);
 						Grid.Img.set(arg.gno);
 						Grid.Img.tax({pno:tgtpno});
 						//Animation

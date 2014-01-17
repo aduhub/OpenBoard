@@ -13,7 +13,7 @@ UI.mapchip = null;
 UI.CreateJS.setup = function(){
 	var manifest = [];
 	var layer;
-	var layerarr = ["layBack","layMap","layIcon"];
+	var layerarr = ["layBack","layMap","layIcon","layEffect","layGold","layClick"];
 	UI.stgBack = new createjs.Stage("CVS_BACK");
 	for(var i in layerarr){
 		layer = new createjs.Container();
@@ -35,70 +35,176 @@ UI.CreateJS.setup = function(){
 	manifest.push({id:'gicon22',src:'img/gicon_brd.gif'});
 	manifest.push({id:'gicon23',src:'img/gicon_alt.gif'});
 	manifest.push({id:'gicon24',src:'img/gicon_drop.gif'});
-	manifest.push({id:'border01',src:'img/border01.gif'});
-	manifest.push({id:'border02',src:'img/border02.gif'});
-	manifest.push({id:'border03',src:'img/border03.gif'});
-	manifest.push({id:'border04',src:'img/border04.gif'});
-	manifest.push({id:'border05',src:'img/border05.gif'});
-	manifest.push({id:'border11',src:'img/border11.gif'});
-	manifest.push({id:'border12',src:'img/border12.gif'});
-	manifest.push({id:'border13',src:'img/border13.gif'});
-	manifest.push({id:'border14',src:'img/border14.gif'});
-	manifest.push({id:'border15',src:'img/border15.gif'});
+	for(var i=0; i<=4; i++){
+		for(var j=1; j<=5; j++){
+			manifest.push({id:'border'+i+j,src:'img/border'+i+j+'.gif'});
+		}
+	}
+	for(var i=0; i<=9; i++){
+		manifest.push({id:'num'+i,src:'img/num'+i+'.gif'});
+		manifest.push({id:'numb'+i,src:'img/numb'+i+'.gif'});
+		manifest.push({id:'numb'+i,src:'img/numb'+i+'.gif'});
+	}
 	UI.mapchip = new createjs.LoadQueue();
 	UI.mapchip.addEventListener("complete", UI.CreateJS.Board);
 	UI.mapchip.loadManifest(manifest);
 }
 UI.CreateJS.Board = function(){
-	var layer = UI.stgBack.getChildByName("layMap");
+	var gnoarr = [];
 	//easeljs
 	for(var i in Board.grid){
 		if(Board.grid[i].color != 0){
-			UI.CreateJS.Grid(i);
+			gnoarr.push(i);
 		}
+	}
+	//draw
+	UI.CreateJS.Grid(gnoarr);
+	UI.CreateJS.ClickMap(gnoarr);
+}
+UI.CreateJS.Grid = function (gno){
+	var src = "";
+	var layer = UI.stgBack.getChildByName("layMap");
+	var gnoarr = [].concat(gno);
+	for(var i in gnoarr){
+		//remove
+		layer.removeChild(layer.getChildByName("Grid_"+gnoarr[i]));
+		//add
+		var grid = new createjs.Container();
+		grid.name = "Grid_"+gnoarr[i];
+		grid.y = Number(Board.grid[gnoarr[i]].top);
+		grid.x = Number(Board.grid[gnoarr[i]].left);
+		if(Board.grid[gnoarr[i]].color >= 10){
+			//icon
+			src = "gicon"+Board.grid[gnoarr[i]].color;
+			var bmIcon = new createjs.Bitmap(UI.mapchip.getResult(src));
+			bmIcon.y = -26;
+			bmIcon.compositeOperation = "source-over";
+			grid.addChild(bmIcon);
+			//back
+			src = "grid0";
+		}else{
+			//border
+			src = "border" + Flow.Tool.team(Board.grid[gnoarr[i]].owner) + Board.grid[gnoarr[i]].level;
+			var bmBorder = new createjs.Bitmap(UI.mapchip.getResult(src));
+			bmBorder.compositeOperation = "destination-over";
+			grid.addChild(bmBorder);
+			//back
+			src = "grid"+Board.grid[gnoarr[i]].color;
+		}
+		//back
+		var bmBack = new createjs.Bitmap(UI.mapchip.getResult(src));
+		bmBack.compositeOperation = "destination-over";
+		grid.addChild(bmBack);
+		//add layer
+		layer.addChild(grid);
 	}
 	//easeljs
 	UI.stgBack.update();
 }
-UI.CreateJS.Grid = function (gno){
-	var iconsrc = "";
-	var backsrc = "";
-	var src = "";
-	var layer = UI.stgBack.getChildByName("layMap");
+UI.CreateJS.GridIcon = function (gno){
+	var layer = UI.stgBack.getChildByName("layIcon");
 	//remove
-	layer.removeChild(layer.getChildByName("Grid_"+gno));
+	layer.removeChild(layer.getChildByName("Gicon_"+gno));
 	//add
-	var grid = new createjs.Container();
-	grid.name = "Grid_"+gno;
-	grid.y = Number(Board.grid[gno].top);
-	grid.x = Number(Board.grid[gno].left);
-	//border
-	if(Board.grid[gno].color >= 1 && Board.grid[gno].color <= 5){
-		src = "border" + Flow.Tool.team(Board.grid[gno].owner) + Board.grid[gno].level;
-		var bmBorder = new createjs.Bitmap(UI.mapchip.getResult(src));
-		bmBorder.compositeOperation = "destination-over";
-		grid.addChild(bmBorder);
+	var cno = Board.grid[gno].cno;
+	if(cno != ""){
+		var src = "img/icon/"+Card[cno].imgsrc.replace(".png",".gif");
+		var queue = new createjs.LoadQueue();
+		queue.addEventListener('fileload', function(e){
+			var img = new createjs.Bitmap(e.result);
+			img.name = "Gicon_"+gno;
+			img.y = Number(Board.grid[gno].top) - 26;
+			img.x = Number(Board.grid[gno].left);
+			layer.addChild(img);
+			UI.stgBack.update();
+		});
+		queue.loadFile(src);
 	}
-	if([10,11,12,13,14,15,21,24].indexOf(Board.grid[gno].color) >= 0){
-		iconsrc = "gicon"+Board.grid[gno].color;
-		backsrc = "grid0";
-	}else{
-		backsrc = "grid"+Board.grid[gno].color;
+}
+Grid.Img.tax = function(arg){
+	var src = "";
+	var tgt = [];
+	var layer = UI.stgBack.getChildByName("layGold");
+	if(arg.gno) tgt = [].concat(arg.gno);
+	if(arg.pno) tgt = Grid.grep({pno:arg.pno, tgt:"AMG"});
+	for(var i in tgt){
+		//remove
+		layer.removeChild(layer.getChildByName("Gold_"+tgt[i]));
+		//add
+		var grid = new createjs.Container();
+		grid.name = "Gold_"+tgt[i];
+		grid.y = Number(Board.grid[tgt[i]].top);
+		grid.x = Number(Board.grid[tgt[i]].left);
+		/////////////////
+		html = "";
+		if(Board.grid[tgt[i]].owner >= 1){
+			//Status
+			if(Board.grid[tgt[i]].status != ""){
+				var imgsrc = StatusIcon(Board.grid[tgt[i]].status);
+				html = "<img src='img/"+imgsrc+".gif' width='32' height='22' style='margin-top:28px;'><br>";
+			}else{
+				html = "<div style='height:50px;'></div>";
+			}
+			switch(Grid.Img.tax_gsh){
+				case 0: //Tax
+					var wktax = String(Grid.tax(tgt[i]));
+					for(var i2=1; i2<=wktax.length; i2++){
+						html += "<IMG src='img/num"+wktax.substr(i2 - 1, 1)+".gif' width='11' height='14'>";
+					}
+					break;
+				case 1: //ST
+					var wkst = String(Board.grid[tgt[i]].st);
+					for(var i2=1; i2<=wkst.length; i2++){
+						html += "<IMG src='img/numr"+wkst.substr(i2 - 1, 1)+".gif' width='11' height='14'>";
+					}
+					break;
+				case 2: //HP/MHP
+					var wkhp = String(Board.grid[tgt[i]].lf);
+					var wkmhp = String(Board.grid[tgt[i]].maxlf);
+					var clrstr = (wkhp == wkmhp) ? "b" : "";
+					for(var i2=1; i2<=wkhp.length; i2++){
+						html += "<IMG src='img/num"+clrstr+wkhp.substr(i2 - 1, 1)+".gif' width='11' height='14'>";
+					}
+					html += "<IMG src='img/numbs.gif' width='10' height='14'>";
+					for(var i2=1; i2<=wkmhp.length; i2++){
+						html += "<IMG src='img/numb"+wkmhp.substr(i2 - 1, 1)+".gif' width='11' height='14'>";
+					}
+					break;
+			}
+		}
+		$("#DIV_GCLICK"+tgt[i]).html(html);
 	}
-	//back
-	var bmBack = new createjs.Bitmap(UI.mapchip.getResult(backsrc));
-	bmBack.compositeOperation = "destination-over";
-	grid.addChild(bmBack);
-	//icon
-	if(iconsrc){
-		var bmIcon = new createjs.Bitmap(UI.mapchip.getResult(iconsrc));
-		bmIcon.y = -26;
-		bmIcon.compositeOperation = "source-over";
-		grid.addChild(bmIcon);
+}
+UI.CreateJS.ClickMap = function (gno){
+	var layer = UI.stgBack.getChildByName("layClick");
+	var gnoarr = [].concat(gno);
+	for(var i in gnoarr){
+		var baseShape = new createjs.Shape();
+		baseShape.name = "Click_"+gnoarr[i];
+		baseShape.y = Number(Board.grid[gnoarr[i]].top);
+		baseShape.x = Number(Board.grid[gnoarr[i]].left);
+		//area draw
+		var g = new createjs.Graphics();
+		g.f("#FFF").s("#FFF").mt(0,31).lt(63,0).lt(64,0).lt(127,31).lt(127,32).lt(64,63).lt(63,63).lt(0,32).closePath();
+		//hit
+		var hitShape = new createjs.Shape(g);
+		baseShape.set({hitArea : hitShape});
+		//event
+		baseShape.on("mousedown", function(e){
+			var gno = e.target.name.split("_")[1];
+			UI.Event.clickGrid(gno);
+		});
+		baseShape.on("mouseover", function(e){
+			var gno = e.target.name.split("_")[1];
+			GridInfo(gno);
+		});
+		baseShape.on("mouseout", function(e){
+			GridInfo(0);
+		});
+		//Attr["oncontextmenu"] = "GridGuidePop("+arg.gno+");return false;";
+		//add layer
+		layer.addChild(baseShape);
 	}
-	layer.addChild(grid);
-	//easeljs
-	UI.stgBack.update();
 }
 UI.CreateJS.Card = function (arg){
 	var cvs = arg.cvs;
@@ -107,38 +213,28 @@ UI.CreateJS.Card = function (arg){
 	var card_src = "img/card/"+Card[arg.cno].imgsrc;
 	var frame_src = "img/card/frame_"+Card[arg.cno].type;
 	frame_src += (Card[arg.cno].type == "C") ? Card[arg.cno].color + ".gif" : ".gif";
-	(function(){
-		var queue = new createjs.LoadQueue();
-		queue.addEventListener('complete', function(e){
-			var stage = createjs.Stage(cvs);
-			var img1 = queue.getResult('img1');
-			img1.scaleX = zoom;
-			img1.scaleY = zoom;
-			stage.addChild(img1);
-			var img2 = queue.getResult('img2');
-			img2.scaleX = zoom;
-			img2.scaleY = zoom;
-			stage.addChild(img2);
-			stage.update;
-			if(fnc)fnc();
-		});
-		queue.loadFile([{img1:card_src},{img2:frame_src}]);
-	})();
+	var queue = new createjs.LoadQueue();
+	queue.addEventListener('complete', function(e){
+		var stage = new createjs.Stage(cvs);
+		var img1 = new createjs.Bitmap(queue.getResult('img1'));
+		img1.scaleX = zoom;
+		img1.scaleY = zoom;
+		stage.addChild(img1);
+		var img2 = new createjs.Bitmap(queue.getResult('img2'));
+		img2.scaleX = zoom;
+		img2.scaleY = zoom;
+		stage.addChild(img2);
+		stage.update();
+		if(fnc)fnc();
+	});
+	var manifest = [{id:"img1", src:card_src},{id:"img2", src:frame_src}];
+	queue.loadManifest(manifest);
 }
 //-----[ HTML ]-----
 //DIV レイヤー設置
 UI.Html.createDiv = function (arg){
 	var Attr = {id:arg.id}
 	var Class = "";
-	//Div生成
-	if(arg.opt && arg.opt == "click"){
-		Attr["onmousedown"] = "UI.Event.clickGrid("+arg.gno+")";
-		Attr["onmouseover"] = "GridInfo("+arg.gno+")";
-		Attr["onmouseout"] = "GridInfo(0)";
-		Attr["oncontextmenu"] = "GridGuidePop("+arg.gno+");return false;";
-		//Class設定
-		Class = "CLS_CLICK";
-	}
 	//Style設定
 	var Css = {
 		position:"absolute",
@@ -191,24 +287,16 @@ UI.Html.sortZindex = function (flg){
 	for(var i in yarr){
 		yzarr[yarr[i]] = 22 + (i * 3);
 	}
-	if(flg == "map"){
-		for(var i=1; i<Board.grid.length; i++){
-			if(Board.grid[i].color < 10){
-				$("#DIV_GICON"+i).css({zIndex:yzarr[Board.grid[i].top]});
-			}
+	for(var i=1; i<=Board.playcnt; i++){
+		var zidx = yzarr[Board.grid[Player[i].stand].top];
+		if(Board.turn == i){
+			zidx -= 1;
+		}else{
+			zidx -= 2;
 		}
-	}else{
-		for(var i=1; i<=Board.playcnt; i++){
-			var zidx = yzarr[Board.grid[Player[i].stand].top];
-			if(Board.turn == i){
-				zidx -= 1;
-			}else{
-				zidx -= 2;
-			}
-			$("#DIV_PLAYER"+i).css({zIndex:zidx});
-		}
-		UI.Tool.setImgCharactor(0);
+		$("#DIV_PLAYER"+i).css({zIndex:zidx});
 	}
+	UI.Tool.setImgCharactor(0);
 }
 //-----[ Tool ]-----
 //キャラクター
@@ -492,13 +580,6 @@ UI.Event.clickGrid = function (gno){
 	}
 	//Sound Effect
 	Audie.seplay("click");
-
-	//###### Debug ######
-	if(sessionStorage.Mode == "debug"){
-		if(Board.step == 20){
-			DebugGridInfo(gno);
-		}
-	}
 }
 //ハンドクリック判定
 UI.Event.clickHand = function (hno){
@@ -551,29 +632,11 @@ UI.Event.clickHand = function (hno){
 	//Sound Effect
 	Audie.seplay("click");
 }
-//マウスホイール
-UI.Event.mouseWheel = function (e){
-	var e = e || window.event;
-	var delta = 0;
-	delta = e.wheelDelta;
-	if (delta){
-		if (delta < 0){
-			UI.Tool.chgBoardSize(1);
-		}else{
-			UI.Tool.chgBoardSize(0);
-		}
-	}
-	if (event.preventDefault) {
-		event.preventDefault();
-	}
-	event.returnValue = false;
-}
 //ドラッグスクロール
 UI.Tool.mapDragStart = function (){
 	$("BODY").mouseup(UI.Event.mouseupDrag);
 	$("BODY").mousemove(UI.Event.mousemoveDrag);
 	$("#DIV_BACK").mousedown(UI.Event.mousedownDrag);
-	$("#DIV_BACK").bind("mousewheel", UI.Event.mouseWheel);
 }
 UI.Event.mousedownDrag = function (e){
 	//縮小クリア

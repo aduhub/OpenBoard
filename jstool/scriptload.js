@@ -1,5 +1,5 @@
 var d = new Date().getTime();
-var scripts1 = ["chessclock","canvas","audio","debug","effect","graph","tool"];
+var scripts1 = ["chessclock","canvas","audio","effect","graph","tool"];
 var scripts2 = ["data_card","data_map","data_ability","dictionary"];
 var scripts3 = ["var","battle","battle_ability","board","card","dice","flow","grid","infoblock","main","maker","net","spell","summon","territory","ui"];
 //jstool

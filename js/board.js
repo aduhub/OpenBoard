@@ -69,49 +69,8 @@ Game.setupBoard = function (){
 	Logprint({msg:msgarr, ltype:"block"});
 	//MAP背景
 	$("#DIV_BACK").css("backgroundImage", "url(img/mapdefault.gif)");
-	//グリッド生成
-	for(var i in Board.grid){
-		if(Board.grid[i].color != 0){
-			var wkimgid, wkicon, wkcomposite;
-			if(Board.grid[i].color >= 10 && Board.grid[i].color <= 14){
-				var icosrc = {"10":"gicon_cas","11":'gicon_n',"12":'gicon_s',"13":'gicon_w',"14":'gicon_e'};
-				wkicon = icosrc[Board.grid[i].color];
-				wkimgid = "GRID0";
-				wkcomposite = "source-over"; //上に描く
-			}else if(Board.grid[i].color == 21){
-				wkicon = "";
-				wkimgid = "GRIDT";
-				wkcomposite = "source-over"; //上に描く
-			}else if(Board.grid[i].color == 22){
-				wkicon = "gicon_brd";
-				wkimgid = "GRID0";
-				wkcomposite = "source-over"; //上に描く
-			}else if(Board.grid[i].color == 23){
-				wkicon = "gicon_alt";
-				wkimgid = "GRID0";
-				wkcomposite = "source-over"; //上に描く
-			}else if(Board.grid[i].color == 24){
-				wkicon = "";
-				wkimgid = "GRIDF";
-				wkcomposite = "source-over"; //上に描く
-			}else{
-				wkicon = "";
-				wkimgid = "GRID"+Board.grid[i].color;
-				wkcomposite = "destination-over"; //下に描く
-			}
-			//CANVAS
-			var pos = {x:Number(Board.grid[i].left), y:Number(Board.grid[i].top)};
-			//Canvas.draw({id:"CVS_BACK", src:wkimgid, x:pos.x, y:pos.y, composite:wkcomposite});
-
-			//GRID
-			//UI.Html.createDiv({id:"DIV_GICON"+i, w:128, h:90, l:pos.x, t:pos.y - 26, z:10, opt:"img", imgsrc:wkicon});
-			UI.Html.createDiv({id:"DIV_GCLICK"+i, w:64, h:64, l:pos.x + 32, t:pos.y, z:150, opt:"click", gno:i});
-		}
-	}
 	//CreateJS
 	UI.CreateJS.setup();
-	//ソート
-	UI.Html.sortZindex("map");
 	//スクロール
 	UI.Tool.scrollBoard(1);
 	//役(観戦)

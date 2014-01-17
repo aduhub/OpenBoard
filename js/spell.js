@@ -866,8 +866,8 @@ Spell.Step.fire = function(i_flg){
 		Board.grid[tgtgno1].statime = 0;
 		Board.grid[tgtgno2].statime = 0;
 		//表示
-		$("#DIV_GICON"+tgtgno1).css("backgroundImage", "url(img/icon/"+Card[Board.grid[tgtgno1].cno].imgsrc.replace(".png", "")+".gif)");
-		$("#DIV_GICON"+tgtgno2).css("backgroundImage", "url(img/icon/"+Card[Board.grid[tgtgno2].cno].imgsrc.replace(".png", "")+".gif)");
+		UI.CreateJS.GridIcon(tgtgno1);
+		UI.CreateJS.GridIcon(tgtgno2);
 		Grid.Img.tax({gno:tgtgno1});
 		Grid.Img.tax({gno:tgtgno2});
 		//矢印

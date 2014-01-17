@@ -193,3 +193,18 @@ var Net = {
 		}
 	}
 }
+//========[ Chat ]========
+function ChatSend(){
+	var msg = $.trim($("#chatcomment").val());
+	$("#chatcomment").val("");
+	if(msg != ""){
+		if(sessionStorage.Mode != "debug"){
+			var hash = CryptoJS.SHA1(msg).toString();
+			var message = {"pno":Board.role, "cmd":"chat", "msg":sessionStorage.USERNAME+"{}"+msg, "hash":hash}
+			// pubnub send
+			//Net.pubnub_send(message);
+			Net.peerjs_send(message);
+		}
+	}
+	$("#chatcomment").focus();
+}
