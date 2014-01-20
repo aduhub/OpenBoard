@@ -791,7 +791,7 @@ Spell.Step.fire = function(i_flg){
 		Board.grid[tgtgno].status = "";
 		Board.grid[tgtgno].statime = 0;
 		//表示
-		Grid.Img.tax({gno:tgtgno});
+		UI.CreateJS.GridTax({gno:tgtgno});
 		//スクロール
 		UI.Tool.scrollBoard(tgtgno);
 		//矢印
@@ -868,8 +868,8 @@ Spell.Step.fire = function(i_flg){
 		//表示
 		UI.CreateJS.GridIcon(tgtgno1);
 		UI.CreateJS.GridIcon(tgtgno2);
-		Grid.Img.tax({gno:tgtgno1});
-		Grid.Img.tax({gno:tgtgno2});
+		UI.CreateJS.GridTax({gno:tgtgno1});
+		UI.CreateJS.GridTax({gno:tgtgno2});
 		//矢印
 		UI.Html.setDiv({id:"DIV_GCLICK"+tgtgno1, img:"arrow4.gif"});
 		UI.Html.setDiv({id:"DIV_GCLICK"+tgtgno2, img:"arrow4.gif"});
@@ -896,8 +896,8 @@ Spell.Step.fire = function(i_flg){
 		//表示
 		Grid.Img.set(tgtgno1);
 		Grid.Img.set(tgtgno2);
-		Grid.Img.tax({gno:tgtgno1});
-		Grid.Img.tax({gno:tgtgno2});
+		UI.CreateJS.GridTax({gno:tgtgno1});
+		UI.CreateJS.GridTax({gno:tgtgno2});
 		//矢印
 		UI.Html.setDiv({id:"DIV_GCLICK"+tgtgno1, img:"arrow4.gif"});
 		UI.Html.setDiv({id:"DIV_GCLICK"+tgtgno2, img:"arrow4.gif"});
@@ -914,8 +914,8 @@ Spell.Step.fire = function(i_flg){
 		Board.grid[tgtgno1].st = starr[1];
 		Board.grid[tgtgno2].st = starr[0];
 		//表示
-		Grid.Img.tax({gno:tgtgno1});
-		Grid.Img.tax({gno:tgtgno2});
+		UI.CreateJS.GridTax({gno:tgtgno1});
+		UI.CreateJS.GridTax({gno:tgtgno2});
 
 		//矢印
 		UI.Html.setDiv({id:"DIV_GCLICK"+tgtgno1, img:"arrow4.gif"});

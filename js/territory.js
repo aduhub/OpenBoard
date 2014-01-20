@@ -493,7 +493,7 @@ Territory.Step.ability = function (i_flg){
 			Board.grid[i_flg].status = "";
 			Board.grid[i_flg].statime = 0;
 			//表示
-			Grid.Img.tax({gno:i_flg});
+			UI.CreateJS.GridTax({gno:i_flg});
 			//矢印
 			UI.Html.setDiv({id:"DIV_GCLICK"+i_flg, img:"arrow4.gif"});
 			//スクロール

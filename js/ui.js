@@ -7,6 +7,7 @@ UI.CreateJS = {};
 //Drag
 UI.dragObject = null;
 UI.dragOffset = null;
+UI.numtype = 0;
 //-----[ CreateJS ]-----
 UI.stgBack = null;
 UI.mapchip = null;
@@ -121,8 +122,8 @@ UI.CreateJS.GridIcon = function (gno){
 		queue.loadFile(src);
 	}
 }
-Grid.Img.tax = function(arg){
-	var src = "";
+UI.CreateJS.GridTax = function(arg){
+	var src, strNum, bmNum;
 	var tgt = [];
 	var layer = UI.stgBack.getChildByName("layGold");
 	if(arg.gno) tgt = [].concat(arg.gno);
@@ -131,49 +132,50 @@ Grid.Img.tax = function(arg){
 		//remove
 		layer.removeChild(layer.getChildByName("Gold_"+tgt[i]));
 		//add
-		var grid = new createjs.Container();
-		grid.name = "Gold_"+tgt[i];
-		grid.y = Number(Board.grid[tgt[i]].top);
-		grid.x = Number(Board.grid[tgt[i]].left);
-		/////////////////
-		html = "";
-		if(Board.grid[tgt[i]].owner >= 1){
+		if(Board.grid[tgt[i]].color <= 4 && Board.grid[tgt[i]].owner >= 1){
+			var grid = new createjs.Container();
+			grid.name = "Gold_"+tgt[i];
+			grid.y = Number(Board.grid[tgt[i]].top);
+			grid.x = Number(Board.grid[tgt[i]].left);
+			switch(UI.numtype){
+			case 0: //Tax
+				strNum = String(Grid.tax(tgt[i]));
+				break;
+			case 1: //ST
+				strNum = String(Board.grid[tgt[i]].st);
+				break;
+			case 2: //HP/MHP
+				strNum = String(Board.grid[tgt[i]].lf) + "s" + String(Board.grid[tgt[i]].maxlf);
+				break;
+			}
+			//back
+			for(var j=0; j<strNum.length; j++){
+				src = "num" + ["","r","b"][UI.numtype] + strNum.substr(j, 1);
+				bmNum = new createjs.Bitmap(UI.mapchip.getResult(src));
+				bmNum.compositeOperation = "source-over";
+				bmNum.y = 50;
+				bmNum.x = 64 - (strNum.length * 6) + (j * 12);
+				grid.addChild(bmNum);
+			}
+			//add layer
+			layer.addChild(grid);
 			//Status
 			if(Board.grid[tgt[i]].status != ""){
-				var imgsrc = StatusIcon(Board.grid[tgt[i]].status);
-				html = "<img src='img/"+imgsrc+".gif' width='32' height='22' style='margin-top:28px;'><br>";
-			}else{
-				html = "<div style='height:50px;'></div>";
-			}
-			switch(Grid.Img.tax_gsh){
-				case 0: //Tax
-					var wktax = String(Grid.tax(tgt[i]));
-					for(var i2=1; i2<=wktax.length; i2++){
-						html += "<IMG src='img/num"+wktax.substr(i2 - 1, 1)+".gif' width='11' height='14'>";
-					}
-					break;
-				case 1: //ST
-					var wkst = String(Board.grid[tgt[i]].st);
-					for(var i2=1; i2<=wkst.length; i2++){
-						html += "<IMG src='img/numr"+wkst.substr(i2 - 1, 1)+".gif' width='11' height='14'>";
-					}
-					break;
-				case 2: //HP/MHP
-					var wkhp = String(Board.grid[tgt[i]].lf);
-					var wkmhp = String(Board.grid[tgt[i]].maxlf);
-					var clrstr = (wkhp == wkmhp) ? "b" : "";
-					for(var i2=1; i2<=wkhp.length; i2++){
-						html += "<IMG src='img/num"+clrstr+wkhp.substr(i2 - 1, 1)+".gif' width='11' height='14'>";
-					}
-					html += "<IMG src='img/numbs.gif' width='10' height='14'>";
-					for(var i2=1; i2<=wkmhp.length; i2++){
-						html += "<IMG src='img/numb"+wkmhp.substr(i2 - 1, 1)+".gif' width='11' height='14'>";
-					}
-					break;
+				var src = "img/"+StatusIcon(Board.grid[tgt[i]].status)+".gif";
+				var queue = new createjs.LoadQueue();
+				queue.addEventListener('fileload', function(e){
+					var bmIcon = new createjs.Bitmap(e.result);
+					bmIcon.y = 28;
+					bmIcon.x = 48;
+					grid.addChild(bmIcon);
+					UI.stgBack.update();
+				});
+				queue.loadFile(src);
 			}
 		}
-		$("#DIV_GCLICK"+tgt[i]).html(html);
 	}
+	//easeljs
+	UI.stgBack.update();
 }
 UI.CreateJS.ClickMap = function (gno){
 	var layer = UI.stgBack.getChildByName("layClick");

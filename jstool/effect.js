@@ -310,24 +310,24 @@ function CSSTransition(arg){
 		css[key] = arg.css[key];
 		backup[key] = $(arg.id).css(key);
 	}
-    css["transition-property"] = property.join(",");
-    css["transition-duration"] = arg.msec + "ms";
-    $(arg.id).css(css);
+	css["transition-property"] = property.join(",");
+	css["transition-duration"] = arg.msec + "ms";
+	$(arg.id).css(css);
 	$(arg.id).one('transitionend', function(){
-        if(arg.remove){
-            $(this).remove();
-        }else{
-            $(this).css({"transition-property":"", "transition-duration":""});
-            if(arg.reset){
-                for(i in property){
-                    $(this).css(property[i], backup[property[i]]);
-                }
-            }
-        }
-        if(arg.term){
-            arg.term();
-        }
-    });
+		if(arg.remove){
+		    $(this).remove();
+		}else{
+		    $(this).css({"transition-property":"", "transition-duration":""});
+		    if(arg.reset){
+		        for(i in property){
+		            $(this).css(property[i], backup[property[i]]);
+		        }
+		    }
+		}
+		if(arg.term){
+		    arg.term();
+		}
+	});
 }
 function CSSAnimation(arg){
 	arg.obj.addClass(arg.class);

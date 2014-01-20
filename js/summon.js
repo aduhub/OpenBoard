@@ -158,7 +158,7 @@ Summon.Step.setgrid = function (){
 	}
 	//地形カラー
 	Grid.Img.set(Summon.gno);
-	Grid.Img.tax({gno:Summon.gno});
+	UI.CreateJS.GridTax({gno:Summon.gno});
 	//再表示
 	Game.Info.dispPlayerbox();
 	//エフェクト

@@ -10,7 +10,7 @@ Grid.clear = function(arg){
 		}
 		UI.CreateJS.GridIcon(arg.gno);
 		Grid.Img.set(arg.gno);
-		Grid.Img.tax({pno:pno});
+		UI.CreateJS.GridTax({pno:pno});
 	}
 }
 //Move A to B
@@ -114,7 +114,7 @@ Grid.setstatus = function (arg){
 					Board.grid[gno].status = arg.status;
 					Board.grid[gno].statime = turn;
 					//表示
-					Grid.Img.tax({gno:gno});
+					UI.CreateJS.GridTax({gno:gno});
 					//ログ
 					Logprint({msg:"##"+Board.grid[gno].cno+"##は呪いを受けた", pno:Board.grid[gno].owner});
 					//msgpop
@@ -264,31 +264,30 @@ function GridGuideSearch(gene){
 }
 //Image
 Grid.Img = {};
-Grid.Img.tax_gsh = 0;
 Grid.Img.set = function(gno){
 	//Canvas
 	UI.CreateJS.Grid(gno);
 	//
 	if(Board.grid[gno].owner >= 1){
-		Grid.Img.tax({pno:Board.grid[gno].owner});
+		UI.CreateJS.GridTax({pno:Board.grid[gno].owner});
 	}else{
 		$("#DIV_GCLICK"+gno).html("");
 	}
 }
 Grid.Img.chgnum = function (){
-	switch(Grid.Img.tax_gsh){
+	switch(UI.numtype){
 	case 0: //G
-		Grid.Img.tax_gsh = 1;
+		UI.numtype = 1;
 		break;
 	case 1: //ST
-		Grid.Img.tax_gsh = 2;
+		UI.numtype = 2;
 		break;
 	case 2: //HP
-		Grid.Img.tax_gsh = 0;
+		UI.numtype = 0;
 		break;
 	}
 	for(var i=1; i<=4; i++){
-		Grid.Img.tax({pno:i});
+		UI.CreateJS.GridTax({pno:i});
 	}
 }
 //########################################
@@ -718,7 +717,7 @@ function GridAbility(arg){
 						tgtgrid.flush();
 						UI.CreateJS.GridIcon(arg.gno);
 						Grid.Img.set(arg.gno);
-						Grid.Img.tax({pno:tgtpno});
+						UI.CreateJS.GridTax({pno:tgtpno});
 						//Animation
 						EffectBox({pattern:"destroy", cno:tgtcno, gno:arg.gno});
 					}else{
@@ -770,7 +769,7 @@ function GridAbility(arg){
 						tgtgrid.flush();
 						UI.CreateJS.GridIcon(arg.gno);
 						Grid.Img.set(arg.gno);
-						Grid.Img.tax({pno:tgtpno});
+						UI.CreateJS.GridTax({pno:tgtpno});
 						//Animation
 						EffectBox({pattern:"destroy", cno:tgtcno, gno:arg.gno});
 					}else{
@@ -790,7 +789,7 @@ function GridAbility(arg){
 					//解除
 					Board.grid[arg.gno].status = "";
 					Board.grid[arg.gno].statime = 0;
-					Grid.Img.tax({gno:arg.gno});
+					UI.CreateJS.GridTax({gno:arg.gno});
 					break;
 				}
 				break;
@@ -884,7 +883,7 @@ function GridAbility(arg){
 					//解除
 					Board.grid[arg.gno].status = "";
 					Board.grid[arg.gno].statime = 0;
-					Grid.Img.tax({gno:arg.gno});
+					UI.CreateJS.GridTax({gno:arg.gno});
 					//log
 					Logprint({msg:"##"+tgtcno+"##は呪いが解けた", pno:tgtgrid.owner});
 					break;

@@ -670,7 +670,7 @@ function BattleResult(){
 		Battle.result = 1;
 		//クリア
 		Board.grid[Battle.gno].flush();
-		Grid.Img.tax({pno:Battle.p[1].pno});
+		UI.CreateJS.GridTax({pno:Battle.p[1].pno});
 		//移動時
 		if(Battle.from == "M"){
 			//クリア
@@ -702,7 +702,7 @@ function BattleResult(){
 				Board.grid[Battle.gno].statime = Board.Round+":"+Board.turn;
 			}
 			//イメージ再設定
-			Grid.Img.tax({gno:Battle.gno});
+			UI.CreateJS.GridTax({gno:Battle.gno});
 		}
 		//攻撃側生存
 		if(Battle.p[0].lf >= 1){

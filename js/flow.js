@@ -428,7 +428,7 @@ Flow.Tool.chkstatus = function (){
 				Board.grid[i].status = "";
 				Board.grid[i].statime = 0;
 				//Icon
-				Grid.Img.tax({gno:i});
+				UI.CreateJS.GridTax({gno:i});
 				//msgpop
 				EffectBox({pattern:"msgpop", gno:i, msg:"Dispel"});
 				//log
