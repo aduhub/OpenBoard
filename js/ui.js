@@ -10,12 +10,14 @@ UI.dragOffset = null;
 UI.numtype = 0;
 //-----[ CreateJS ]-----
 UI.stgBack = null;
+UI.stgClick = null;
 UI.mapchip = null;
 UI.CreateJS.setup = function(){
 	var manifest = [];
 	var layer;
-	var layerarr = ["layBack","layMap","layIcon","layEffect","layGold","layClick"];
+	var layerarr = ["layBack","layMap","layIcon","layEffect","layGold"];
 	UI.stgBack = new createjs.Stage("CVS_BACK");
+	UI.stgClick = new createjs.Stage("CVS_CLICK");
 	for(var i in layerarr){
 		layer = new createjs.Container();
 		layer.name = layerarr[i];
@@ -46,6 +48,7 @@ UI.CreateJS.setup = function(){
 		manifest.push({id:'numb'+i,src:'img/numb'+i+'.gif'});
 		manifest.push({id:'numb'+i,src:'img/numb'+i+'.gif'});
 	}
+	manifest.push({id:'numbs',src:'img/numbs.gif'});
 	UI.mapchip = new createjs.LoadQueue();
 	UI.mapchip.addEventListener("complete", UI.CreateJS.Board);
 	UI.mapchip.loadManifest(manifest);
@@ -101,6 +104,37 @@ UI.CreateJS.Grid = function (gno){
 	}
 	//easeljs
 	UI.stgBack.update();
+}
+UI.CreateJS.ClickMap = function (gno){
+	var gnoarr = [].concat(gno);
+	for(var i in gnoarr){
+		var baseShape = new createjs.Shape();
+		baseShape.name = "Click_"+gnoarr[i];
+		baseShape.y = Number(Board.grid[gnoarr[i]].top);
+		baseShape.x = Number(Board.grid[gnoarr[i]].left);
+		//area draw
+		var g = new createjs.Graphics();
+		g.f("#FFF").s("#FFF").mt(0,31).lt(63,0).lt(64,0).lt(127,31).lt(127,32).lt(64,63).lt(63,63).lt(0,32).closePath();
+		//hit
+		var hitShape = new createjs.Shape(g);
+		baseShape.set({hitArea : hitShape});
+		//event
+		baseShape.on("mousedown", function(e){
+			var gno = e.target.name.split("_")[1];
+			UI.Event.clickGrid(gno);
+		});
+		baseShape.on("mouseover", function(e){
+			var gno = e.target.name.split("_")[1];
+			GridInfo(gno);
+		});
+		baseShape.on("mouseout", function(e){
+			GridInfo(0);
+		});
+		//Attr["oncontextmenu"] = "GridGuidePop("+arg.gno+");return false;";
+		//add layer
+		UI.stgClick.addChild(baseShape);
+	}
+	UI.stgClick.update();
 }
 UI.CreateJS.GridIcon = function (gno){
 	var layer = UI.stgBack.getChildByName("layIcon");
@@ -161,52 +195,26 @@ UI.CreateJS.GridTax = function(arg){
 			layer.addChild(grid);
 			//Status
 			if(Board.grid[tgt[i]].status != ""){
-				var src = "img/"+StatusIcon(Board.grid[tgt[i]].status)+".gif";
-				var queue = new createjs.LoadQueue();
-				queue.addEventListener('fileload', function(e){
-					var bmIcon = new createjs.Bitmap(e.result);
-					bmIcon.y = 28;
-					bmIcon.x = 48;
-					grid.addChild(bmIcon);
-					UI.stgBack.update();
-				});
-				queue.loadFile(src);
+				UI.CreateJS.GridStatus(tgt[i]);
 			}
 		}
 	}
 	//easeljs
 	UI.stgBack.update();
 }
-UI.CreateJS.ClickMap = function (gno){
-	var layer = UI.stgBack.getChildByName("layClick");
-	var gnoarr = [].concat(gno);
-	for(var i in gnoarr){
-		var baseShape = new createjs.Shape();
-		baseShape.name = "Click_"+gnoarr[i];
-		baseShape.y = Number(Board.grid[gnoarr[i]].top);
-		baseShape.x = Number(Board.grid[gnoarr[i]].left);
-		//area draw
-		var g = new createjs.Graphics();
-		g.f("#FFF").s("#FFF").mt(0,31).lt(63,0).lt(64,0).lt(127,31).lt(127,32).lt(64,63).lt(63,63).lt(0,32).closePath();
-		//hit
-		var hitShape = new createjs.Shape(g);
-		baseShape.set({hitArea : hitShape});
-		//event
-		baseShape.on("mousedown", function(e){
-			var gno = e.target.name.split("_")[1];
-			UI.Event.clickGrid(gno);
-		});
-		baseShape.on("mouseover", function(e){
-			var gno = e.target.name.split("_")[1];
-			GridInfo(gno);
-		});
-		baseShape.on("mouseout", function(e){
-			GridInfo(0);
-		});
-		//Attr["oncontextmenu"] = "GridGuidePop("+arg.gno+");return false;";
-		//add layer
-		layer.addChild(baseShape);
-	}
+UI.CreateJS.GridStatus = function(gno){
+	var layer = UI.stgBack.getChildByName("layGold");
+	var grid = layer.getChildByName("Gold_"+gno);
+	var src = "img/"+StatusIcon(Board.grid[gno].status)+".gif";
+	var queue = new createjs.LoadQueue();
+	queue.addEventListener('fileload', function(e){
+		var bmIcon = new createjs.Bitmap(e.result);
+		bmIcon.y = 28;
+		bmIcon.x = 48;
+		grid.addChild(bmIcon);
+		UI.stgBack.update();
+	});
+	queue.loadFile(src);
 }
 UI.CreateJS.Card = function (arg){
 	var cvs = arg.cvs;
@@ -233,28 +241,6 @@ UI.CreateJS.Card = function (arg){
 	queue.loadManifest(manifest);
 }
 //-----[ HTML ]-----
-//DIV レイヤー設置
-UI.Html.createDiv = function (arg){
-	var Attr = {id:arg.id}
-	var Class = "";
-	//Style設定
-	var Css = {
-		position:"absolute",
-		width:arg.w+"px",
-		height:arg.h+"px",
-		left:arg.l+"px",
-		top:arg.t+"px",
-		zIndex:arg.z,
-		textAlign:"center"
-	}
-	if(arg.opt && arg.opt == "img"){
-		Css["backgroundImage"] = "url(img/"+arg.imgsrc+".gif)";
-		Css["backgroundRepeat"] = "no-repeat";
-	}
-	//ドキュメントに追加
-	Maker.addDiv({base:"#DIV_FRAME", attr:Attr, css:Css, class:Class});
-}
-//DIV表示設定
 UI.Html.setDiv = function (arg){
 	var css = {};
 	var divid = "#" + arg.id;
@@ -276,7 +262,6 @@ UI.Html.setDiv = function (arg){
 	}
 	$(divid).css(css);
 }
-//z-Index操作
 UI.Html.sortZindex = function (flg){
 	var yarr = [];
 	var yzarr = [];
@@ -311,8 +296,22 @@ UI.Tool.createCharactor = function (pno){
 	for (var i in dirtype){
 		imgsrc.push("url(img/avator/"+Player[pno].avatar+plus+dirtype[i]+".gif)");
 	}
-	$("#DIV_PLAYER"+pno).css("backgroundImage", imgsrc.join(","));
-	$("#DIV_PLAYER"+pno).css("backgroundPosition", "0px 0px, 128px 0px, 128px 0px");
+	var pos ={l:Number(Board.grid[1].left), t:Number(Board.grid[1].top) - 64};
+	var Attr = {id:"DIV_PLAYER"+i}
+	var Css = {
+		position:"absolute",
+		width:"128px",
+		height:"128px",
+		left:pos.l+"px",
+		top:pos.t +"px",
+		zIndex:11,
+		textAlign:"center"
+	}
+	Css["backgroundImage"] = imgsrc.join(",");
+	Css["backgroundPosition"] = "0px 0px, 128px 0px, 128px 0px";
+	Css["backgroundRepeat"] = "no-repeat";
+	//ドキュメントに追加
+	Maker.addDiv({base:"#DIV_LAYER2", attr:Attr, css:Css, class:Class});
 }
 //アイコン
 UI.Tool.playerIcon = function (pno){
@@ -495,8 +494,13 @@ UI.Tool.openControl = function (){
 		$("#DIV_CONTROLPANEL").css("display", "none");
 	}
 }
+//ドラッグスクロール
+UI.Tool.mapDragStart = function (){
+	$("BODY").mouseup(UI.Event.mouseupDrag);
+	$("BODY").mousemove(UI.Event.mousemoveDrag);
+	$("#DIV_BACK").mousedown(UI.Event.mousedownDrag);
+}
 //-----[ Event ]-----
-//情報クリック判定
 UI.Event.mouseoverInfo = function (flg){
 	if(Board.round >= 1){
 		if(flg == 0){
@@ -510,7 +514,6 @@ UI.Event.mouseoverInfo = function (flg){
 		}
 	}
 }
-//Player
 UI.Event.clickPlayer = function (pno){
 	if(Board.round >= 1){
 		if(pno >= 0){
@@ -524,7 +527,6 @@ UI.Event.clickPlayer = function (pno){
 		}
 	}
 }
-//グリッドクリック判定
 UI.Event.clickGrid = function (gno){
 	if(Board.turn == Board.role){
 		switch(Board.step){
@@ -583,7 +585,6 @@ UI.Event.clickGrid = function (gno){
 	//Sound Effect
 	Audie.seplay("click");
 }
-//ハンドクリック判定
 UI.Event.clickHand = function (hno){
 	if(Board.step == 1){
 		if(Board.role >= 1){
@@ -633,12 +634,6 @@ UI.Event.clickHand = function (hno){
 	}
 	//Sound Effect
 	Audie.seplay("click");
-}
-//ドラッグスクロール
-UI.Tool.mapDragStart = function (){
-	$("BODY").mouseup(UI.Event.mouseupDrag);
-	$("BODY").mousemove(UI.Event.mousemoveDrag);
-	$("#DIV_BACK").mousedown(UI.Event.mousedownDrag);
 }
 UI.Event.mousedownDrag = function (e){
 	//縮小クリア

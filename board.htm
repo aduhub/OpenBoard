@@ -17,7 +17,11 @@
 <body onload="Game.init()">
 	<!-- MAIN -->
 	<div id="DIV_FRAME">
-		<div id="DIV_BACK"><canvas id="CVS_BACK" width="1600" height="1200"></canvas></div>
+		<div id="DIV_BACK">
+			<div id="DIV_LAYER1"><canvas id="CVS_CLICK" width="1600" height="1200"></canvas></div>
+			<div id="DIV_LAYER2"></div>
+			<div id="DIV_LAYER3"><canvas id="CVS_BACK" width="1600" height="1200"></canvas></div>
+		</div>
 	</div>
 	<div id="DIV_INFO" onmouseover="UI.Event.mouseoverInfo(1)" onmouseout="UI.Event.mouseoverInfo(0)"></div>
 	<div id="DIV_INFOPLUS"></div>

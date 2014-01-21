@@ -189,7 +189,7 @@ Grid.light = function (arg){
 			var lightdiv = $("<div></div>");
 			lightdiv.addClass("animeGridlight");
 			lightdiv.css({top:divy, left:divx});
-			$("#DIV_FRAME").append(lightdiv);
+			$("#DIV_LAYER2").append(lightdiv);
 		}
 	}
 }
@@ -206,7 +206,7 @@ Grid.fortlight = function (){
 				var lightdiv = $("<div></div>");
 				lightdiv.addClass("animeFortlight");
 				lightdiv.css({top:divy, left:divx});
-				$("#DIV_FRAME").append(lightdiv);
+				$("#DIV_LAYER2").append(lightdiv);
 			}
 		}
 	}
@@ -227,7 +227,7 @@ function GridGuidePop(gno){
 					var effdiv = $("<div onmousedown='GridGuidePop(0);' onmouseout='GridGuidePop(0);'>"+msgstr+"</div>");
 					effdiv.css({top:divy, left:divx});
 					effdiv.addClass("CLS_GRIDGUIDE");
-					$("#DIV_FRAME").append(effdiv);
+					$("#DIV_LAYER2").append(effdiv);
 				}
 			}
 		}

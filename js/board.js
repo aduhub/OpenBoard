@@ -89,8 +89,6 @@ Game.setupPlayer = function (){
 		Player[i].shadow = 1;
 		Player[i].gold = Board.bonus;
 		//ICON
-		UI.Html.createDiv({id:"DIV_PLAYER"+i, w:128, h:128, l:Number(Board.grid[1].left), t:Number(Board.grid[1].top) - 64, z:11});
-		//$("#DIV_PLAYER"+i).html("<div id='DIV_PNO"+i+"'>"+i+"P</div>");
 		UI.Tool.createCharactor(i);
 	}
 	//##### Alliance #####
