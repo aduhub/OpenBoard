@@ -8,7 +8,7 @@ Dice.teleport = [];
 //start
 Dice.Step.start = function (){
 	//自分のターン
-	if(Board.turn == Board.role){
+	if(Board.chkTurnPlayer()){
 		if(Board.step == 20 || (Board.step == 30 && Player[Board.turn].dicepass == false)){
 			//ステップ（移動開始）
 			Flow.step(31);
@@ -48,7 +48,7 @@ Dice.Step.start = function (){
 //roll {pow, roll} | {pno, pow}
 Dice.Step.roll = function (arg){
 	//自分のターン
-	if(Board.turn == Board.role){
+	if(Board.chkTurnPlayer()){
 		//ダイアログ非表示
 		UI.Dialog.close();
 		//ロール
@@ -79,7 +79,7 @@ Dice.Step.rollskip = function (){
 	if(Board.step == 30){
 		//ステップ（移動開始）
 		Flow.step(31);
-		if(Board.turn == Board.role){
+		if(Board.chkTurnPlayer()){
 			//PHASEENDBUTTON
 			$("#BTN_PhaseEnd").html("-");
 		}
@@ -98,44 +98,38 @@ Dice.Step.rollskip = function (){
 	}
 }
 //move
-Dice.Step.move = function (i_mvto){
+Dice.Step.move = function (gno){
 	//Dice 残りアリ
 	if (Dice.rest >= 1){
 		var nextgno = 0;
 		//表示
 		$("#DIV_DICE").html(Dice.rest);
-		//コマ最前面
 		$("#DIV_PLAYER"+Board.turn).css({zIndex:140});
 		//現在情報
 		var standNow = Player[Board.turn].stand;
 		var shadoNow = Player[Board.turn].shadow;
+		var gridlink = [].concat(Board.grid[standNow].linkarr);
 		//番号指定無し
-		if(i_mvto == 0){
+		if(gno == 0){
 			//分岐なし
-			if(Board.grid[standNow].link3 == 0){
-				if(Board.grid[standNow].link2 == 0){
-					nextgno = Board.grid[standNow].link1;
-				}else{
-					//影あり
-					if(standNow != shadoNow){
-						if(shadoNow != 0){
-							if(Board.grid[standNow].link1 == shadoNow){
-								nextgno = Board.grid[standNow].link2;
-							}else if(Board.grid[standNow].link2 == shadoNow){
-								nextgno = Board.grid[standNow].link1;
-							}
-						}
-					}
+			if(gridlink.length == 1){
+				nextgno = gridlink[0];
+			}
+			if(gridlink.length == 2){
+				//影あり
+				if(standNow != shadoNow && shadoNow != 0){
+					var idx = gridlink.indexOf(shadoNow);
+					nextgno = (idx >= 0) ? gridlink[(idx + 1) % 2] : 0;
 				}
 			}
 		}else{
 			//分岐あり または 立＝影
-			if(Board.grid[standNow].link3 > 0 || standNow == shadoNow || (Board.grid[standNow].link1 != shadoNow && Board.grid[standNow].link2 != shadoNow)){
-				if(i_mvto != shadoNow && $T.inarray(i_mvto, Board.grid[standNow].linkarr)){
-					nextgno = i_mvto;
-					if(Board.turn == Board.role){
+			if(gridlink.length >= 3 || standNow == shadoNow || (gridlink[0] != shadoNow && gridlink[1] != shadoNow)){
+				if(gno != shadoNow && gridlink.indexOf(gno) >= 0){
+					nextgno = gno;
+					if(Board.chkTurnPlayer()){
 						//クリア
-						Grid.light({clear:true});
+						Grid.light();
 						//コマンド送信
 						var wkcmd = "move:"+nextgno;
 						Net.send(wkcmd);
@@ -155,7 +149,7 @@ Dice.Step.move = function (i_mvto){
 			Player[Board.turn].shadow = standNow;
 			Player[Board.turn].stand = nextgno;
 			Player[Board.turn].foot += 1;
-			if(Board.turn == Board.role){
+			if(Board.chkTurnPlayer()){
 				//ルート記憶
 				Dice.route.push(Player[Board.turn].stand);
 			}
@@ -187,7 +181,7 @@ Dice.Step.move = function (i_mvto){
 			Flow.step(32);
 			//スクロール
 			UI.Tool.scrollBoard(Player[Board.turn].stand);
-			if(Board.turn == Board.role){
+			if(Board.chkTurnPlayer()){
 				//現在情報
 				var standNow = Player[Board.turn].stand;
 				var shadoNow = Player[Board.turn].shadow;
@@ -207,161 +201,157 @@ Dice.Step.move = function (i_mvto){
 }
 //next
 Dice.Step.next = function (){
-    var standNow = Player[Board.turn].stand;
-    var shadwNow = Player[Board.turn].shadow;
-    var msec = (Frame.skipchk()) ? 50 : 500;
-    //Dice Step End
-    if(Dice.rest == 0){
-        if(Board.grid[standNow].color == 21){
-            //### 転送円 ###
-            if(Board.grid[shadwNow].color != 24){
-                var mvto = Number(Board.grid[standNow].linkx);
-                Player[Board.turn].shadow = mvto;
-                Player[Board.turn].stand = mvto;
-                if(Board.turn == Board.role){
-                    //ルート記憶
-                    Dice.route.push(Player[Board.turn].stand);
-                }
-                //Animation & ImageChange
-                EffectBox({pattern:"piecemove", pno:Board.turn, gno:mvto, msec:msec});
-                //現在地
-                standNow = mvto;
-                shadwNow = mvto;
-            }
-        }else if(Board.grid[standNow].color == 24){
-            //### 転送門 ###
-            if(standNow == shadwNow){
-                var mvto = Number(Board.grid[standNow].linkx);
-                Player[Board.turn].shadow = standNow;
-                Player[Board.turn].stand = mvto;
-                if(Board.turn == Board.role){
-                    //ルート記憶
-                    Dice.route.push(Player[Board.turn].stand);
-                }
-                //Animation & ImageChange
-                EffectBox({pattern:"piecemove", pno:Board.turn, gno:mvto, msec:msec});
-            }
-        }
-        //祭壇
-        if(Board.grid[standNow].color == 23){
-            //ドロー
-            Dice.Step.draw();
-            //中断
-            return;
-        }
-        //### GridAbility ###
-        var abiret = GridAbility({time:"DICE_REST_OVER", gno:Player[Board.turn].stand});
-        for(var i2=0; i2<abiret.length; i2++){
-            switch(abiret[i2].act){
-                case "teleport":
-                    Dice.Step.teleport({step:0, tgt:abiret[i2].val});
-                    //中断
-                    return;
-                    break;
-            }
-        }
-        //移動終了
-        Dice.Step.end();
-    }else{
-        //表示次へ
-        $("#DIV_DICE").html(Dice.rest);
-        Dice.Step.move(0);
-    }
+	var standNow = Player[Board.turn].stand;
+	var shadwNow = Player[Board.turn].shadow;
+	var msec = (Frame.skipchk()) ? 50 : 500;
+	//Dice Step End
+	if(Dice.rest >= 1){
+		//表示次へ
+		$("#DIV_DICE").html(Dice.rest);
+		Dice.Step.move(0);
+	}else{
+	    if(Board.grid[standNow].color == 21){
+	        //### 転送円 ###
+	        if(Board.grid[shadwNow].color != 24){
+	            var mvto = Number(Board.grid[standNow].linkx);
+	            Player[Board.turn].shadow = mvto;
+	            Player[Board.turn].stand = mvto;
+	            if(Board.chkTurnPlayer()){
+	                //ルート記憶
+	                Dice.route.push(Player[Board.turn].stand);
+	            }
+	            //Animation & ImageChange
+	            EffectBox({pattern:"piecemove", pno:Board.turn, gno:mvto, msec:msec});
+	            //現在地
+	            standNow = mvto;
+	            shadwNow = mvto;
+	        }
+	    }else if(Board.grid[standNow].color == 24){
+	        //### 転送門 ###
+	        if(standNow == shadwNow){
+	            var mvto = Number(Board.grid[standNow].linkx);
+	            Player[Board.turn].shadow = standNow;
+	            Player[Board.turn].stand = mvto;
+	            if(Board.chkTurnPlayer()){
+	                //ルート記憶
+	                Dice.route.push(Player[Board.turn].stand);
+	            }
+	            //Animation & ImageChange
+	            EffectBox({pattern:"piecemove", pno:Board.turn, gno:mvto, msec:msec});
+	        }
+	    }
+	    //祭壇
+	    if(Board.grid[standNow].color == 23){
+	        //ドロー
+	        Dice.Step.draw();
+	        //中断
+	        return;
+	    }
+	    //### GridAbility ###
+	    var abiret = GridAbility({time:"DICE_REST_OVER", gno:Player[Board.turn].stand});
+	    for(var i2=0; i2<abiret.length; i2++){
+	        switch(abiret[i2].act){
+            case "teleport":
+                Dice.Step.teleport({step:0, tgt:abiret[i2].val});
+                //中断
+                return;
+                break;
+	        }
+	    }
+	    //移動終了
+	    Dice.Step.end();
+	}
 }
 //end
 Dice.Step.end = function (){
     //ステップ（移動終了）
 	Flow.step(40);
 	UI.Html.setDiv({id:"DIV_DICE", hidden:true});
-    //ZIndex
 	UI.Html.sortZindex("player");
-    //スクロール
+	//スクロール
 	UI.Tool.scrollBoard(Player[Board.turn].stand);
-    //ターンプレイヤー
-    if(Board.turn == Board.role){
-        //領地指示可能カウント
-        var wkarr = new Array();
-        if($T.inarray(Board.grid[Player[Board.role].stand].color, [10,11,12,13,14]) || Player[Board.role].status == "_TELEGNOSIS_"){
-            for(var i=1; i<Board.grid.length; i++){
-                if(Flow.Tool.team(Board.grid[i].owner) == Flow.Tool.team(Board.turn)){
-                    wkarr.push(i);
-                }
-            }
-        }else{
-            for(var i=0; i<Dice.route.length; i++){
-                if(Flow.Tool.team(Board.grid[Dice.route[i]].owner) == Flow.Tool.team(Board.turn)){
-                    wkarr.push(Dice.route[i]);
-                }
-            }
-            //TELEPATHY CHECK
-            for(var igno=1; igno<Board.grid.length; igno++){
-                if(Flow.Tool.team(Board.grid[igno].owner) == Flow.Tool.team(Board.turn) && Board.grid[igno].status == "_TELEPATHY_"){
-                    wkarr.push(igno);
-                }
-            }
-        }
-        //Territory Set
-        Territory.target = wkarr;
-        //通過点ライト
-        if(wkarr.length >= 1){
-            Grid.light({arr:wkarr, save:true});
-        }
-        //
-	    Summon.Step.start(Player[Board.role].stand);
-
-        //PHASEENDBUTTON
-        $("#BTN_PhaseEnd").html("ターンエンド");
-        //timer
-        $("#BTN_PhaseEnd").addClass(Chessclock.set(40));
-    }
+	//ターンプレイヤー
+	if(Board.chkTurnPlayer()){
+		//領地指示可能カウント
+		var wkarr = new Array();
+		if($T.inarray(Board.grid[Player[Board.role].stand].color, [10,11,12,13,14]) || Player[Board.role].status == "_TELEGNOSIS_"){
+		    for(var i=1; i<Board.grid.length; i++){
+		        if(Flow.Tool.team(Board.grid[i].owner) == Flow.Tool.team(Board.turn)){
+		            wkarr.push(i);
+		        }
+		    }
+		}else{
+		    for(var i=0; i<Dice.route.length; i++){
+		        if(Flow.Tool.team(Board.grid[Dice.route[i]].owner) == Flow.Tool.team(Board.turn)){
+		            wkarr.push(Dice.route[i]);
+		        }
+		    }
+		    //TELEPATHY CHECK
+		    for(var igno=1; igno<Board.grid.length; igno++){
+		        if(Flow.Tool.team(Board.grid[igno].owner) == Flow.Tool.team(Board.turn) && Board.grid[igno].status == "_TELEPATHY_"){
+		            wkarr.push(igno);
+		        }
+		    }
+		}
+		//Territory Set
+		Territory.target = wkarr;
+		//通過点ライト
+		if(wkarr.length >= 1){
+		    Grid.light({arr:wkarr, save:true});
+		}
+		//Summmon
+		Summon.Step.start(Player[Board.role].stand);
+		//PHASEENDBUTTON
+		$("#BTN_PhaseEnd").html("ターンエンド");
+		$("#BTN_PhaseEnd").addClass(Chessclock.set(40));
+	}
 }
 //teleport
 Dice.Step.teleport = function (arg){
-    var msec = (Frame.skipchk()) ? 50 : 500;
-    switch(arg.step){
-        case 0:
-            //ステップ
-	        Flow.step(36);
-            if(Board.role == Board.turn){
-                Dice.teleport = arg.tgt;
-                //ライト
-                Grid.light({arr:arg.tgt});
-
-                //Dialog
-	            UI.Dialog.show({msgs:["テレポート先を選択してください"], dtype:"ok"});
-            }
-            break;
-        case 1:
-            //Role Player
-            if(Board.turn == Board.role){
-                //ライト
-                Grid.light({clear:true});
-                //コマンド送信
-                var wkcmd = "dicetele:"+arg.gno;
-                //送信
-                Net.send(wkcmd);
-            }
-            Player[Board.turn].shadow = arg.gno;
-            Player[Board.turn].stand = arg.gno;
-            if(Board.turn == Board.role){
-                //ルート記憶
-                Dice.route.push(arg.gno);
-            }
-            //Animation & ImageChange
-            EffectBox({pattern:"piecemove", pno:Board.turn, gno:arg.gno, msec:msec});
-            //Log
-            Logprint({msg:Player[Board.turn].name+"はテレポートした", pno:Board.turn});
-            //移動終了
-            Dice.Step.end();
-            break;
-    }
+	var msec = (Frame.skipchk()) ? 50 : 500;
+	switch(arg.step){
+	case 0:
+		//ステップ
+		Flow.step(36);
+		if(Board.chkTurnPlayer()){
+		    Dice.teleport = arg.tgt;
+		    //ライト
+		    Grid.light({arr:arg.tgt});
+		    //Dialog
+		    UI.Dialog.show({msgs:["テレポート先を選択してください"], dtype:"ok"});
+		}
+		break;
+	case 1:
+		//Role Player
+		if(Board.chkTurnPlayer()){
+		    //ライト
+		    Grid.light();
+		    //コマンド送信
+		    var wkcmd = "dicetele:"+arg.gno;
+		    //送信
+		    Net.send(wkcmd);
+		}
+		Player[Board.turn].shadow = arg.gno;
+		Player[Board.turn].stand = arg.gno;
+		if(Board.turn == Board.role){
+		    //ルート記憶
+		    Dice.route.push(arg.gno);
+		}
+		//Animation & ImageChange
+		EffectBox({pattern:"piecemove", pno:Board.turn, gno:arg.gno, msec:msec});
+		//Log
+		Logprint({msg:Player[Board.turn].name+"はテレポートした", pno:Board.turn});
+		//移動終了
+		Dice.Step.end();
+		break;
+	}
 }
 //plus draw
 Dice.Step.draw = function (){
     if(arguments.length == 0){
         //ステップ
 	    Flow.step(34);
-        if(Board.role == Board.turn){
+        if(Board.chkTurnPlayer()){
             var typeflg = {C:0, I:0, S:0};
             var Plyr = Player[Board.turn];
             for(var i=1; i<=Plyr.DeckCount(); i++){
@@ -405,7 +395,7 @@ Dice.Step.draw = function (){
         //手札追加
 	    Deck.Tool.draw({pno:Board.turn, from:"dno", dno:arg[0]});
         //Role Player
-        if(Board.turn == Board.role){
+        if(Board.chkTurnPlayer()){
 	        Deck.Tool.sorthand();
         }
         Dice.Step.end();

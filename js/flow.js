@@ -196,7 +196,7 @@ Flow.Step.turnend = function (){
 			//PHASEENDBUTTON
 			$("#BTN_PhaseEnd").html("-");
 			//GridLightクリア
-			Grid.light({clear:true});
+			Grid.light();
 
 			//Close
 			Flow.Step.endphase(0);

@@ -34,7 +34,7 @@ Spell.Step.chkTarget = function (hno){
 		if(tgt.match(/^T.G.*$/)){
 			Spell.check = Grid.grep({pno:Board.turn, tgt:tgt});
 			//ライト
-			Grid.light({clear:true, arr:Spell.check});
+			Grid.light({arr:Spell.check});
 			//PHASEENDBUTTON
 			$("#BTN_PhaseEnd").html("キャンセル");
 			//timer cancel set
@@ -105,7 +105,7 @@ Spell.Step.chkGrid = function (gno){
 		}else{
 			Spell.check = Grid.grep({pno:Board.turn, tgt:tgtarr[Spell.target.length], ext:Spell.target});
 			//ライト
-			Grid.light({clear:true, arr:Spell.check});
+			Grid.light({arr:Spell.check});
 			//
 			UI.Dialog.show({msgs:["次のターゲットを選択してください"], dtype:"ok"});
 		}
@@ -114,7 +114,7 @@ Spell.Step.chkGrid = function (gno){
 //スペル使用確認
 Spell.Step.confirm = function (flg){
 	//ライト
-	Grid.light({clear:true});
+	Grid.light();
 	//ダイアログ
 	if(arguments.length == 0){
 		var msgarr = ["["+Card[Spell.cno].name+"]を使用しますか？"];
@@ -343,7 +343,7 @@ Spell.Step.fire = function(i_flg){
 			mvto.push(Spell.target[1]);
 			if(Board.turn == Board.role){
 				//ライト
-				Grid.light({clear:true});
+				Grid.light();
 				//コマンド送信
 				var wkcmd = "spellplus:"+Spell.target.join("_");
 				//送信
@@ -1376,13 +1376,13 @@ Spell.Step.second = function (arg){
 		switch(arg.step){
 		case 0: //表示
 			//ライト
-			Grid.light({clear:true, arr:Spell.check});
+			Grid.light({arr:Spell.check});
 			//PHASEENDBUTTON
 			$("#BTN_PhaseEnd").html("-");
 			break;
 		case 1: //OK
 			//ライト
-			Grid.light({clear:true});
+			Grid.light();
 			//ターゲット追加
 			Spell.target.push(arg.gno);
 			//ターゲット確定

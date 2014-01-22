@@ -46,11 +46,12 @@ Game.setupBoard = function (){
 			Board.grid[gno].color = Number(Mapgrid[1]);
 			Board.grid[gno].top   = Number(Mapgrid[2]);
 			Board.grid[gno].left  = Number(Mapgrid[3]);
-			Board.grid[gno].link1 = Number(Mapgrid[4]);
-			Board.grid[gno].link2 = Number(Mapgrid[5]);
-			Board.grid[gno].link3 = Number(Mapgrid[6]);
-			Board.grid[gno].link4 = Number(Mapgrid[7]);
-			Board.grid[gno].linkarr = [Number(Mapgrid[4]), Number(Mapgrid[5]), Number(Mapgrid[6]), Number(Mapgrid[7])];
+			Board.grid[gno].linkarr = [];
+			for(var j=4; j<=7; j++){
+				if(Mapgrid[j] != 0){
+					Board.grid[gno].linkarr.push(Number(Mapgrid[j]));
+				}
+			}
 			Board.grid[gno].arrow = Mapgrid[8];
 			Board.grid[gno].gold  = Number(Mapgrid[9]);
 			Board.grid[gno].owner = 0;

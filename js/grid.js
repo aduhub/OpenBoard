@@ -175,38 +175,31 @@ Grid.tax = function (gno){
 //Light ({arr, load, save, clear})
 Grid.light_memory = [];
 Grid.light = function (arg){
-	if(arg.clear){
-		$(".animeGridlight").remove();
-	}
-	if(arg.arr || arg.load){
-		var tgtgrid = (arg.load) ? Grid.light_memory : arg.arr;
-		if(arg.save){
-			Grid.light_memory = arg.arr;
-		}
-		for(var i in tgtgrid){
-			var divy = Board.grid[tgtgrid[i]].top;
-			var divx = Board.grid[tgtgrid[i]].left;
-			var lightdiv = $("<div></div>");
-			lightdiv.addClass("animeGridlight");
-			lightdiv.css({top:divy, left:divx});
-			$("#DIV_LAYER2").append(lightdiv);
+	$(".animeGridlight").remove();
+	if(arguments.length > 0){
+		if(arg.arr || arg.load){
+			var tgtgrid = (arg.load) ? Grid.light_memory : arg.arr;
+			if(arg.save){
+				Grid.light_memory = arg.arr;
+			}
+			for(var i in tgtgrid){
+				var divy = Board.grid[tgtgrid[i]].top;
+				var divx = Board.grid[tgtgrid[i]].left;
+				Maker.addDiv({css:{top:divy, left:divx}, class:"animeGridlight"});
+			}
 		}
 	}
 }
 Grid.fortlight = function (){
-	var nswe = ["n", "s", "w", "e"];
-	var nswe2 = ["N", "S", "W", "E"];
+	var nswe = ["n","s","w","e"];
 	$(".animeFortlight").remove();
-	for(var i=0; i<4; i++){
+	for(var i in nswe){
 		if(Player[Board.turn].flag.match(nswe[i])){
-			tgtarr = Grid.grep({tgt:"TXGF"+nswe2[i]});
-			for(var i2=0; i2<tgtarr.length; i2++){
-				var divy = Board.grid[tgtarr[i2]].top;
-				var divx = Board.grid[tgtarr[i2]].left;
-				var lightdiv = $("<div></div>");
-				lightdiv.addClass("animeFortlight");
-				lightdiv.css({top:divy, left:divx});
-				$("#DIV_LAYER2").append(lightdiv);
+			var tgtarr = Grid.grep({tgt:"TXGF"+nswe[i].toUpperCase()});
+			for(var j in tgtarr){
+				var divy = Board.grid[tgtarr[j]].top;
+				var divx = Board.grid[tgtarr[j]].left;
+				Maker.addDiv({css:{top:divy, left:divx}, class:"animeFortlight"});
 			}
 		}
 	}
@@ -485,11 +478,10 @@ function GridTgtSearch(gene){
 		gene.depth++;
 	}
 	var tgtgno = gene.gno;
-	var stand = Board.grid[tgtgno];
-	var linkarr = [stand.link1, stand.link2, stand.link3, stand.link4];
-	for(var i=3; i>=0; i--){
-		if(linkarr[i] == "0" || gene.route.indexOf(linkarr[i]) >= 0 || linkarr[i] == gene.root){
-			linkarr.splice(i, 1);
+	var linkarr = [];
+	for(var i in Board.grid[tgtgno].linkarr){
+		if(gene.route.indexOf(Board.grid[tgtgno].linkarr[i]) == -1 && gene.root != Board.grid[tgtgno].linkarr[i]){
+			linkarr.push(Board.grid[tgtgno].linkarr[i]);
 		}
 	}
 	if(linkarr.length > 0){
@@ -621,7 +613,7 @@ Grid.trans = function(gno){
 					//【魔力枯渇】
 					Flow.Tool.bankrupt();
 					//ライト
-					Grid.light({clear:true});
+					Grid.light();
 					//ターン終了
 					setTimeout(function(){Flow.Step.endphase(9);}, 4000);
 				}
@@ -629,7 +621,7 @@ Grid.trans = function(gno){
 		}else{
 			//【支払い終了】
 			//ライト
-			Grid.light({clear:true});
+			Grid.light();
 			//ターン終了
 			setTimeout(function(){Flow.Step.endphase(9);}, 2000);
 		}

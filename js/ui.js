@@ -38,6 +38,7 @@ UI.CreateJS.setup = function(){
 	manifest.push({id:'gicon22',src:'img/gicon_brd.gif'});
 	manifest.push({id:'gicon23',src:'img/gicon_alt.gif'});
 	manifest.push({id:'gicon24',src:'img/gicon_drop.gif'});
+	manifest.push({id:'gridlight',src:'img/gridlight.gif'});
 	for(var i=0; i<=4; i++){
 		for(var j=1; j<=5; j++){
 			manifest.push({id:'border'+i+j,src:'img/border'+i+j+'.gif'});
@@ -65,7 +66,7 @@ UI.CreateJS.Board = function(){
 	UI.CreateJS.Grid(gnoarr);
 	UI.CreateJS.ClickMap(gnoarr);
 }
-UI.CreateJS.Grid = function (gno){
+UI.CreateJS.Grid = function(gno){
 	var src = "";
 	var layer = UI.stgBack.getChildByName("layMap");
 	var gnoarr = [].concat(gno);
@@ -105,7 +106,7 @@ UI.CreateJS.Grid = function (gno){
 	//easeljs
 	UI.stgBack.update();
 }
-UI.CreateJS.ClickMap = function (gno){
+UI.CreateJS.ClickMap = function(gno){
 	var gnoarr = [].concat(gno);
 	for(var i in gnoarr){
 		var baseShape = new createjs.Shape();
@@ -125,9 +126,12 @@ UI.CreateJS.ClickMap = function (gno){
 		});
 		baseShape.on("mouseover", function(e){
 			var gno = e.target.name.split("_")[1];
+			UI.CreateJS.GridArrow(gno, true);
 			GridInfo(gno);
 		});
 		baseShape.on("mouseout", function(e){
+			var gno = e.target.name.split("_")[1];
+			UI.CreateJS.GridArrow(gno, false);
 			GridInfo(0);
 		});
 		//Attr["oncontextmenu"] = "GridGuidePop("+arg.gno+");return false;";
@@ -136,7 +140,7 @@ UI.CreateJS.ClickMap = function (gno){
 	}
 	UI.stgClick.update();
 }
-UI.CreateJS.GridIcon = function (gno){
+UI.CreateJS.GridIcon = function(gno){
 	var layer = UI.stgBack.getChildByName("layIcon");
 	//remove
 	layer.removeChild(layer.getChildByName("Gicon_"+gno));
@@ -215,6 +219,16 @@ UI.CreateJS.GridStatus = function(gno){
 		UI.stgBack.update();
 	});
 	queue.loadFile(src);
+}
+UI.CreateJS.GridArrow = function(gno, flg){
+	var grid = UI.stgClick.getChildByName("Click_"+gno);
+	if(grid){
+		grid.removeAllChildren();
+		if(flg){
+			var bmBorder = new createjs.Bitmap(UI.mapchip.getResult("gridlight"));
+			grid.addChild(bmBorder);
+		}
+	}
 }
 UI.CreateJS.Card = function (arg){
 	var cvs = arg.cvs;

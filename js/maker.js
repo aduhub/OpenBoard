@@ -2,7 +2,7 @@ var Maker = {};
 Maker.addDiv = function(arg){
 		var jQ_Div;
 		var id = arg["id"] || "DIV_MAKER_" + $T.rndstr(8);
-		var baseframe = arg["base"] || "#DIV_FRAME";
+		var baseframe = arg["base"] || "#DIV_LAYER2";
 		//Base
 		if(arg["attr"]){
 			jQ_Div = $("<div/>", arg["attr"]);

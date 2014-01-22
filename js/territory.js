@@ -15,7 +15,7 @@ Territory.Step.start = function (i_gno){
 			var wkarr = [];
 			//ライト
 			wkarr.push(i_gno);
-			Grid.light({clear:true, arr:wkarr});
+			Grid.light({arr:wkarr});
 			//領地INIT
 			Flow.step(51);
 			Territory.gno = i_gno;
@@ -156,7 +156,7 @@ Territory.Step.dialog = function (i_mode){
 		}
 		if(Territory.check.length >= 1){
 			//ライト
-			Grid.light({clear:true, arr:Territory.check});
+			Grid.light({arr:Territory.check});
 			//移動先入力
 			Flow.step(52);
 			//PHASEENDBUTTON
@@ -170,7 +170,7 @@ Territory.Step.dialog = function (i_mode){
 	case 4:
 		//[CreatureChange]
 		//ライト
-		Grid.light({clear:true, arr:[Territory.gno]});
+		Grid.light({arr:[Territory.gno]});
 		//交換カード選択
 		Flow.step(53);
 		//PHASEENDBUTTON
@@ -186,7 +186,7 @@ Territory.Step.dialog = function (i_mode){
 		//クリア
 		Territory.ability = "";
 		//ライト
-		Grid.light({clear:true, load:true});
+		Grid.light({load:true});
 		//キャンセル
 		Flow.step(40);
 		//PHASEENDBUTTON
@@ -946,7 +946,7 @@ Territory.Tool.targetGrid = function (){
 	//Step
 	Flow.step(54);
 	//ライト
-	Grid.light({clear:true, arr:Territory.check});
+	Grid.light({arr:Territory.check});
 	//PHASEENDBUTTON
 	$("#BTN_PhaseEnd").html("キャンセル");
 }

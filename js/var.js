@@ -34,7 +34,10 @@ var Board = {
 	discardstep:0,
 	alliance:false,
 	joincntA:0,
-	joincntB:0
+	joincntB:0,
+	chkTurnPlayer:function(){
+		return (this.turn == this.role);
+	}
 }
 //Player
 var Player = [];
@@ -64,10 +67,6 @@ var Analytics = {
 //====================================
 //Gridクラス
 function clsGrid(){
-	this.link1   = 0;
-	this.link2   = 0;
-	this.link3   = 0;
-	this.link4   = 0;
 	this.linkx   = 0;
 	this.linkarr = [];
 	this.arrow   = "";
@@ -94,37 +93,17 @@ function clsGrid(){
 	};
 	this.GetArrow = function(gno){
 		var ret = 0;
-		switch(Number(gno)){
-			case this.link1:
-				ret = Number(this.arrow.substr(0,1));
-				break;
-			case this.link2:
-				ret = Number(this.arrow.substr(1,1));
-				break;
-			case this.link3:
-				ret = Number(this.arrow.substr(2,1));
-				break;
-			case this.link4:
-				ret = Number(this.arrow.substr(3,1));
-				break;
+		var idx = this.linkarr.indexOf(Number(gno));
+		if(idx >= 0){
+			ret = Number(this.arrow[idx]);
 		}
 		return ret;
 	};
 	this.GetLink = function(arrow){
 		var ret = 0;
-		switch(String(arrow)){
-			case this.arrow.substr(0,1):
-				ret = this.link1;
-				break;
-			case this.arrow.substr(1,1):
-				ret = this.link2;
-				break;
-			case this.arrow.substr(2,1):
-				ret = this.link3;
-				break;
-			case this.arrow.substr(3,1):
-				ret = this.link4;
-				break;
+		var idx = this.arrow.indexOf(arrow);
+		if(idx >= 0){
+			ret = this.linkarr[idx];
 		}
 		return ret;
 	};
