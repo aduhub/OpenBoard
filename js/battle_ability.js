@@ -1,5 +1,6 @@
+var BattleAbility = {};
 //発動条件判定
-function AbilityActive(arg){
+BattleAbility.Active = function (arg){
 	var ret = false;
 	var opts = [];
 	var fig = Battle.p[arg.bno];
@@ -142,7 +143,7 @@ function AbilityActive(arg){
 	}
 }
 //効果発生 (i_no, i_step)
-function BattleAbiAction(arg){
+BattleAbility.Action = function (arg){
 	var msgflg = false;
 	var atk = Battle.p[arg.bno];
 	var def = Battle.p[$r(arg.bno)];
@@ -150,7 +151,7 @@ function BattleAbiAction(arg){
 	switch(arg.step){
 	case "SELECT1":
 		if(atk.active.match("@FORGET@")){
-			BattleLog(9, "能力封印");
+			Battle.Tool.setLog(9, "能力封印");
 			for(var i=0; i<=1; i++){
 				Battle.p[i].active = "";
 			}
@@ -165,9 +166,9 @@ function BattleAbiAction(arg){
 				}
 			}
 			if(Board.role == atk.pno){
-				BattleLog(arg.bno, Dic("@SPY@")+"["+itemcnt+" 枚]");
+				Battle.Tool.setLog(arg.bno, Dic("@SPY@")+"["+itemcnt+" 枚]");
 			}else{
-				BattleLog(arg.bno, Dic("@SPY@"));
+				Battle.Tool.setLog(arg.bno, Dic("@SPY@"));
 			}
 		}
 		break;
@@ -182,7 +183,7 @@ function BattleAbiAction(arg){
 				$("#DIV_VSITEM"+$r(arg.bno)).css("display", "none");
 				EffectBox({pattern:"itemdestroy", bno:$r(arg.bno), cno:cno});
 				//Log
-				BattleLog(i, "アイテム奪取");
+				Battle.Tool.setLog(i, "アイテム奪取");
 			}
 			break;
 		}
@@ -194,7 +195,7 @@ function BattleAbiAction(arg){
 				def.item = "FIST";
 				EffectBox({pattern:"itemdestroy", bno:$r(arg.bno), cno:defcno});
 				$("#DIV_VSITEM"+$r(arg.bno)).css("display", "none");
-				BattleLog(i, "アイテム破壊");
+				Battle.Tool.setLog(i, "アイテム破壊");
 			}
 			break;
 		}
@@ -229,7 +230,7 @@ function BattleAbiAction(arg){
 					atk.active += ","+["@FIRST@","@CURSEDMG@:30","@HALFSHIELD@"][i];
 				}
 			}
-			BattleLog(arg.bno, Dic("@ADAPTATION@"));
+			Battle.Tool.setLog(arg.bno, Dic("@ADAPTATION@"));
 		}
 		if(atk.active.match("@DEFBASE@")){
 			for(var i=0; i<=3; i++){
@@ -243,117 +244,117 @@ function BattleAbiAction(arg){
 					}
 				}
 			}
-			BattleLog(arg.bno, Dic("@DEFBASE@"));
+			Battle.Tool.setLog(arg.bno, Dic("@DEFBASE@"));
 		}
 		if(atk.active.match("@STPLUS@")){
 			var matchstr = atk.active.match(/@STPLUS@:([A-Z0-9]+)/);
-			atk.st += BtAbilityExNo(arg.bno, matchstr[1]);
+			atk.st += BattleAbility.Xnumber(arg.bno, matchstr[1]);
 			atk.st = Math.max(0, atk.st);
-			BattleLog(arg.bno, Dic("@STCHANGE@"));
+			Battle.Tool.setLog(arg.bno, Dic("@STCHANGE@"));
 		}
 		if(atk.active.match("@LFPLUS@")){
 			var matchstr = atk.active.match(/@LFPLUS@:([A-Z0-9]+)/);
-			var chglf = BtAbilityExNo(arg.bno, matchstr[1]);
+			var chglf = BattleAbility.Xnumber(arg.bno, matchstr[1]);
 			atk.lftemp.push(["plus", chglf]);
 			atk.lf = Math.max(0, atk.lf + chglf);
-			BattleLog(arg.bno, Dic("@LFCHANGE@"));
+			Battle.Tool.setLog(arg.bno, Dic("@LFCHANGE@"));
 		}
 		if(atk.active.match("@STPLUSNO@")){
 			if(Battle.p[arg.bno].item == "FIST"){
 				var matchstr = atk.active.match(/@STPLUSNO@:([A-Z0-9]+)/);
-				atk.st += BtAbilityExNo(arg.bno, matchstr[1]);
+				atk.st += BattleAbility.Xnumber(arg.bno, matchstr[1]);
 				atk.st = Math.max(0, atk.st);
-				BattleLog(arg.bno, Dic("@STCHANGE@"));
+				Battle.Tool.setLog(arg.bno, Dic("@STCHANGE@"));
 			}
 		}
 		if(atk.active.match("@LFPLUSNO@")){
 			if(Battle.p[arg.bno].item == "FIST"){
 				var matchstr = atk.active.match(/@LFPLUSNO@:([A-Z0-9]+)/);
-				var chglf = BtAbilityExNo(arg.bno, matchstr[1]);
+				var chglf = BattleAbility.Xnumber(arg.bno, matchstr[1]);
 				atk.lftemp.push(["plus", chglf]);
 				atk.lf = Math.max(0, atk.lf + chglf);
-				BattleLog(arg.bno, Dic("@LFCHANGE@"));
+				Battle.Tool.setLog(arg.bno, Dic("@LFCHANGE@"));
 			}
 		}
 		if(atk.active.match("@STEQUAL@")){
 			var matchstr = atk.active.match(/@STEQUAL@:([A-Z0-9]+)/);
-			atk.st = BtAbilityExNo(arg.bno, matchstr[1]);
-			BattleLog(arg.bno, Dic("@STCHANGE@"));
+			atk.st = BattleAbility.Xnumber(arg.bno, matchstr[1]);
+			Battle.Tool.setLog(arg.bno, Dic("@STCHANGE@"));
 		}
 		if(atk.active.match("@LFEQUAL@")){
 			var matchstr = atk.active.match(/@LFEQUAL@:([A-Z0-9]+)/);
 			atk.lftemp.push(["plus", atk.lf]);
-			atk.lf = BtAbilityExNo(arg.bno, matchstr[1]);
-			BattleLog(arg.bno, Dic("@LFCHANGE@"));
+			atk.lf = BattleAbility.Xnumber(arg.bno, matchstr[1]);
+			Battle.Tool.setLog(arg.bno, Dic("@LFCHANGE@"));
 		}
 		if(atk.active.match("@SPHINX@")){
 			if(Board.round % 10 == 0){
 				atk.st += 30;
-				BattleLog(arg.bno, Dic("@STCHANGE@"));
+				Battle.Tool.setLog(arg.bno, Dic("@STCHANGE@"));
 			}else if(Board.round % 2 == 1){
 				atk.lftemp.push(["plus", -30]);
 				atk.st += 30;
 				atk.lf = Math.max(0, atk.lf - 30);
-				BattleLog(arg.bno, Dic("@STCHANGE@"));
-				BattleLog(arg.bno, Dic("@LFCHANGE@"));
+				Battle.Tool.setLog(arg.bno, Dic("@STCHANGE@"));
+				Battle.Tool.setLog(arg.bno, Dic("@LFCHANGE@"));
 			}
 		}
 		if(atk.active.match("@DRUG@")){
 			if(atk.item != "FIST" && Card[atk.item].item && Card[atk.item].item == "I"){
 				var matchstr = atk.active.match(/@DRUG@:([A-Z0-9]+)/);
-				atk.lf += BtAbilityExNo(arg.bno, matchstr[1]);
-				BattleLog(arg.bno, Dic("@LFCHANGE@"));
+				atk.lf += BattleAbility.Xnumber(arg.bno, matchstr[1]);
+				Battle.Tool.setLog(arg.bno, Dic("@LFCHANGE@"));
 			}
 		}
 		if(atk.active.match("_GRAVITY_")){
 			atk.st = Math.max(0, atk.st - 10);
 			atk.lftemp.push(["plus", 10]);
 			atk.lf = Math.max(0, atk.lf + 10);
-			BattleLog(arg.bno, Dic("@STCHANGE@"));
-			BattleLog(arg.bno, Dic("@LFCHANGE@"));
+			Battle.Tool.setLog(arg.bno, Dic("@STCHANGE@"));
+			Battle.Tool.setLog(arg.bno, Dic("@LFCHANGE@"));
 		}
 		if(atk.active.match("_UNTIELEMENT_")){
 			atk.lfplus = 0;
-			BattleLog(arg.bno, Dic("_UNTIELEMENT_"));
+			Battle.Tool.setLog(arg.bno, Dic("_UNTIELEMENT_"));
 		}
 		break;
 	case "INIT2":
 		if(atk.active.match("@FIRST@")){
 			atk.speed += 2;
-			BattleLog(arg.bno, Dic("@FIRST@"));
+			Battle.Tool.setLog(arg.bno, Dic("@FIRST@"));
 		}
 		if(atk.active.match("@SLOW@")){
 			atk.speed -= 2;
-			BattleLog(arg.bno, Dic("@SLOW@"));
+			Battle.Tool.setLog(arg.bno, Dic("@SLOW@"));
 		}
 		if(atk.active.match("@FLYING@")){
-			BattleLog(arg.bno, Dic("@FLYING@"));
+			Battle.Tool.setLog(arg.bno, Dic("@FLYING@"));
 		}
 		break;
 	case "ATTACK":
 		if(atk.active.match("@SMASH@")){
 			atk.damage = (atk.damage > 0) ? Math.floor(atk.damage * 1.5) : 0;
-			BattleLog(arg.bno, Dic("@SMASH@"));
+			Battle.Tool.setLog(arg.bno, Dic("@SMASH@"));
 		}
 		if(atk.active.match("@WEAPON@")){
 			if(atk.item != "FIST" && Card[atk.item].item && Card[atk.item].item == "W"){
 				atk.damage = (atk.damage > 0) ? Math.floor(atk.damage * 1.5) : 0;
-				BattleLog(arg.bno, Dic("@SMASH@"));
+				Battle.Tool.setLog(arg.bno, Dic("@SMASH@"));
 			}
 		}
 		if(atk.active.match("@FEAR@")){
 			atk.damage = (atk.damage > 0) ? Math.floor(atk.damage / 2) : 0;
-			BattleLog(arg.bno, Dic("@FEAR@"));
+			Battle.Tool.setLog(arg.bno, Dic("@FEAR@"));
 		}
 		if(atk.active.match("@DIRECT@")){
 			atk.direct = true;
-			BattleLog(arg.bno, Dic("@DIRECT@"));
+			Battle.Tool.setLog(arg.bno, Dic("@DIRECT@"));
 		}
 		//def
 		if(def.active.match("@FLYING@")){
 			if(atk.active.match(/@FLYING@|@SHOOT@/)){
 				if(atk.active.match("@SHOOT@")){
-					BattleLog(arg.bno, Dic("@SHOOT@"));
+					Battle.Tool.setLog(arg.bno, Dic("@SHOOT@"));
 				}
 			}else{
 				atk.damage = 0;
@@ -364,19 +365,19 @@ function BattleAbiAction(arg){
 				atk.damage = Math.ceil(atk.damage / 2);
 			}
 			if(def.active.match(/@SPIKESHIELD@/)){
-				BattleLog($r(arg.bno), Dic("@SPIKESHIELD@"));
+				Battle.Tool.setLog($r(arg.bno), Dic("@SPIKESHIELD@"));
 			}else{
-				BattleLog($r(arg.bno), Dic("@HALFSHIELD@"));
+				Battle.Tool.setLog($r(arg.bno), Dic("@HALFSHIELD@"));
 			}
 		}
 		if(def.active.match(/@PROTECTION@/)){
 			atk.damage = 0;
-			BattleLog($r(arg.bno), Dic("@PROTECTION@"));
+			Battle.Tool.setLog($r(arg.bno), Dic("@PROTECTION@"));
 		}
 		if(def.active.match(/@AEGIS@/)){
 			if(atk.item != "FIST" && (Card[atk.item].type == "I" || (Card[atk.item].type == "C" && !def.active.match(/@BAND@/))) && Card[atk.item].item && Card[atk.item].item == "W"){
 				atk.damage = 0;
-				BattleLog($r(arg.bno), Dic("@PROTECTION@"));
+				Battle.Tool.setLog($r(arg.bno), Dic("@PROTECTION@"));
 			}
 		}
 		break;
@@ -385,14 +386,14 @@ function BattleAbiAction(arg){
 			if(def.lf <= arg.dmglife && def.lf > 1){
 				var guard = arg.dmglife - (def.lf - 1);
 				ret.push({act:"minus", val:guard});
-				BattleLog($r(arg.bno), Dic("@IRONHEART@"));
+				Battle.Tool.setLog($r(arg.bno), Dic("@IRONHEART@"));
 			}
 		}
 		if(def.active.match(/@REFLECT@/)){
 			if(def.item != "FIST" && Card[def.item].type == "C" && Card[atk.cno].color == Card[def.item].color){
 				ret.push({act:"nodamage"});
 				ret.push({act:"reflect"});
-				BattleLog($r(arg.bno), Dic("@REFLECT@"));
+				Battle.Tool.setLog($r(arg.bno), Dic("@REFLECT@"));
 			}
 		}
 		if(def.active.match(/@SPIKESHIELD@/)){
@@ -400,7 +401,7 @@ function BattleAbiAction(arg){
 		}
 		if(def.active.match(/@COUNTER@/)){
 			ret.push({act:"counter"});
-			BattleLog($r(arg.bno), Dic("@COUNTER@"));
+			Battle.Tool.setLog($r(arg.bno), Dic("@COUNTER@"));
 		}
 		break;
 	case "HIT":
@@ -412,7 +413,7 @@ function BattleAbiAction(arg){
 				if(Player[def.pno].hand.length > rndnum){
 					cno = Player[def.pno].hand[rndnum];
 					Player[def.pno].HandDel(cno);
-					BattleLog($r(arg.bno), Dic("@DISCARD@"));
+					Battle.Tool.setLog($r(arg.bno), Dic("@DISCARD@"));
 					Logprint({msg:"##" + cno + "##を破棄", pno:def.pno});
 					if(Board.role == def.pno){
 						Deck.Tool.sorthand();
@@ -423,43 +424,43 @@ function BattleAbiAction(arg){
 		}
 		if(atk.active.match("@POISON@")){
 			if(def.active.match(/@CLEAR@/)){
-				BattleLog($r(arg.bno), Dic("@CLEAR@"));
+				Battle.Tool.setLog($r(arg.bno), Dic("@CLEAR@"));
 			}else{
 				def.active = def.active.replace(/_[0-9A-Z]+_/, "");
 				def.active += ",_POISON_";
 				def.status = "_POISON_";
-				BattleLog($r(arg.bno), Dic("@POISON@"));
+				Battle.Tool.setLog($r(arg.bno), Dic("@POISON@"));
 			}
 		}
 		if(atk.active.match("@BIND@")){
 			if(def.active.match(/@CLEAR@/)){
-				BattleLog($r(arg.bno), Dic("@CLEAR@"));
+				Battle.Tool.setLog($r(arg.bno), Dic("@CLEAR@"));
 			}else{
 				def.active = def.active.replace(/_[0-9A-Z]+_/, "");
 				def.active = "_BIND_";
 				def.status = "_BIND_";
-				BattleLog($r(arg.bno), Dic("@BIND@"));
+				Battle.Tool.setLog($r(arg.bno), Dic("@BIND@"));
 			}
 		}
 		if(atk.active.match(/@DEATH@/)){
 			if(atk.item == "FIST" && def.item != "FIST"){
 				def.lf = 0;
-				BattleLog(arg.bno, Dic("@DEATH@"));
+				Battle.Tool.setLog(arg.bno, Dic("@DEATH@"));
 				//ダメージ表示
 				BattleBar("LF"+$r(arg.bno), def.lf, def.lfplus);
 				//エフェクト
-				AttackEffect($r(arg.bno), "cross");
+				Battle.Tool.AttackEffect($r(arg.bno), "cross");
 			}
 		}
 		if(atk.active.match(/@STONE@/)){
 			//Check Neutral
 			if(Card[def.cno].color == 1){
 				def.lf = 0;
-				BattleLog(arg.bno, Dic("@STONE@"));
+				Battle.Tool.setLog(arg.bno, Dic("@STONE@"));
 				//ダメージ表示
 				BattleBar("LF"+$r(arg.bno), def.lf, def.lfplus);
 				//エフェクト
-				AttackEffect($r(arg.bno), "cross");
+				Battle.Tool.AttackEffect($r(arg.bno), "cross");
 			}
 		}
 		if(atk.active.match(/@ESCAPE@/)){
@@ -476,18 +477,18 @@ function BattleAbiAction(arg){
 					}
 				}
 				//Log
-				BattleLog($r(arg.bno), Dic("@ESCAPE@"));
+				Battle.Tool.setLog($r(arg.bno), Dic("@ESCAPE@"));
 			}
 		}
 		break;
 	case "MISS":
 		if(atk.active.match(/@REVDEATH@/)){
 			def.lf = 0;
-			BattleLog(arg.bno, Dic("@DEATH@"));
+			Battle.Tool.setLog(arg.bno, Dic("@DEATH@"));
 			//ダメージ表示
 			BattleBar("LF"+$r(arg.bno), def.lf, def.lfplus);
 			//エフェクト
-			AttackEffect($r(arg.bno), "cross");
+			Battle.Tool.AttackEffect($r(arg.bno), "cross");
 		}
 		break;
 	case "DESTROY":
@@ -505,7 +506,7 @@ function BattleAbiAction(arg){
 					Logprint({msg:"*##" + atk.cno + "##を破棄", pno:atk.pno});
 				}
 			}
-			BattleLog(arg.bno, Dic("@STICKY@"));
+			Battle.Tool.setLog(arg.bno, Dic("@STICKY@"));
 		}
 		break;
 	case "RESULT":
@@ -517,7 +518,7 @@ function BattleAbiAction(arg){
 				$("#DIV_VSDMG"+arg.bno).html(dmg);
 				BattleBar("LF"+arg.bno, atk.lf, atk.lfplus);
 				//Log
-				BattleLog(arg.bno, Dic("_POISON_"));
+				Battle.Tool.setLog(arg.bno, Dic("_POISON_"));
 			}
 		}
 		if(atk.active.match(/@COLLAPSE@/)){
@@ -528,7 +529,7 @@ function BattleAbiAction(arg){
 				$("#DIV_VSDMG"+arg.bno).html(dmg);
 				BattleBar("LF"+arg.bno, atk.lf, atk.lfplus);
 				//Log
-				BattleLog(arg.bno, Dic("@COLLAPSE@"));
+				Battle.Tool.setLog(arg.bno, Dic("@COLLAPSE@"));
 			}
 		}
 		if(atk.active.match(/@CURSEDMG@/)){
@@ -539,13 +540,13 @@ function BattleAbiAction(arg){
 				$("#DIV_VSDMG"+$r(arg.bno)).html(dmg);
 				BattleBar("LF"+$r(arg.bno), def.lf, def.lfplus);
 				//Log
-				BattleLog($r(arg.bno), Dic("@CURSEDMG@"));
+				Battle.Tool.setLog($r(arg.bno), Dic("@CURSEDMG@"));
 			}
 		}
 		if(atk.active.match(/@REGENE@/)){
 			if(atk.lf >= 1){
 				atk.lf = atk.maxlf;
-				BattleLog(arg.bno, Dic("@REGENE@"));
+				Battle.Tool.setLog(arg.bno, Dic("@REGENE@"));
 			}
 		}
 		if(atk.active.match(/@SWAP@/)){
@@ -560,7 +561,7 @@ function BattleAbiAction(arg){
 				BattleBar("ST"+$r(arg.bno), def.st, def.stplus);
 				BattleBar("LF"+$r(arg.bno), def.lf, def.lfplus);
 				//Log
-				BattleLog($r(arg.bno), Dic("@SWAP@"));
+				Battle.Tool.setLog($r(arg.bno), Dic("@SWAP@"));
 			}
 		}
 		if(atk.active.match(/@HOMING@/)){
@@ -579,7 +580,7 @@ function BattleAbiAction(arg){
 					Logprint({msg:"*##" + atk.cno + "##を破棄", pno:atk.pno});
 				}
 				//Log
-				BattleLog($r(arg.bno), Dic("@HOMING@"));
+				Battle.Tool.setLog($r(arg.bno), Dic("@HOMING@"));
 			}
 		}
 		if(atk.active.match(/@BLACKSWAN@/)){
@@ -588,7 +589,7 @@ function BattleAbiAction(arg){
 				//Status Set
 				Player[atk.pno].gold += wkgold;
 				//log
-				BattleLog(arg.bno, Dic("@BLACKSWAN@"));
+				Battle.Tool.setLog(arg.bno, Dic("@BLACKSWAN@"));
 				Logprint({msg:"<span class='g'>"+wkgold+"G</span>を得た", pno:atk.pno});
 			}
 		}
@@ -600,7 +601,7 @@ function BattleAbiAction(arg){
 					Player[atk.pno].gold += wkgold;
 					Player[def.pno].gold -= wkgold;
 					//log
-					BattleLog(arg.bno, Dic("@HUNTER@"));
+					Battle.Tool.setLog(arg.bno, Dic("@HUNTER@"));
 					Logprint({msg:"<span class='g'>"+wkgold+"G</span>を奪った", pno:atk.pno});
 				}
 			}
@@ -616,7 +617,7 @@ function BattleAbiAction(arg){
 				}
 				//Icon set
 				UI.Tool.playerIcon(def.pno);
-				BattleLog(arg.bno, Dic("@DICE1@"));
+				Battle.Tool.setLog(arg.bno, Dic("@DICE1@"));
 			}
 		}
 		if(atk.active.match(/@UROBOROS@/)){
@@ -635,7 +636,7 @@ function BattleAbiAction(arg){
 					UI.CreateJS.Card({cvs:"CVS_VSCARD"+arg.bno, cno:atk.cno});
 					$("#DIV_VSCARD"+arg.bno).animate({height:260}, 2000);
 					//Log
-					BattleLog(arg.bno, Dic("@UROBOROS@"));
+					Battle.Tool.setLog(arg.bno, Dic("@UROBOROS@"));
 				}
 			}
 		}
@@ -644,7 +645,7 @@ function BattleAbiAction(arg){
 		if(atk.active.match(/@SINK@/)){
 			if(arg.bno == 0 && Battle.result == 1){
 				//Battle log
-				BattleLog(arg.bno, Dic("@SINK@"));
+				Battle.Tool.setLog(arg.bno, Dic("@SINK@"));
 
 				var wkelement = ["", "無", "火", "水", "地", "風"];
 				var wkcolor = Board.grid[Battle.gno].color;
@@ -660,7 +661,7 @@ function BattleAbiAction(arg){
 			if(arg.bno == 0 && Battle.result == 1){
 				if(Board.grid[Battle.gno].level <= 4){
 					//Battle log
-					BattleLog(arg.bno, Dic("@REWARD@"));
+					Battle.Tool.setLog(arg.bno, Dic("@REWARD@"));
 
 					var wklevel1 = Board.grid[Battle.gno].level;
 					var wklevel2 = wklevel1 + 1;
@@ -678,7 +679,7 @@ function BattleAbiAction(arg){
 	return ret;
 }
 //数字換算
-function BtAbilityExNo(i_bno, i_str){
+BattleAbility.Xnumber = function (i_bno, i_str){
 	var retno = 0;
 	if(i_str.match(/^[0-9]+$/)){
 		retno = Number(i_str);

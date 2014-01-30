@@ -99,7 +99,7 @@ Summon.Step.ready = function (){
 		//Log
 		Logprint({msg:"(侵略召喚)##"+Summon.cno+"##", pno:Summon.pno});
 		//戦闘
-		BattleInit("S", Summon.gno, Board.turn, Summon.cno);
+		Battle.Step.init("S", Summon.gno, Board.turn, Summon.cno);
 	}else{
 		//Log
 		var summoncomment = (Summon.from == "summon") ? "支配" : "交換";

@@ -275,7 +275,7 @@ var Frame = {
 					if(Board.step == 73){
 						runflg = 1;
 						//受信処理
-						BattleRecv("item", logpno, logpara);
+						Battle.Recv("item", logpno, logpara);
 					}
 					break;
 				case "turn":

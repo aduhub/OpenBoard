@@ -175,7 +175,7 @@ Flow.endPhase = function (){
 	if(Battle.p[0].pno == Board.role || Battle.p[1].pno == Board.role){
 		switch(Board.step){
 		case 72: //Battle(NoItem)
-			BattleItem({pno:Board.role, hno:99});
+			Battle.Step.setitem({pno:Board.role, hno:99});
 			break;
 		}
 	}

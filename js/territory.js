@@ -340,7 +340,7 @@ Territory.Step.move = function (i_gno, i_flg){
 			EffectBox({pattern:"msgpop", gno:Territory.gno, msg:"Move"});
 			//【戦闘】
 			Battle.gno_atk = Territory.gno;
-			var wkcmd = function(){BattleInit("M", i_gno, Board.turn, wkcno);};
+			var wkcmd = function(){Battle.Step.init("M", i_gno, Board.turn, wkcno);};
 			var id = setTimeout(wkcmd, 1500);
 		}
 	}
@@ -711,7 +711,7 @@ Territory.Step.ability = function (i_flg){
 				EffectBox({pattern:"invasion", cno:cno, gno1:Territory.gno, gno2:i_flg});
 				//【戦闘】
 				Battle.hand = cno;
-				var wkcmd = function(){BattleInit("S", i_flg, Board.turn, cno);};
+				var wkcmd = function(){Battle.Step.init("S", i_flg, Board.turn, cno);};
 				var id = setTimeout(wkcmd, 1500);
 			}else{
 				//変数設定

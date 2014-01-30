@@ -45,8 +45,6 @@ Player[1] = new clsPlayer();
 Player[2] = new clsPlayer();
 Player[3] = new clsPlayer();
 Player[4] = new clsPlayer();
-//Battle
-var Battle = new clsBattle();
 //Analytics
 var Analytics = {
 	rankmode:"",
@@ -183,20 +181,6 @@ function clsPlayer() {
 			return wkarr[topno];
 		}
 	}
-}
-//Battle
-function clsBattle(){
-	this.from    = 0;
-	this.result  = 0;
-	this.gno     = 0;
-	this.gno_atk = 0;
-	this.p       = [];
-	this.p[0]    = new clsFighter();
-	this.p[1]    = new clsFighter();
-	this.log     = [];
-	this.hand    = 0;
-	this.check   = [];
-	this.wait    = 0;
 }
 //Fighter
 function clsFighter(){

@@ -1,6 +1,19 @@
-//初期処理
+var Battle = {};
+Battle.from = 0;
+Battle.result = 0;
+Battle.gno = 0;
+Battle.gno_atk = 0;
+Battle.push(new clsFighter());
+Battle.push(new clsFighter());
+Battle.log = [];
+Battle.hand = 0;
+Battle.check = [];
+Battle.wait = 0;
+Battle.Step = {};
+Battle.Tool = {};
+//method
 //[引数] 0,タイプ 1,GridNo 2,pno(Off) 3,cno(Off)
-function BattleInit(){
+Battle.Step.init = function (){
 	var arg = arguments;
 	//戦闘初期処理
 	Flow.step(71);
@@ -45,8 +58,8 @@ function BattleInit(){
 		Canvas.clear({id:"CVS_VSCARD" + i, w:200, h:260});
 		Canvas.clear({id:"CVS_VSITEM" + i});
 		$("#DIV_VSITEM"+i).css("display", "block");
-		BattleBar("ST" + i, 0, 0);
-		BattleBar("LF" + i, 0, 0);
+		Battle.Tool.setNumBar("ST" + i, 0, 0);
+		Battle.Tool.setNumBar("LF" + i, 0, 0);
 		$("#DIV_VSDMG" + i).html("");
 	}
 	$("#DIV_VSNAME0").css("background-image", "url(img/bticon_sword"+Battle.p[0].pno+".gif)");
@@ -64,7 +77,7 @@ function BattleInit(){
 		Battle.p[0].lf = Number(Card[Battle.p[0].cno].lf);
 		Battle.p[0].maxlf = Number(Card[Battle.p[0].cno].lf);
 	}
-	Battle.p[0].stplus = BattleStPlus(0);
+	Battle.p[0].stplus = Battle.Tool.STPlus(0);
 	Battle.p[0].lfplus = 0;
 	Battle.p[0].stbase = Battle.p[0].st;
 	Battle.p[0].lfbase = Battle.p[0].lf;
@@ -75,8 +88,8 @@ function BattleInit(){
 	Battle.p[1].st = Number(Board.grid[Battle.gno].st);
 	Battle.p[1].lf = Number(Board.grid[Battle.gno].lf);
 	Battle.p[1].maxlf = Number(Board.grid[Battle.gno].maxlf);
-	Battle.p[1].stplus = BattleStPlus(1);
-	Battle.p[1].lfplus = BattleLfPlus(Battle.gno);
+	Battle.p[1].stplus = Battle.Tool.STPlus(1);
+	Battle.p[1].lfplus = Battle.Tool.LFPlus(Battle.gno);
 	Battle.p[1].stbase = Battle.p[1].st;
 	Battle.p[1].lfbase = Battle.p[1].lf;
 	Battle.p[1].lftemp = [];
@@ -106,31 +119,31 @@ function BattleInit(){
 	UI.CreateJS.Card({cvs:"CVS_VSCARD0", cno:Battle.p[0].cno, fnc:fnc0});
 	UI.CreateJS.Card({cvs:"CVS_VSCARD1", cno:Battle.p[1].cno, fnc:fnc1});
 	//数値表示
-	BattleBar("ST0", Battle.p[0].st, Battle.p[0].stplus);
-	BattleBar("LF0", Battle.p[0].lf, Battle.p[0].lfplus);
-	BattleBar("ST1", Battle.p[1].st, Battle.p[1].stplus);
-	BattleBar("LF1", Battle.p[1].lf, Battle.p[1].lfplus);
+	Battle.Tool.setNumBar("ST0", Battle.p[0].st, Battle.p[0].stplus);
+	Battle.Tool.setNumBar("LF0", Battle.p[0].lf, Battle.p[0].lfplus);
+	Battle.Tool.setNumBar("ST1", Battle.p[1].st, Battle.p[1].stplus);
+	Battle.Tool.setNumBar("LF1", Battle.p[1].lf, Battle.p[1].lfplus);
 	//名前
 	$("#DIV_VSNAME0").html(Player[Battle.p[0].pno].name);
 	$("#DIV_VSNAME1").html(Player[Battle.p[1].pno].name);
 
 	//条件チェック
-	AbilityActive({type:"abillity", bno:0});
-	AbilityActive({type:"abillity", bno:1});
+	BattleAbility.Active({type:"abillity", bno:0});
+	BattleAbility.Active({type:"abillity", bno:1});
 
 	// ===[ 能力封印(ステータス) ]===
 	if(Battle.p[1].status.match(/_FORGET_/)){
-		BattleLog(9, "能力封印");
+		Battle.Tool.setLog(9, "能力封印");
 		for(var i=0; i<=1; i++){
 			Battle.p[i].active = "";
 		}
 	}
 	//効果適用
-	BattleAbiAction({bno:0, step:"SELECT1"});
-	BattleAbiAction({bno:1, step:"SELECT1"});
+	BattleAbility.Action({bno:0, step:"SELECT1"});
+	BattleAbility.Action({bno:1, step:"SELECT1"});
 	//効果適用
-	BattleAbiAction({bno:0, step:"SELECT2"});
-	BattleAbiAction({bno:1, step:"SELECT2"});
+	BattleAbility.Action({bno:0, step:"SELECT2"});
+	BattleAbility.Action({bno:1, step:"SELECT2"});
 	//ItemSelect
 	if(Battle.p[0].pno == Board.role || Battle.p[1].pno == Board.role){
 		//再表示
@@ -138,14 +151,13 @@ function BattleInit(){
 		//PHASEENDBUTTON
 		$("#BTN_PhaseEnd").html("キャンセル");
 		//使用可能チェック
-		setTimeout(ItemCheck, 500);
+		setTimeout(Battle.Step.chkhand, 500);
 	}else{
 		//結果待ち
 		Flow.step(73);
 	}
 }
-//アイテムチェック
-function ItemCheck(){
+Battle.Step.chkhand = function(){
 	var chkflg, handcno, opts;
 	var fig = (Battle.p[0].pno == Board.role) ? Battle.p[0] : Battle.p[1];
 	//Item選択
@@ -199,8 +211,7 @@ function ItemCheck(){
 		}
 	}
 }
-//Itemセット
-function BattleItem(arg){
+Battle.Step.setitem = function (arg){
 	for(var i=0; i<=1; i++){
 		if(Battle.p[i].pno == arg.pno && Battle.p[i].item == ""){
 			if(arg.pno == Board.role && Board.step == 72){
@@ -232,14 +243,13 @@ function BattleItem(arg){
 	if(Battle.p[0].item != "" && Battle.p[1].item != ""){
 		//メイン処理開始
 		if(sessionStorage.Mode == "gallery"){
-			setTimeout(BattleFight, 1000);
+			setTimeout(Battle.Step.mainstart, 1000);
 		}else{
-			BattleFight();
+			Battle.Step.mainstart();
 		}
 	}
 }
-//######################[ MAIN ]#######################
-function BattleFight(){
+Battle.Step.mainstart = function (){
 	Battle.wait = 1000;
 	Flow.step(74);
 	//########## Item ##########
@@ -259,30 +269,30 @@ function BattleFight(){
 	}
 	Game.Info.dispPlayerbox();
 	//Next
-	setTimeout(BattleFightReady1, Battle.wait);
+	setTimeout(Battle.Step.ready1, Battle.wait);
 }
-function BattleFightReady1(){
+Battle.Step.ready1 = function (){
 	Battle.wait = 0;
 	// ===[ アイテム奪取 ]===
 	for(var i=0; i<=1; i++){
 		//効果適用
-		BattleAbiAction({bno:i, step:"ITEMSTEAL"});
+		BattleAbility.Action({bno:i, step:"ITEMSTEAL"});
 	}
 	// ===[ アイテム破壊(アイテム) ]===
 	for(var i=0; i<=1; i++){
-		var cno = [Battle.p[i].item, Battle.p[$r(i)].item];
+		var cno = [Battle.p[i].item, Battle.p[i^1].item];
 		//No FIST
 		if(cno[0] != "FIST" && Card[cno[0]].type == "I"){
 			for(var i2 in Card[cno[0]].opt){
-				if(AbilityActive({type:"item", bno:i, opt:Card[cno[0]].opt[i2]})){
+				if(BattleAbility.Active({type:"item", bno:i, opt:Card[cno[0]].opt[i2]})){
 					var itemsts = Card[cno[0]].opt[i2].split(":");
 					switch(itemsts[0]){
 					case "HOLYSTONE":
 						if(cno[1] != "FIST"){
-							Battle.p[$r(i)].item = "FIST";
-							EffectBox({pattern:"itemdestroy", bno:$r(i), cno:cno[1]})
-							$("#DIV_VSITEM"+$r(i)).css("display", "none");
-							BattleLog(i, "アイテム破壊");
+							Battle.p[i^1].item = "FIST";
+							EffectBox({pattern:"itemdestroy", bno:i^1, cno:cno[1]})
+							$("#DIV_VSITEM"+i^1).css("display", "none");
+							Battle.Tool.setLog(i, "アイテム破壊");
 						}
 						break;
 					}
@@ -293,7 +303,7 @@ function BattleFightReady1(){
 	// ===[ アイテム破壊(クリーチャー) ]===
 	for(var i=0; i<=1; i++){
 		//効果適用
-		BattleAbiAction({bno:i, step:"ITEMCLASH"});
+		BattleAbility.Action({bno:i, step:"ITEMCLASH"});
 	}
 	// ===[ 能力封印(アイテム) ]===
 	for(var i=0; i<=1; i++){
@@ -301,12 +311,12 @@ function BattleFightReady1(){
 		//No FIST
 		if(cno != "FIST" && Card[cno].type == "I"){
 			for(var i2 in Card[cno].opt){
-				if(AbilityActive({type:"item", bno:i, opt:Card[cno].opt[i2]})){
+				if(BattleAbility.Active({type:"item", bno:i, opt:Card[cno].opt[i2]})){
 					var itemsts = Card[cno].opt[i2].split(":");
 					switch(itemsts[0]){
 					case "EVILSTONE":
-						Battle.p[$r(i)].active = "";
-						BattleLog(i, "能力封印");
+						Battle.p[i^1].active = "";
+						Battle.Tool.setLog(i, "能力封印");
 						break;
 					}
 				}
@@ -314,14 +324,14 @@ function BattleFightReady1(){
 		}
 	}
 	//Next
-	setTimeout(BattleFightReady2, Battle.wait);
+	setTimeout(Battle.Step.ready2, Battle.wait);
 }
-function BattleFightReady2(){
+Battle.Step.ready2 = function (){
 	//Map Enchant
-	BattleMapAbiAction();
+	Battle.Tool.MapAbiAction();
 	//効果適用
-	BattleAbiAction({bno:0, step:"INIT1"});
-	BattleAbiAction({bno:1, step:"INIT1"});
+	BattleAbility.Action({bno:0, step:"INIT1"});
+	BattleAbility.Action({bno:1, step:"INIT1"});
 	//2nd
 	for(var i=0; i<=1; i++){
 		var wkcno = Battle.p[i].item;
@@ -330,36 +340,36 @@ function BattleFightReady2(){
 			//効果
 			if(Card[wkcno].type == "I"){
 				for(var i2 in Card[wkcno].opt){
-					if(AbilityActive({type:"item", bno:i, opt:Card[wkcno].opt[i2]})){
+					if(BattleAbility.Active({type:"item", bno:i, opt:Card[wkcno].opt[i2]})){
 						var itemsts = Card[wkcno].opt[i2].split("!")[0].split(":");
 						switch(itemsts[0]){
 						case "STPLUS":
-							var stvar = BtAbilityExNo(i2, itemsts[1])
+							var stvar = BattleAbility.Xnumber(i2, itemsts[1])
 							Battle.p[i].st = Math.max(0, Battle.p[i].st + stvar);
-							BattleLog(i, "ST変動");
+							Battle.Tool.setLog(i, "ST変動");
 							break;
 						case "STMINUS":
 							Battle.p[i].st = Math.max(0, Battle.p[i].st - Number(itemsts[1]));
-							BattleLog(i, "ST変動");
+							Battle.Tool.setLog(i, "ST変動");
 							break;
 						case "STEQUAL":
 							Battle.p[i].st = Number(itemsts[1]);
-							BattleLog(i, "ST変動");
+							Battle.Tool.setLog(i, "ST変動");
 							break;
 						case "LFPLUS":
 							Battle.p[i].lf = Math.max(0, Battle.p[i].lf + Number(itemsts[1]));
-							BattleLog(i, "LF変動");
+							Battle.Tool.setLog(i, "LF変動");
 							break;
 						case "LFEQUAL":
 							Battle.p[i].lf = Number(itemsts[1]);
-							BattleLog(i, "LF変動");
+							Battle.Tool.setLog(i, "LF変動");
 							break;
 						case "JUGGLE":
 							var oldst = Battle.p[i].st;
 							var oldlf = Battle.p[i].lf;
 							Battle.p[i].st = oldlf;
 							Battle.p[i].lf = oldst;
-							BattleLog(i, "STLF変動");
+							Battle.Tool.setLog(i, "STLF変動");
 							break;
 						case "FIRST":
 							Battle.p[i].active = Battle.p[i].active.replace("@SLOW@", "");
@@ -379,8 +389,6 @@ function BattleFightReady2(){
 							Battle.p[i].active += ",@IRONHEART@";
 							break;
 						case "DIVINESTONE":
-							var atkcno = Battle.p[i].cno;
-							var defcno = Battle.p[$r(i)].cno;
 							Battle.p[i].active += ",@SPIKESHIELD@";
 							break;
 						case "BLACKSWAN":
@@ -400,31 +408,30 @@ function BattleFightReady2(){
 					//援護
 					Battle.p[i].st += Card[wkcno].st;
 					Battle.p[i].lf += Card[wkcno].lf;
-					BattleLog(i, Dic("@BAND@"));
+					Battle.Tool.setLog(i, Dic("@BAND@"));
 				}else if($T.inarray("@AID@", Card[wkcno].opt)){
 					//加勢
 					Battle.p[i].st += Card[wkcno].st;
 					Battle.p[i].lf += Card[wkcno].lf;
-					BattleLog(i, "STLF変動");
+					Battle.Tool.setLog(i, "STLF変動");
 				}
 			}
-			BattleBar("ST"+i, Battle.p[i].st, Battle.p[i].stplus);
-			BattleBar("LF"+i, Battle.p[i].lf, Battle.p[i].lfplus);
+			Battle.Tool.setNumBar("ST"+i, Battle.p[i].st, Battle.p[i].stplus);
+			Battle.Tool.setNumBar("LF"+i, Battle.p[i].lf, Battle.p[i].lfplus);
 		}
 	}
 	//効果適用(速度計算)
-	BattleAbiAction({bno:0, step:"INIT2"});
-	BattleAbiAction({bno:1, step:"INIT2"});
+	BattleAbility.Action({bno:0, step:"INIT2"});
+	BattleAbility.Action({bno:1, step:"INIT2"});
 	//数値表示
-	BattleBar("ST0", Battle.p[0].st, Battle.p[0].stplus);
-	BattleBar("LF0", Battle.p[0].lf, Battle.p[0].lfplus);
-	BattleBar("ST1", Battle.p[1].st, Battle.p[1].stplus);
-	BattleBar("LF1", Battle.p[1].lf, Battle.p[1].lfplus);
+	Battle.Tool.setNumBar("ST0", Battle.p[0].st, Battle.p[0].stplus);
+	Battle.Tool.setNumBar("LF0", Battle.p[0].lf, Battle.p[0].lfplus);
+	Battle.Tool.setNumBar("ST1", Battle.p[1].st, Battle.p[1].stplus);
+	Battle.Tool.setNumBar("LF1", Battle.p[1].lf, Battle.p[1].lfplus);
 	//攻撃開始
-	var id = setTimeout(BattleAttackBefore, Battle.wait);
+	var id = setTimeout(Battle.Step.AttackStance, Battle.wait);
 }
-//--------- Attack -----------
-function BattleAttackBefore(){
+Battle.Step.AttackStance = function (){
 	var fastbno, atkbno, atkstatus = ["", ""];
 	for(var i=0; i<=1; i++){
 		if(Battle.p[0].lf >= 1 && Battle.p[1].lf >= 1 && Battle.p[i].attack == 0 && !(Battle.p[i].status.match(/_BIND_/))){
@@ -439,19 +446,19 @@ function BattleAttackBefore(){
 		if(atkstatus[fastbno] == "ready"){
 			atkbno = fastbno;
 		}else{
-			atkbno = $r(fastbno);
+			atkbno = fastbno ^ 1;
 		}
 		//Attack
-		BattleAttack(atkbno);
+		Battle.Step.Attack(atkbno);
 	}else{
 		//result
-		BattleResult();
+		Battle.Step.Result();
 	}
 }
-function BattleAttack(i_bno){
+Battle.Step.Attack = function (i_bno){
 	var dmg_through, dmg_land, dmg_life, dmg_hit = true;
 	var atkno = i_bno;
-	var defno = $r(i_bno);
+	var defno = i_bno ^ 1;
 	var atk = Battle.p[atkno];
 	var def = Battle.p[defno];
 	//wait clear
@@ -461,9 +468,9 @@ function BattleAttack(i_bno){
 		Battle.p[i].damage = Number(Battle.p[i].st) + Number(Battle.p[i].stplus);
 	}
 	//Log
-	BattleLog(atkno, "攻撃");
+	Battle.Tool.setLog(atkno, "攻撃");
 	//Action
-	BattleAbiAction({bno:atkno, step:"ATTACK"});
+	BattleAbility.Action({bno:atkno, step:"ATTACK"});
 	//Damage
 	if(atk.direct){
 		dmg_land = 0;
@@ -474,7 +481,7 @@ function BattleAttack(i_bno){
 		dmg_life = (atk.damage > def.lfplus) ? (dmg_through >= def.lf) ? def.lf : dmg_through : 0;
 	}
 	//Action
-	var defabi = BattleAbiAction({bno:atkno, step:"DEFFENCE", dmg:atk.damage, dmglife:dmg_life});
+	var defabi = BattleAbility.Action({bno:atkno, step:"DEFFENCE", dmg:atk.damage, dmglife:dmg_life});
 	//===軽減===
 	if($T.search(defabi, "act", "minus")){
 		dmg_life -= $T.result.val;
@@ -490,16 +497,16 @@ function BattleAttack(i_bno){
 	}
 	//ダメージ表示
 	$("#DIV_VSDMG"+defno).html(atk.damage);
-	BattleBar("LF"+defno, def.lf, def.lfplus);
+	Battle.Tool.setNumBar("LF"+defno, def.lf, def.lfplus);
 	//Hit!
 	if(dmg_hit && atk.damage > 0){
 		//エフェクト
-		AttackEffect(defno, Card[atk.cno].atkani);
+		Battle.Tool.AttackEffect(defno, Card[atk.cno].atkani);
 		//Action
-		BattleAbiAction({bno:atkno, step:"HIT"});
+		BattleAbility.Action({bno:atkno, step:"HIT"});
 	}else{
 		//Action
-		BattleAbiAction({bno:atkno, step:"MISS"});
+		BattleAbility.Action({bno:atkno, step:"MISS"});
 	}
 	//攻撃終了
 	atk.attack = 1;
@@ -510,13 +517,13 @@ function BattleAttack(i_bno){
 		dmg_land = (atk.lfplus < atk.damage) ? Number(atk.lfplus) : atk.damage;
 		dmg_life = (atk.lfplus < atk.damage) ? (dmg_through >= atk.lf) ? atk.lf : dmg_through : 0;
 		//反射攻撃
-		setTimeout(function(){BattleAttackReflect(i_bno, dmg_life, dmg_land);}, Battle.wait);
+		setTimeout(function(){Battle.Step.AttackReflect(i_bno, dmg_life, dmg_land);}, Battle.wait);
 	}else{
 		//破壊判定
-		setTimeout(function(){BattleAttackAfter(i_bno);}, Battle.wait);
+		setTimeout(function(){Battle.Step.HitAfter(i_bno);}, Battle.wait);
 	}
 }
-function BattleAttackReflect(i_bno, dmg_life, dmg_land){
+Battle.Step.AttackReflect = function (i_bno, dmg_life, dmg_land){
 	var def = Battle.p[i_bno];
 	//base wait
 	Battle.wait = 800;
@@ -525,18 +532,18 @@ function BattleAttackReflect(i_bno, dmg_life, dmg_land){
 	def.lfplus -= dmg_land;
 	//ダメージ表示
 	$("#DIV_VSDMG"+i_bno).html(def.damage);
-	BattleBar("LF"+i_bno, def.lf, def.lfplus);
+	Battle.Tool.setNumBar("LF"+i_bno, def.lf, def.lfplus);
 	//Hit!
 	if(def.damage > 0){
 		//エフェクト
-		AttackEffect(i_bno, Card[def.cno].atkani);
+		Battle.Tool.AttackEffect(i_bno, Card[def.cno].atkani);
 	}
 	//破壊判定
-	setTimeout(function(){BattleAttackAfter(i_bno);}, Battle.wait);
+	setTimeout(function(){Battle.Step.HitAfter(i_bno);}, Battle.wait);
 }
-function BattleAttackAfter(i_bno){
+Battle.Step.HitAfter = function (i_bno){
 	var atkno = i_bno;
-	var defno = $r(i_bno);
+	var defno = i_bno ^ 1;
 	var atk = Battle.p[atkno];
 	var def = Battle.p[defno];
 	//wait clear
@@ -547,25 +554,23 @@ function BattleAttackAfter(i_bno){
 		//Grave
 		Board.grave.push(atk.cno);
 		//Log
-		BattleLog(atkno, "破壊");
+		Battle.Tool.setLog(atkno, "破壊");
 		//Action
-		BattleAbiAction({bno:atkno, step:"DESTROY"});
+		BattleAbility.Action({bno:atkno, step:"DESTROY"});
 	}
 	if(def.lf == 0 && def.status != "escape"){
 		Battle.wait += 800;
 		//Grave
 		Board.grave.push(def.cno);
 		//Log
-		BattleLog(defno, "破壊");
+		Battle.Tool.setLog(defno, "破壊");
 		//Action
-		BattleAbiAction({bno:defno, step:"DESTROY"});
+		BattleAbility.Action({bno:defno, step:"DESTROY"});
 	}
 	//結果
-	setTimeout(BattleAttackBefore, Battle.wait);
+	setTimeout(Battle.Step.Attack1, Battle.wait);
 }
-//---------------------------------
-//結果判定
-function BattleResult(){
+Battle.Step.Result = function (){
 	//クリア
 	Battle.wait = 0;
 	//後処理
@@ -595,15 +600,15 @@ function BattleResult(){
 			Battle.p[i].st = Battle.p[i].stbase
 			Battle.p[i].lf = Math.min(Battle.p[i].lf, Battle.p[i].maxlf);
 			Battle.p[i].lf = Math.min(Battle.p[i].lf, Battle.p[i].lfbase);
-			BattleBar("ST"+i, Battle.p[i].st, Battle.p[i].stplus);
-			BattleBar("LF"+i, Battle.p[i].lf, Battle.p[i].lfplus);
+			Battle.Tool.setNumBar("ST"+i, Battle.p[i].st, Battle.p[i].stplus);
+			Battle.Tool.setNumBar("LF"+i, Battle.p[i].lf, Battle.p[i].lfplus);
 		}
 	}
 	//
 	for(var i=0; i<=1; i++){
 		//Abillity
-		BattleAbiAction({bno:i, step:"RESULT"});
-		BattleBar("LF"+i, Battle.p[i].lf, Battle.p[i].lfplus);
+		BattleAbility.Action({bno:i, step:"RESULT"});
+		Battle.Tool.setNumBar("LF"+i, Battle.p[i].lf, Battle.p[i].lfplus);
 	}
 	//Result Item
 	for(var i=0; i<=1; i++){
@@ -619,12 +624,12 @@ function BattleResult(){
 							Deck.Tool.sorthand();
 						}
 						//Log
-						BattleLog(i, "手札復帰");
+						Battle.Tool.setLog(i, "手札復帰");
 					}
 					break;
 				case "UPDOWN":
 					//Opponent Life
-					if(Battle.p[$r(i)].lf >= 1){
+					if(Battle.p[i^1].lf >= 1){
 						Battle.p[i].maxlf = Math.max(0, Battle.p[i].maxlf - 10);
 						Battle.p[i].lf = Math.min(Battle.p[i].lf, Battle.p[i].maxlf);
 					}else{
@@ -632,11 +637,11 @@ function BattleResult(){
 						Battle.p[i].lf = Math.min(80, Battle.p[i].lf + 10);
 					}
 					//Log
-					BattleLog(i, "MHP変動");
+					Battle.Tool.setLog(i, "MHP変動");
 					break;
 				}
 			}
-			BattleBar("LF"+i, Battle.p[i].lf, Battle.p[i].lfplus);
+			Battle.Tool.setNumBar("LF"+i, Battle.p[i].lf, Battle.p[i].lfplus);
 		}
 	}
 	//
@@ -651,7 +656,7 @@ function BattleResult(){
 	//結果
 	switch(true){
 	case (Battle.p[0].lf == 0 && Battle.p[1].lf == 0):
-		BattleLog(9, "全滅");
+		Battle.Tool.setLog(9, "全滅");
 		Battle.result = 0;
 		//クリア
 		Grid.clear({gno:Battle.gno});
@@ -666,7 +671,7 @@ function BattleResult(){
 		}
 		break;
 	case (Battle.p[0].lf >= 1 && Battle.p[1].lf == 0):
-		BattleLog(9, "制圧");
+		Battle.Tool.setLog(9, "制圧");
 		Battle.result = 1;
 		//クリア
 		Board.grid[Battle.gno].flush();
@@ -687,7 +692,7 @@ function BattleResult(){
 		Summon.status = Battle.p[0].status;
 		break;
 	case (Battle.p[1].lf >= 1):
-		BattleLog(9, "防衛");
+		Battle.Tool.setLog(9, "防衛");
 		Battle.result = 2;
 		//ダメージ・変動反映
 		Board.grid[Battle.gno].st = Battle.p[1].st;
@@ -740,20 +745,20 @@ function BattleResult(){
 	}
 	for(var i=0; i<=1; i++){
 		//Abillity
-		BattleAbiAction({bno:i, step:"RESULTCLOSE"});
+		BattleAbility.Action({bno:i, step:"RESULTCLOSE"});
 	}
 	//ウェイト
 	var waitsec = (Battle.wait >= 2400) ? Battle.wait : 2400;
-	var id = setTimeout(BattleClose, waitsec);
+	var id = setTimeout(Battle.Step.Close, waitsec);
 }
-function BattleClose(){
+Battle.Step.Close = function (){
 	//表示
 	UI.Html.setDiv({id:"DIV_VSBACK", hidden:true});
 	//数値表示クリア
-	BattleBar("ST0", 0, 0);
-	BattleBar("LF0", 0, 0);
-	BattleBar("ST1", 0, 0);
-	BattleBar("LF1", 0, 0);
+	Battle.Tool.setNumBar("ST0", 0, 0);
+	Battle.Tool.setNumBar("LF0", 0, 0);
+	Battle.Tool.setNumBar("ST1", 0, 0);
+	Battle.Tool.setNumBar("LF1", 0, 0);
 
 	//BGM CHANGE
 	Audie.stop("battle");
@@ -789,19 +794,17 @@ function BattleClose(){
 		}
 	}
 }
-//#######################################################
-//受信処理
-function BattleRecv(i_cmd, i_pno, i_para){
+//Recv
+Battle.Recv = function (i_cmd, i_pno, i_para){
 	var wkarr = i_para.split(":");
 	switch(i_cmd){
 	case "item": //アイテムセット
-		BattleItem({pno:i_pno, cno:wkarr[0], rnd:wkarr[1]});
+		Battle.Step.setitem({pno:i_pno, cno:wkarr[0], rnd:wkarr[1]});
 		break;
 	}
 }
-//######################################################################
-//支援効果
-function BattleStPlus(i_bno){
+//Calc
+Battle.Tool.STPlus = function (i_bno){
 	var wkret = 0, gno = 0;
 	for(var i=0; i<=3; i++){
 		gno = Board.grid[Battle.gno].linkarr[i];
@@ -816,14 +819,12 @@ function BattleStPlus(i_bno){
 	}
 	return wkret;
 }
-//地形効果
-function BattleLfPlus(i_gno){
+Battle.Tool.LFPlus = function (i_gno){
 	var tgtgrid = Board.grid[i_gno];
 	var wkret = (tgtgrid.color >= 2 && tgtgrid.color == Card[Battle.p[1].cno].color) ? tgtgrid.level * 10 : 0;
 	return wkret;
 }
-//応援効果
-function BattleMapAbiAction(){
+Battle.Tool.MapAbiAction = function (){
 	var mapactive = "";
 	//Search
 	for(var i=1; i<Board.grid.length; i++){
@@ -843,12 +844,12 @@ function BattleMapAbiAction(){
 				Battle.p[i].st = 0;
 			}
 		}
-		BattleLog(9, Dic("@MAPBTINVALID@"));
+		Battle.Tool.setLog(9, Dic("@MAPBTINVALID@"));
 	}
 	if(mapactive.match(/@MAPBTSTPLUS@/)){
 		var point = Number(mapactive.match(/@MAPBTSTPLUS@:([A-Z0-9]+)/)[1]);
 		Battle.p[0].st += point;
-		BattleLog(9, Dic("@MAPBTSTPLUS@"));
+		Battle.Tool.setLog(9, Dic("@MAPBTSTPLUS@"));
 	}
 	if(mapactive.match(/@MAPBTLFPLUSN@/)){
 		var point = Number(mapactive.match(/@MAPBTLFPLUSN@:([A-Z0-9]+)/)[1]);
@@ -857,7 +858,7 @@ function BattleMapAbiAction(){
 				Battle.p[i].lf += point;
 			}
 		}
-		BattleLog(9, Dic("@MAPBTLFPLUSN@"));
+		Battle.Tool.setLog(9, Dic("@MAPBTLFPLUSN@"));
 	}
 	if(mapactive.match(/@MAPBTFLYING@/)){
 		for(var i=0; i<=1; i++){
@@ -866,12 +867,11 @@ function BattleMapAbiAction(){
 				Battle.p[i].lf += 10;
 			}
 		}
-		BattleLog(9, Dic("@MAPBTFLYING@"));
+		Battle.Tool.setLog(9, Dic("@MAPBTFLYING@"));
 	}
 }
-//#######################################################
-//ゲージ表示
-function BattleBar(i_str, i_point, i_plus){
+//画面表示
+Battle.Tool.setNumBar = function (i_str, i_point, i_plus){
 	var wk_point = i_point >= 80 ? 200 : Math.floor(i_point * 2.5);
 	var wk_plus = i_plus >= 80 ? 200 : Math.floor(i_plus * 2.5);
 	if(wk_point + wk_plus >= 200){
@@ -881,8 +881,7 @@ function BattleBar(i_str, i_point, i_plus){
 	$("#DIV_VS"+i_str+"1").css("width", wk_point+"px");
 	$("#DIV_VS"+i_str+"2").css("width", wk_plus+"px");
 }
-//ログ
-function BattleLog(i_css, i_msg){
+Battle.Tool.setLog = function (i_css, i_msg){
 	(function(i_css, i_msg){
 		var fnc = function(){
 			var div = $("<div>"+i_msg+"</div>");
@@ -899,13 +898,8 @@ function BattleLog(i_css, i_msg){
 	//wait
 	Battle.wait += 500;
 }
-//0:1:2 > 1:0:1 
-function $r(i_no){
-	return ((i_no + 1) % 2);
-}
-//####################################################################################
 //Effect
-function AttackEffect(i_cvsno, i_effect){
+Battle.Tool.AttackEffect = function (i_cvsno, i_effect){
 	var soundnm = "";
 	var anime = [];
 	var aniid = "attack" + i_cvsno;

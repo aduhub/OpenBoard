@@ -325,7 +325,7 @@ UI.Tool.createCharactor = function (pno){
 	Css["backgroundPosition"] = "0px 0px, 128px 0px, 128px 0px";
 	Css["backgroundRepeat"] = "no-repeat";
 	//ドキュメントに追加
-	Maker.addDiv({base:"#DIV_LAYER2", attr:Attr, css:Css, class:Class});
+	Maker.addDiv({base:"#DIV_LAYER2", attr:Attr, css:Css});
 }
 //アイコン
 UI.Tool.playerIcon = function (pno){
@@ -541,53 +541,54 @@ UI.Event.clickPlayer = function (pno){
 		}
 	}
 }
-UI.Event.clickGrid = function (gno){
+UI.Event.clickGrid = function (igno){
+	var gno = Number(igno);
 	if(Board.turn == Board.role){
 		switch(Board.step){
-			case 21:
-				Spell.Step.chkGrid(gno);
-				break;
-			case 25:
-				if(Spell.check.indexOf(gno) >= 0){
-					//使用確認
-					Spell.Step.second({step:1, gno:gno});
-				}
-				break;
-			case 32:
-				//移動先決定
-				Dice.Step.move(gno);
-				break;
-			case 36:
-				if(Dice.teleport.indexOf(gno) >= 0){
-					Dice.Step.teleport({step:1, gno:gno});
-				}
-				break;
-			case 40:
-				//スクロール
-				UI.Tool.scrollBoard(gno);
-				//領地選択
-				Territory.Step.start(gno);
-				break;
-			case 52:
-				//移動先決定
-				Territory.Step.move(gno, 0);
-				break;
-			case 54:
-				//領地選択
-				if(Territory.check.indexOf(gno) >= 0){
-					Territory.Step.ability(gno);
-				}
-				break;
-			case 92:
-				Grid.trans(gno);
-				break;
-			default:
-				if(sessionStorage.iPhone == "Y"){
-					return false;
-				}
-				//スクロール
-				UI.Tool.scrollBoard(gno);
-				break;
+		case 21:
+			Spell.Step.chkGrid(gno);
+			break;
+		case 25:
+			if(Spell.check.indexOf(gno) >= 0){
+				//使用確認
+				Spell.Step.second({step:1, gno:gno});
+			}
+			break;
+		case 32:
+			//移動先決定
+			Dice.Step.move(gno);
+			break;
+		case 36:
+			if(Dice.teleport.indexOf(gno) >= 0){
+				Dice.Step.teleport({step:1, gno:gno});
+			}
+			break;
+		case 40:
+			//スクロール
+			UI.Tool.scrollBoard(gno);
+			//領地選択
+			Territory.Step.start(gno);
+			break;
+		case 52:
+			//移動先決定
+			Territory.Step.move(gno, 0);
+			break;
+		case 54:
+			//領地選択
+			if(Territory.check.indexOf(gno) >= 0){
+				Territory.Step.ability(gno);
+			}
+			break;
+		case 92:
+			Grid.trans(gno);
+			break;
+		default:
+			if(sessionStorage.iPhone == "Y"){
+				return false;
+			}
+			//スクロール
+			UI.Tool.scrollBoard(gno);
+			break;
 		}
 	}else{
 		if(sessionStorage.iPhone == "Y"){
@@ -640,7 +641,7 @@ UI.Event.clickHand = function (hno){
 					var cno = Player[Board.role].hand[hno];
 					//コストチェック
 					if(Battle.check.indexOf(cno) >= 0){
-						BattleItem({pno:Board.role, hno:hno});
+						Battle.Step.setitem({pno:Board.role, hno:hno});
 					}
 				}
 				break;

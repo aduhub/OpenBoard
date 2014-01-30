@@ -74,7 +74,6 @@ Dice.Step.roll = function (arg){
 	//移動
 	setTimeout(function(){Dice.Step.move(0);}, 500);
 }
-//rollskip
 Dice.Step.rollskip = function (){
 	if(Board.step == 30){
 		//ステップ（移動開始）
@@ -97,7 +96,6 @@ Dice.Step.rollskip = function (){
 		}
 	}
 }
-//move
 Dice.Step.move = function (gno){
 	//Dice 残りアリ
 	if (Dice.rest >= 1){
@@ -199,7 +197,6 @@ Dice.Step.move = function (gno){
 		}
 	}
 }
-//next
 Dice.Step.next = function (){
 	var standNow = Player[Board.turn].stand;
 	var shadwNow = Player[Board.turn].shadow;
@@ -262,7 +259,6 @@ Dice.Step.next = function (){
 	    Dice.Step.end();
 	}
 }
-//end
 Dice.Step.end = function (){
     //ステップ（移動終了）
 	Flow.step(40);
@@ -306,7 +302,6 @@ Dice.Step.end = function (){
 		$("#BTN_PhaseEnd").addClass(Chessclock.set(40));
 	}
 }
-//teleport
 Dice.Step.teleport = function (arg){
 	var msec = (Frame.skipchk()) ? 50 : 500;
 	switch(arg.step){
@@ -346,7 +341,6 @@ Dice.Step.teleport = function (arg){
 		break;
 	}
 }
-//plus draw
 Dice.Step.draw = function (){
     if(arguments.length == 0){
         //ステップ
@@ -403,12 +397,12 @@ Dice.Step.draw = function (){
 }
 //########[ TOOL ]########
 //橋チェック
-Dice.Tool.chkBridge = function (arg){
+Dice.Tool.chkBridge = function (){
 	var ret = false;
 	var msec = (Frame.skipchk()) ? 50 : 300;
 	//Cross Road
 	if(Board.grid[Player[Board.turn].stand].color == 22){
-		var stdgrid, arrowno, mvgno;
+		var arrowno, mvgno;
 		var dirlinks = [0,0,0,0,0]; 
 		var revdirno = [0,3,4,1,2];
 		//現在情報
