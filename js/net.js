@@ -68,48 +68,6 @@ var Net = {
 		//Frame
 		Frame.stack(message);
 	},
-	//=====[ Pubnub ]=====
-	pubnub_init:function(){
-		Net.Pubnub = PUBNUB({
-			publish_key   : 'pub-c-e8a48c09-801b-4762-8fe7-a3099e169938',
-			subscribe_key : 'sub-c-6d638320-da31-11e2-9d3d-02ee2ddab7fe',
-			ssl           : false,
-			origin        : 'pubsub.pubnub.com'
-		});
-		Net.Pubnub.subscribe({
-			restore : true,
-			channel : Net._channel,
-			connect : function(){
-				Frame.startset();
-				//console
-				console.log("pubnub Connect");
-			},
-			disconnect : function(){
-				//Log
-				Logprint({msg:"*通信が切断されました*", pno:Board.role, ltype:"system"});
-				//console
-				console.log("pubnub Disconnect");
-			},
-			callback : function(message) {
-				if(Net._hashlist.indexOf(message["hash"]) == -1){
-					//Frame
-					Frame.stack(message);
-					//stock
-					Net._hashlist.push(message["hash"]);
-                    //console
-                    console.log("[pub_get]" + JSON.stringify(message));
-				}
-			}
-		});
-	},
-	pubnub_send:function(message){
-		Net.Pubnub.publish({
-			channel  : Net._channel,
-			message  : message
-		});
-        //console
-        console.log("[pub_send]" + JSON.stringify(message));
-	},
 	//=====[ 送信 ]=====
 	send:function (recv){
 		var message = {"cmd":"send", "pno":Board.role, "plog":recv, "hash":Net.hashkit()}
